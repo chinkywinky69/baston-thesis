@@ -38,7 +38,6 @@
         <q-select class="q-mb-sm" :options="weightDivision" outlined bg-color="white" label="Weight Division" />
         <q-select class="q-mb-sm" :options="categories" outlined bg-color="white" label="Category" />
         <q-input class="q-mb-sm" outlined bg-color="white" label="Number of Teams" type="number" />
-        <q-input outlined bg-color="white" label="Number of Players" type="number" />
       </div>
       <div class="row q-gutter-sm q-mt-md">
         <q-btn @click="back" label="back" color="blue-8" />
