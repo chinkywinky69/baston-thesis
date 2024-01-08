@@ -3,7 +3,7 @@
     <div class="text-center q-mb-md text-h6 text-bold">Create a Tournament</div>
     <div class="flex justify-between q-mt-lg">
       <div class="text-h4">
-        Please select the Arnis Rules to follow
+        Please select the Arnis Rules to follow asdasd
       </div>
       <div class="q-mb-md">
         <img width="100px" src="../img/sccarnislogo.png" />
