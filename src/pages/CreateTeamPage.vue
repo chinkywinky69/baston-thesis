@@ -1,18 +1,77 @@
 <template>
   <q-page padding>
     <div class="text-center q-mb-md text-h6 text-bold">Create a Team</div>
-    <div style="width: 100%;">
-      <q-select class="q-mb-sm" :options="weightDivision" outlined bg-color="white" label="Weight Division" />
-      <q-select class="q-mb-sm" :options="categories" outlined bg-color="white" label="Category" />
+    <div class="q-mb-sm">
+      <div class="row justify-center q-gutter-sm">
+        <q-btn @click="existingTeamToggle" label="Existing Teams" color="blue-8" />
+        <q-btn @click="createTeamToggle" label="Create a Team" color="red-8" />
+      </div>
     </div>
-    <div>
-      <q-table title="Users" :rows="rows" :columns="columns" row-key="name">
-        <template v-slot:body-cell-action="props">
-          <q-td :props="props">
-            <q-checkbox v-model="selectedPlayers" color="red-8" />
-          </q-td>
-        </template>
-      </q-table>
+    <div v-if="createTeam">
+      <div class="row justify-center q-gutter-sm">
+        <q-select class="col q-mb-sm" :options="weightDivision" outlined bg-color="white" label="Weight Division" />
+        <q-select class="col q-mb-sm" :options="categories" outlined bg-color="white" label="Category" />
+      </div>
+      <div class="row justify-center">
+        <div class="col-12 col-md-6 q-pa-xs">
+          <q-table :rows="rows" :columns="columns" row-key="name">
+            <template v-slot:top>
+              <div class="text-h6 q-mr-md">Users</div>
+              <q-input placeholder="search" outlined dense>
+                <template v-slot:prepend>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+            <template v-slot:body-cell-action="props">
+              <q-td :props="props">
+                <q-radio v-model="selectedPlayers" color="red-8" dense />
+              </q-td>
+            </template>
+          </q-table>
+        </div>
+        <div class="col-12 col-md-6 q-pa-xs">
+          <q-table :rows="rows" :columns="columns" row-key="name">
+            <template v-slot:top>
+              <q-input placeholder="Team Name" dense />
+            </template>
+            <template v-slot:body-cell-action="props">
+              <q-td :props="props">
+                <q-btn icon="delete" dense color="red-8" />
+              </q-td>
+            </template>
+          </q-table>
+        </div>
+      </div>
+      <div class="text-center q-mt-md">
+        <q-btn label="Submit" color="red-8" />
+      </div>
+    </div>
+    <div v-if="existingTeam">
+      <div class="text-h6 text-bold">
+        Existing Teams:
+      </div>
+      <div class="row justify-center q-gutter-sm">
+        <q-select class="col q-mb-sm" :options="weightDivision" outlined bg-color="white" label="Weight Division" />
+        <q-select class="col q-mb-sm" :options="categories" outlined bg-color="white" label="Category" />
+      </div>
+      <div v-for="(item, i) in 6" :key="i" class="q-mt-md">
+        <q-card style="max-width: 350px;" class="col-6 q-pa-xs">
+          <q-card-section class="text-h6 text-bold">
+            Team Name
+          </q-card-section>
+          <q-card-actions>
+            <q-btn label="View" />
+          </q-card-actions>
+        </q-card>
+      </div>
+      <q-dialog v-model="viewTeam">
+        <q-card>
+          <q-card-section>
+
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </div>
   </q-page>
 </template>
@@ -20,10 +79,22 @@
 <script setup>
 import { ref } from 'vue'
 const selectedPlayers = ref([])
+const createTeam = ref(false)
+const existingTeam = ref(false)
+const viewTeam = ref(false)
 
+const existingTeamToggle = () => {
+  existingTeam.value = true
+  createTeam.value = false
+}
+
+const createTeamToggle = () => {
+  existingTeam.value = false
+  createTeam.value = true
+}
 
 const weightDivision = [
-  'Pinweight', 'Bantanweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight'
+  'Pinweight', 'Bantanweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
 ]
 
 const categories = [
