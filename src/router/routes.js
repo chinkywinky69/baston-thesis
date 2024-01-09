@@ -8,6 +8,14 @@ const routes = [
   },
 
   {
+    path: "/createTeam",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      { path: "", component: () => import("pages/CreateTeamPage.vue") },
+    ],
+  },
+
+  {
     path: "/tournament",
     component: () => import("layouts/MainLayout.vue"),
     children: [
