@@ -60,15 +60,19 @@
           <q-card-section class="text-h6 text-bold">
             Team Name
           </q-card-section>
-          <q-card-actions>
-            <q-btn label="View" />
+          <q-card-actions class="flex flex-end">
+            <q-btn label="View" @click="toggleTeam" />
           </q-card-actions>
         </q-card>
       </div>
       <q-dialog v-model="viewTeam">
         <q-card>
           <q-card-section>
-
+            <q-list>
+              <q-item>
+                Justin Villacampa
+              </q-item>
+            </q-list>
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -82,6 +86,10 @@ const selectedPlayers = ref([])
 const createTeam = ref(false)
 const existingTeam = ref(false)
 const viewTeam = ref(false)
+
+const toggleTeam = () => {
+  viewTeam.value = true
+}
 
 const existingTeamToggle = () => {
   existingTeam.value = true
