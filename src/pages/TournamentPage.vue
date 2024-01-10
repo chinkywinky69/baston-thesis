@@ -3,41 +3,52 @@
     <div class="text-center q-mb-md text-h6 text-bold">Create a Tournament</div>
     <div class="flex justify-between q-mt-lg">
       <div class="text-h4">
-        Please select the Arnis Rules to follow
+        Select Match Type
       </div>
       <div class="q-mb-md">
         <img width="100px" src="../img/sccarnislogo.png" />
       </div>
     </div>
     <div v-if="tournamentTypes" class="row justify-around q-gutter-md">
-      <q-card @click="setTournament('PEKAF')" class="text-center card-type" style="width: 500px; height: 350px">
+      <q-card @click="labanan('Labanan')" class="text-center card-type" style="width: 500px; height: 350px">
         <q-card-section>
           <img src="../img/arnispic2.png" alt="">
         </q-card-section>
         <q-card-section>
           <div class="text-bold text-h5">
-            PEKAF(Philippine Eskrema Kali Arnis Federation)
+            Labanan
           </div>
         </q-card-section>
       </q-card>
-      <q-card @click="setTournament('ArPhi')" class="text-center card-type" style="width: 500px; height: 350px">
+      <q-card @click="anyo('Anyo')" class="text-center card-type" style="width: 500px; height: 350px">
         <q-card-section>
           <img src="../img/arnispic1.png" alt="">
         </q-card-section>
         <q-card-section>
           <div class="text-bold text-h5">
-            ArPhi(Arnis Philippines)
+            Anyo
           </div>
         </q-card-section>
       </q-card>
     </div>
-    <div v-if="tournamentOptions" class="flex flex-center">
-      <div class="q-mb-md text-h6 text-bold">Match Type: {{ selectedRule }}</div>
+    <div v-if="labananOptions" class="flex flex-center">
+      <div class="q-mb-md text-h6 text-bold">Match Type: {{ selectedMatchType }}</div>
       <div style="width: 100%;">
-        <q-select class="q-mb-sm" :options="matchType" outlined bg-color="white" label="Match Type" />
+        <q-select class="q-mb-sm" :options="matchRules" outlined bg-color="white" label="Rules" />
         <q-select class="q-mb-sm" :options="weightDivision" outlined bg-color="white" label="Weight Division" />
         <q-select class="q-mb-sm" :options="categories" outlined bg-color="white" label="Category" />
-        <q-input class="q-mb-sm" outlined bg-color="white" label="Number of Teams" type="number" />
+      </div>
+      <div class="row q-gutter-sm q-mt-md">
+        <q-btn @click="back" label="back" color="blue-8" />
+        <q-btn to="/selectPlayers" label="continue" color="red-8" />
+      </div>
+    </div>
+
+    <div v-if="anyoOptions" class="flex flex-center">
+      <div class="q-mb-md text-h6 text-bold">Match Type: {{ selectedMatchType }}</div>
+      <div style="width: 100%;">
+        <q-select class="q-mb-sm" :options="weightDivision" outlined bg-color="white" label="Weight Division" />
+        <q-select class="q-mb-sm" :options="categories" outlined bg-color="white" label="Category" />
       </div>
       <div class="row q-gutter-sm q-mt-md">
         <q-btn @click="back" label="back" color="blue-8" />
@@ -51,22 +62,34 @@
 <script setup>
 import { ref } from 'vue'
 
-const tournamentOptions = ref(false)
+const labananOptions = ref(false)
+const anyoOptions = ref(false)
 const tournamentTypes = ref(true)
-const selectedRule = ref('')
-
-const setTournament = (rule) => {
-  tournamentOptions.value = true
-  tournamentTypes.value = false
-  selectedRule.value = rule
-}
+const selectedMatchType = ref('')
 
 const back = () => {
-  tournamentOptions.value = false
+  labananOptions.value = false
   tournamentTypes.value = true
+  labananOptions.value = false
+  anyoOptions.value = false
 }
-const matchType = [
-  'Labanan', 'Anyo'
+
+const labanan = (matchType) => {
+  labananOptions.value = true
+  anyoOptions.value = false
+  selectedMatchType.value = matchType
+  tournamentTypes.value = false
+}
+
+const anyo = (matchType) => {
+  labananOptions.value = false
+  anyoOptions.value = true
+  selectedMatchType.value = matchType
+  tournamentTypes.value = false
+}
+
+const matchRules = [
+  'Palarong Pambansa Guidelines 2023', 'Continuous Strike'
 ]
 
 const weightDivision = [

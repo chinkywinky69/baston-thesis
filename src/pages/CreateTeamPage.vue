@@ -88,16 +88,19 @@
                 Boys Senior
               </div>
             </div>
-            <q-separator class="q-my-sm" />
-            <div class="row justify-between">
-              <div class="text-body1">
-                Justin Villacampa
-              </div>
-              <div>
-                <q-btn icon="delete" dense color="red-8" />
-              </div>
-            </div>
+            <q-separator />
           </q-card-section>
+          <q-list>
+            <q-item clickable v-ripple>
+              <q-item-section>Justin Villacampa</q-item-section>
+              <q-item-section avatar>
+                <q-btn color="red" icon="delete" dense />
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <q-card-actions>
+            <q-btn label="Add Member" dense />
+          </q-card-actions>
         </q-card>
       </q-dialog>
     </div>
