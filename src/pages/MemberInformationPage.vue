@@ -75,27 +75,27 @@
     <q-dialog v-model="viewDetailsDialog">
       <q-card>
         <q-card-section>
-          <div class="text-h6">Dummy Data </div>
+          <div class="text-h6">Member Data </div>
           <q-separator class="q-my-md" />
-          <div><strong>Last Name:</strong> {{ dummyPerson.lastName }}</div>
-          <div><strong>First Name:</strong> {{ dummyPerson.firstName }}</div>
-          <div><strong>Middle Name:</strong> {{ dummyPerson.middleName }}</div>
-          <div><strong>Email:</strong> {{ dummyPerson.email }}</div>
-          <div><strong>Birthday:</strong> {{ dummyPerson.birthday }}</div>
-          <div><strong>Age:</strong> {{ dummyPerson.birthday }}</div>
-          <div><strong>Gender:</strong> {{ dummyPerson.gender }}</div>
-          <div><strong>Contact Number:</strong> {{ dummyPerson.contactNumber }}</div>
-          <div><strong>Height:</strong> {{ dummyPerson.height }} cm</div>
-          <div><strong>Weight:</strong> {{ dummyPerson.weight }} kg</div>
-          <div><strong>Weight Class:</strong> {{ dummyPerson.weight }}</div>
-          <div><strong>City:</strong> {{ dummyPerson.city }}</div>
-          <div><strong>Barangay:</strong> {{ dummyPerson.barangay }}</div>
-          <div><strong>Street Name, Building, House No.:</strong> {{ dummyPerson.streetName }}</div>
-          <div><strong>Father's Name:</strong> {{ dummyPerson.fathersName }}</div>
-          <div><strong>Mother's Name:</strong> {{ dummyPerson.mothersName }}</div>
-          <div><strong>Legal Guardian:</strong> {{ dummyPerson.legalGuardian }}</div>
-          <div><strong>Contact # of Legal Guardian:</strong> {{ dummyPerson.legalGuardianContact }}</div>
-          <div><strong>Med Cert:</strong> {{ dummyPerson.medCert }}</div>
+          <div><strong>Last Name:</strong> {{ previewMember.lastName }}</div>
+          <div><strong>First Name:</strong> {{ previewMember.firstName }}</div>
+          <div><strong>Middle Name:</strong> {{ previewMember.middleName }}</div>
+          <div><strong>Email:</strong> {{ previewMember.email }}</div>
+          <div><strong>Birthday:</strong> {{ previewMember.birthday }}</div>
+          <div><strong>Age:</strong> {{ previewMember.birthday }}</div>
+          <div><strong>Gender:</strong> {{ previewMember.gender }}</div>
+          <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
+          <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
+          <div><strong>Weight:</strong> {{ previewMember.weight }} kg</div>
+          <div><strong>Weight Class:</strong> {{ previewMember.weight }}</div>
+          <div><strong>City:</strong> {{ previewMember.city }}</div>
+          <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
+          <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.streetName }}</div>
+          <div><strong>Father's Name:</strong> {{ previewMember.fathersName }}</div>
+          <div><strong>Mother's Name:</strong> {{ previewMember.mothersName }}</div>
+          <div><strong>Legal Guardian:</strong> {{ previewMember.legalGuardian }}</div>
+          <div><strong>Contact # of Legal Guardian:</strong> {{ previewMember.legalGuardianContact }}</div>
+          <div><strong>Med Cert:</strong> {{ previewMember.medCert }}</div>
 
         </q-card-section>
         <q-card-actions align="right">
@@ -229,13 +229,13 @@ const columns = [
 
 const membersData = computed(() => useMemberStore().members)
 
-const viewDetails = (row) => {
-  console.log('Viewing details for:', row.name);
+const viewDetails = (data) => {
   viewDetailsDialog.value = true;
   //PUT IN A DIALOG ANG FULL DETAILS
+  previewMember.value = data
 }
 
-const dummyPerson = {
+const dummy = {
   lastName: 'Doe',
   firstName: 'John',
   middleName: 'Etlog',
@@ -255,6 +255,8 @@ const dummyPerson = {
   legalGuardianContact: '0987654321',
 };
 
+const previewMember = ref(null)
+
 const isLoadingMembersTable = ref(false)
 const fetchMembers = async () => {
   isLoadingMembersTable.value = true
@@ -263,7 +265,7 @@ const fetchMembers = async () => {
 }
 
 onMounted(async () => {
-  Object.assign(form, dummyPerson)
+  Object.assign(form, dummy)
   await fetchMembers()
 })
 </script>
