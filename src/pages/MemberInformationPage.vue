@@ -2,7 +2,7 @@
   <q-page padding>
     <div class="text-center q-mb-md text-h6 text-bold">Member Information</div>
     <div class="flex flex-start q-gutter-sm q-mb-md">
-      <div><q-btn @click="addUserDialog = true" label="Add Member" color="red-8" /></div>
+      <div><q-btn @click="handleUserDialog" label="Add Member" color="red-8" /></div>
       <div style="width:350px">
         <q-input v-model="search" label="search" filled bg-color="white" outlined dense />
       </div>
@@ -33,7 +33,7 @@
     <!-- ADD MEMBER DIALOG -->
     <q-dialog v-model="addUserDialog">
       <q-card style="width: 400px">
-        <q-form @submit="createMember">
+        <q-form @submit="previewMember ? updateMember() : createMember()">
           <q-card-section>
             <div class="text-bold text-h6 q-mb-md">Add Member</div>
             <q-input v-model="form.lastName" class="q-mb-sm" label="Last Name" outlined dense :rules="[(val) => !!val]" />
@@ -55,7 +55,7 @@
             <q-input v-model="form.weightClass" label="Weight Class" outlined dense readonly />
             <q-input class="col q-mb-sm" label="City: San Carlos City" outlined dense type="number" readonly />
             <q-select v-model="form.barangay" class="q-mb-sm" :options="barangays" outlined dense label="Barangay" />
-            <q-input v-model="form.address" class="q-mb-sm" label="Street Name, Building, House no." outlined dense />
+            <q-input v-model="form.street" class="q-mb-sm" label="Street Name, Building, House no." outlined dense />
             <q-input v-model="form.fathersName" class="q-mb-sm" label="Fathers Name" outlined dense />
             <q-input v-model="form.mothersName" class="q-mb-sm" label="Mothers Name" outlined dense />
             <q-input v-model="form.legalGuardian" class="q-mb-sm" label="Legal Guardian that is Present" outlined dense />
@@ -67,7 +67,8 @@
                 <q-icon name="attach_file" />
               </template>
             </q-file>
-            <q-btn :loading="isLoading" type="submit" label="Add Member" color="red-8" />
+            <q-btn :loading="isLoading" type="submit" :label="previewMember ? 'Update Data' : 'Add Member'"
+              color="red-8" />
           </q-card-section>
         </q-form>
       </q-card>
@@ -90,7 +91,7 @@
           <div><strong>Weight Class:</strong> {{ previewMember.weight }}</div>
           <div><strong>City:</strong> {{ previewMember.city }}</div>
           <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
-          <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.streetName }}</div>
+          <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.street }}</div>
           <div><strong>Father's Name:</strong> {{ previewMember.fathersName }}</div>
           <div><strong>Mother's Name:</strong> {{ previewMember.mothersName }}</div>
           <div><strong>Legal Guardian:</strong> {{ previewMember.legalGuardian }}</div>
@@ -99,7 +100,7 @@
 
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn dense label="Edit" color="primary" v-close-popup />
+          <q-btn @click="editMember(previewMember)" dense label="Edit" color="primary" v-close-popup />
           <q-btn dense label="Delete" color="red-8" v-close-popup />
           <q-btn flat label="Close" color="primary" v-close-popup />
         </q-card-actions>
@@ -140,6 +141,11 @@ const form = reactive({
   legalGuardianContact: ""
 })
 
+const handleUserDialog = () => {
+  previewMember.value = null
+  addUserDialog.value = true
+}
+
 const isLoading = ref(false)
 const createMember = async () => {
   isLoading.value = true
@@ -152,6 +158,23 @@ const createMember = async () => {
       message: "You need to upload the medical certificate.",
     })
   }
+  isLoading.value = false
+  if (res) {
+    addUserDialog.value = false
+  }
+}
+
+const updateMember = async () => {
+  isLoading.value = true
+  // Check if medcert available
+  const res = await useMemberStore().update(form.id, form)
+  // if (form.medCert) {
+  // } else {
+  //   $q.dialog({
+  //     title: "Oops!",
+  //     message: "You need to upload the medical certificate.",
+  //   })
+  // }
   isLoading.value = false
   if (res) {
     addUserDialog.value = false
@@ -263,6 +286,12 @@ const fetchMembers = async () => {
   await useMemberStore().fetchAll()
   isLoadingMembersTable.value = false
 }
+
+const editMember = (data) => {
+  Object.assign(form, data)
+  addUserDialog.value = true
+}
+
 
 onMounted(async () => {
   Object.assign(form, dummy)
