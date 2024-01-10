@@ -9,7 +9,8 @@
     </div>
 
     <div class="q-mb-md">
-      <q-table title="Verified Users" :rows="membersData" :columns="columns" row-key="name">
+      <q-table :loading="isLoadingMembersTable" title="Verified Users" :rows="membersData" :columns="columns"
+        row-key="name">
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
             <q-btn flat label="View Details" color="red-8" @click="viewDetails(props.row)" />
@@ -111,6 +112,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useMemberStore } from 'src/stores/members';
 import { useQuasar } from 'quasar';
+import { getFullname, getAddress } from 'src/composables/filters'
 
 const addUserDialog = ref(false)
 const viewDetailsDialog = ref(false)
@@ -216,47 +218,16 @@ const weightClass = computed(() => {
     return "Invalid Weight Class";
   }
 });
-// DUMMY DATA RANI SIR
+
 const columns = [
-  { name: 'name', required: true, label: 'Name', align: 'left', field: 'name', sortable: true },
+  { name: 'name', required: true, label: 'Name', format: (val, row) => getFullname(row), align: 'left', field: 'name', sortable: true },
   { name: 'gender', align: 'center', label: 'Gender', field: 'gender', sortable: true },
   { name: 'age', label: 'Age', field: 'age', sortable: true },
-  { name: 'address', label: 'Address', field: 'address' },
+  { name: 'address', label: 'Address', format: (val, row) => getAddress(row), field: 'address' },
   { name: 'action', label: 'Actions', align: 'center', sortable: false }
 ]
 
-const membersData = [
-  {
-    name: 'Alice Smith',
-    gender: 'Female',
-    age: 28,
-    address: '123 Maple Street'
-  },
-  {
-    name: 'Bob Johnson',
-    gender: 'Male',
-    age: 35,
-    address: '456 Oak Avenue'
-  },
-  {
-    name: 'Charlie Davis',
-    gender: 'Non-Binary',
-    age: 40,
-    address: '789 Pine Road'
-  },
-  {
-    name: 'Diana Taylor',
-    gender: 'Female',
-    age: 22,
-    address: '321 Birch Lane'
-  },
-  {
-    name: 'Edward Brown',
-    gender: 'Male',
-    age: 30,
-    address: '654 Cedar Blvd'
-  },
-]
+const membersData = computed(() => useMemberStore().members)
 
 const viewDetails = (row) => {
   console.log('Viewing details for:', row.name);
@@ -284,7 +255,15 @@ const dummyPerson = {
   legalGuardianContact: '0987654321',
 };
 
-onMounted(() => {
+const isLoadingMembersTable = ref(false)
+const fetchMembers = async () => {
+  isLoadingMembersTable.value = true
+  await useMemberStore().fetchAll()
+  isLoadingMembersTable.value = false
+}
+
+onMounted(async () => {
   Object.assign(form, dummyPerson)
+  await fetchMembers()
 })
 </script>

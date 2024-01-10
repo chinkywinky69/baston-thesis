@@ -102,11 +102,9 @@ export const useMemberStore = defineStore("members", {
     },
 
     async fetchAll() {
-      Loading.show();
       const dataRef = collection(db, "members");
-      const q = query(dataRef, orderBy("started", "desc"));
+      const q = query(dataRef, orderBy("createdAt", "desc"));
       const snapshot = await getDocs(q);
-      Loading.hide();
 
       this.members = snapshot.docs.map((doc) => ({
         ...doc.data(),
