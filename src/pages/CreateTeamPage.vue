@@ -58,13 +58,12 @@
       <div class="row justify-start ">
         <div v-for="(item, i) in 5" :key="i" class="col-6 col-md-3 q-mt-md q-pa-xs">
           <q-card>
-            <q-card-section class="text-h6 text-bold">
+            <q-card-section class="row justify-between text-h6 text-bold">
               <div>
                 Team Name
               </div>
-
               <div>
-
+                <img width="100px" src="../img/arnispic1.png" />
               </div>
             </q-card-section>
             <q-separator />
@@ -75,13 +74,29 @@
         </div>
       </div>
       <q-dialog v-model="viewTeam">
-        <q-card>
+        <q-card style="width: 500px;">
           <q-card-section>
-            <q-list>
-              <q-item>
+            <div class="text-center text-h6 text-bold">
+              Team Pura
+            </div>
+            <q-separator />
+            <div class="row justify-between q-mt-sm">
+              <div class="text-bold">
+                Bantamweight
+              </div>
+              <div class="text-bold">
+                Boys Senior
+              </div>
+            </div>
+            <q-separator class="q-my-sm" />
+            <div class="row justify-between">
+              <div class="text-body1">
                 Justin Villacampa
-              </q-item>
-            </q-list>
+              </div>
+              <div>
+                <q-btn icon="delete" dense color="red-8" />
+              </div>
+            </div>
           </q-card-section>
         </q-card>
       </q-dialog>

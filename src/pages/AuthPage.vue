@@ -12,8 +12,8 @@
             <q-input type="password" filled label="Password" />
           </q-card-section>
           <q-separator />
-          <q-card-action>
-            <q-btn class="q-ma-xl q-px-xl" label="Log In" color="red-8" /> </q-card-action>
+          <q-card-actions>
+            <q-btn class="q-ma-xl q-px-xl" label="Log In" color="red-8" /> </q-card-actions>
         </q-card>
       </form>
     </div>
