@@ -20,14 +20,14 @@
     </div>
 
     <div>
-      <!-- <q-table title="Pending Users" :rows="membersData" :columns="columns" row-key="name">
+      <q-table title="Pending Users" :rows="membersData" :columns="columns" row-key="name">
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
             <q-btn flat label="Reject" color="red-8" @click="viewDetails(props.row)" />
             <q-btn flat label="Accept" color="green-8" @click="viewDetails(props.row)" />
           </q-td>
         </template>
-      </q-table> -->
+      </q-table>
     </div>
 
     <!-- ADD MEMBER DIALOG -->
