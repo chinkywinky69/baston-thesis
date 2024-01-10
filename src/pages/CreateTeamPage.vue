@@ -55,15 +55,24 @@
         <q-select class="col q-mb-sm" :options="weightDivision" outlined bg-color="white" label="Weight Division" />
         <q-select class="col q-mb-sm" :options="categories" outlined bg-color="white" label="Category" />
       </div>
-      <div v-for="(item, i) in 5" :key="i" class="q-mt-md">
-        <q-card style="max-width: 350px;" class="col-6 q-pa-xs">
-          <q-card-section class="text-h6 text-bold">
-            Team Name
-          </q-card-section>
-          <q-card-actions class="flex flex-end">
-            <q-btn label="View" @click="toggleTeam" />
-          </q-card-actions>
-        </q-card>
+      <div class="row justify-start ">
+        <div v-for="(item, i) in 5" :key="i" class="col-6 col-md-3 q-mt-md q-pa-xs">
+          <q-card>
+            <q-card-section class="text-h6 text-bold">
+              <div>
+                Team Name
+              </div>
+
+              <div>
+
+              </div>
+            </q-card-section>
+            <q-separator />
+            <q-card-actions>
+              <q-btn class="" label="View" @click="toggleTeam" />
+            </q-card-actions>
+          </q-card>
+        </div>
       </div>
       <q-dialog v-model="viewTeam">
         <q-card>
