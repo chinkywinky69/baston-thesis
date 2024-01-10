@@ -2,7 +2,7 @@
   <q-page padding>
     <div class="text-center q-mb-md text-h6 text-bold">Member Information</div>
     <div class="flex flex-start q-gutter-sm q-mb-md">
-      <div><q-btn @click="handleUserDialog" label="Add Member" color="red-8" /></div>
+      <div><q-btn @click="handleMemberDialog" label="Add Member" color="red-8" /></div>
       <div style="width:350px">
         <q-input v-model="search" label="search" filled bg-color="white" outlined dense />
       </div>
@@ -101,7 +101,7 @@
         </q-card-section>
         <q-card-actions align="right">
           <q-btn @click="editMember(previewMember)" dense label="Edit" color="primary" v-close-popup />
-          <q-btn dense label="Delete" color="red-8" v-close-popup />
+          <q-btn @click="deleteMember(previewMember)" dense label="Delete" color="red-8" v-close-popup />
           <q-btn flat label="Close" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
@@ -141,10 +141,16 @@ const form = reactive({
   legalGuardianContact: ""
 })
 
-const handleUserDialog = () => {
+const handleMemberDialog = () => {
   previewMember.value = null
   addUserDialog.value = true
 }
+
+const deleteMember = (data) => {
+  viewDetailsDialog.value = false
+  useMemberStore().delete(data.id)
+}
+
 
 const isLoading = ref(false)
 const createMember = async () => {
