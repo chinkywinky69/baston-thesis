@@ -17,18 +17,6 @@
         </q-card>
       </form>
     </div>
-    <!-- MODAL FOR SUCCESSFULLY DELETING THE LAB -->
-    <q-dialog seamless position="bottom">
-      <q-card class="bg-red-9" style="width: 350px">
-        <q-card-section class="row items-center no-wrap">
-          <div>
-            <div class="text-white">Invalid Credentials!</div>
-          </div>
-          <q-space />
-          <q-btn color="white" flat round icon="close" v-close-popup />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
 
