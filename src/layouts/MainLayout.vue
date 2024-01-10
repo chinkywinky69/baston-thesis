@@ -23,7 +23,15 @@
             <q-item-section avatar>
               <q-icon color="red-8" name="fa-regular fa-circle-user" />
             </q-item-section>
-            <q-item-section>Member Information</q-item-section>
+            <q-item-section>Members Info</q-item-section>
+          </q-item>
+
+
+          <q-item to="/createTeam" clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon color="red-8" name="fa-solid fa-people-group" />
+            </q-item-section>
+            <q-item-section>Teams</q-item-section>
           </q-item>
 
 
@@ -37,17 +45,9 @@
 
           <q-item clickable v-ripple>
             <q-item-section avatar>
-              <q-icon color="red-8" name="fa-solid fa-clock" />
-            </q-item-section>
-            <q-item-section>Match History</q-item-section>
-          </q-item>
-
-
-          <q-item clickable v-ripple>
-            <q-item-section avatar>
               <q-icon color="red-8" name="fa-solid fa-tv" />
             </q-item-section>
-            <q-item-section>Scores View Mode</q-item-section>
+            <q-item-section>Match List</q-item-section>
           </q-item>
         </q-list>
       </div>
