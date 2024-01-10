@@ -55,7 +55,7 @@
         <q-select class="col q-mb-sm" :options="weightDivision" outlined bg-color="white" label="Weight Division" />
         <q-select class="col q-mb-sm" :options="categories" outlined bg-color="white" label="Category" />
       </div>
-      <div v-for="(item, i) in 6" :key="i" class="q-mt-md">
+      <div v-for="(item, i) in 5" :key="i" class="q-mt-md">
         <q-card style="max-width: 350px;" class="col-6 q-pa-xs">
           <q-card-section class="text-h6 text-bold">
             Team Name

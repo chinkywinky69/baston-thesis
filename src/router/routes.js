@@ -8,6 +8,12 @@ const routes = [
   },
 
   {
+    path: "/auth",
+    component: () => import("layouts/AuthLayout.vue"),
+    children: [{ path: "", component: () => import("pages/AuthPage.vue") }],
+  },
+
+  {
     path: "/createTeam",
     component: () => import("layouts/MainLayout.vue"),
     children: [
