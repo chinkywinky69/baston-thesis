@@ -2,14 +2,15 @@
   <q-page padding>
     <div class="text-center q-mb-md text-h6 text-bold">Member Information</div>
     <div class="flex flex-start q-gutter-sm q-mb-md">
-      <div><q-btn @click="addUserDialog = true" label="Add Member" color="red-8" /></div>
+      <div><q-btn @click="handleMemberDialog" label="Add Member" color="red-8" /></div>
       <div style="width:350px">
-        <q-input label="search" filled bg-color="white" outlined dense />
+        <q-input v-model="search" label="search" filled bg-color="white" outlined dense />
       </div>
     </div>
 
     <div class="q-mb-md">
-      <q-table title="Verified Users" :rows="rows" :columns="columns" row-key="name">
+      <q-table :loading="isLoadingMembersTable" title="Verified Users" :rows="membersData" :columns="columns"
+        row-key="name">
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
             <q-btn flat label="View Details" color="red-8" @click="viewDetails(props.row)" />
@@ -19,7 +20,7 @@
     </div>
 
     <div>
-      <q-table title="Pending Users" :rows="rows" :columns="columns" row-key="name">
+      <q-table title="Pending Users" :rows="membersData" :columns="columns" row-key="name">
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
             <q-btn flat label="Reject" color="red-8" @click="viewDetails(props.row)" />
@@ -32,72 +33,75 @@
     <!-- ADD MEMBER DIALOG -->
     <q-dialog v-model="addUserDialog">
       <q-card style="width: 400px">
-        <q-card-section>
-          <div class="text-bold text-h6 q-mb-md">Add Member</div>
-          <q-input class="q-mb-sm" label="Last Name" outlined dense />
-          <q-input class="q-mb-sm" label="First Name" outlined dense />
-          <q-input class="q-mb-sm" label="Middle Name" outlined dense />
-          <q-input class="q-mb-sm" label="Email" outlined dense type="email" />
-          <div class="row">
-            <q-input class="col q-mb-sm" label="Birthday" outlined dense type="date" v-model="birthday"
-              @change="calculateAge" />
-            <q-input class="col q-mb-sm" label="Age" outlined dense type="number" v-model="age" readonly />
-          </div>
-          <q-select class="q-mb-sm" :options="genders" outlined dense label="Gender" />
-          <q-input class="q-mb-sm" label="Contact Number" outlined dense />
-          <div class="row">
-            <q-input class="col q-mb-sm" label="Height (cm)" outlined dense type="number" v-model="height" />
-            <q-input class="col q-mb-sm" label="Weight (kg)" outlined dense type="number" v-model="weight" />
+        <q-form @submit="previewMember ? updateMember() : createMember()">
+          <q-card-section>
+            <div class="text-bold text-h6 q-mb-md">Add Member</div>
+            <q-input v-model="form.lastName" class="q-mb-sm" label="Last Name" outlined dense :rules="[(val) => !!val]" />
+            <q-input v-model="form.firstName" class="q-mb-sm" label="First Name" outlined dense />
+            <q-input v-model="form.middleName" class="q-mb-sm" label="Middle Name" outlined dense />
+            <q-input v-model="form.email" class="q-mb-sm" label="Email" outlined dense type="email" />
+            <div class="row">
+              <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
+                @change="calculateAge" />
+              <q-input v-model="form.age" class="col q-mb-sm" label="Age" outlined dense type="number" readonly />
+            </div>
+            <q-select v-model="form.gender" class="q-mb-sm" :options="genders" outlined dense label="Gender" />
+            <q-input v-model="form.contactNo" class="q-mb-sm" label="Contact Number" outlined dense />
+            <div class="row">
+              <q-input v-model="form.height" class="col q-mb-sm" label="Height (cm)" outlined dense type="number" />
+              <q-input v-model="form.weight" class="col q-mb-sm" label="Weight (kg)" outlined dense type="number" />
 
-          </div>
-          <q-input label="Weight Class" outlined dense v-model="weightClass" readonly />
-          <q-input class="col q-mb-sm" label="City: San Carlos City" outlined dense type="number" readonly />
-          <q-input class="q-mb-sm" label="Last Name" outlined dense />
-          <q-select class="q-mb-sm" :options="barangays" outlined dense label="Barangay" />
-          <q-input class="q-mb-sm" label="Street Name, Building, House no." outlined dense />
-          <q-input class="q-mb-sm" label="Fathers Name" outlined dense />
-          <q-input class="q-mb-sm" label="Mothers Name" outlined dense />
-          <q-input class="q-mb-sm" label="Legal Guardian that is Present" outlined dense />
-          <q-input class="q-mb-sm" label="Contact # of Legal Guardian " outlined dense type="number" />
-          <q-separator />
-          <q-file class="q-mb-sm" label="Upload Med Cert" outlined dense>
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-          <q-btn label="Add Member" color="red-8" />
-        </q-card-section>
+            </div>
+            <q-input v-model="form.weightClass" label="Weight Class" outlined dense readonly />
+            <q-input class="col q-mb-sm" label="City: San Carlos City" outlined dense type="number" readonly />
+            <q-select v-model="form.barangay" class="q-mb-sm" :options="barangays" outlined dense label="Barangay" />
+            <q-input v-model="form.street" class="q-mb-sm" label="Street Name, Building, House no." outlined dense />
+            <q-input v-model="form.fathersName" class="q-mb-sm" label="Fathers Name" outlined dense />
+            <q-input v-model="form.mothersName" class="q-mb-sm" label="Mothers Name" outlined dense />
+            <q-input v-model="form.legalGuardian" class="q-mb-sm" label="Legal Guardian that is Present" outlined dense />
+            <q-input v-model="form.legalGuardianContact" class="q-mb-sm" label="Contact # of Legal Guardian " outlined
+              dense type="number" />
+            <q-separator />
+            <q-file v-model="medCert" class="q-mb-sm" label="Upload Med Cert" outlined dense>
+              <template v-slot:prepend>
+                <q-icon name="attach_file" />
+              </template>
+            </q-file>
+            <q-btn :loading="isLoading" type="submit" :label="previewMember ? 'Update Data' : 'Add Member'"
+              color="red-8" />
+          </q-card-section>
+        </q-form>
       </q-card>
     </q-dialog>
     <q-dialog v-model="viewDetailsDialog">
       <q-card>
         <q-card-section>
-          <div class="text-h6">Dummy Data </div>
+          <div class="text-h6">Member Data </div>
           <q-separator class="q-my-md" />
-          <div><strong>Last Name:</strong> {{ dummyPerson.lastName }}</div>
-          <div><strong>First Name:</strong> {{ dummyPerson.firstName }}</div>
-          <div><strong>Middle Name:</strong> {{ dummyPerson.middleName }}</div>
-          <div><strong>Email:</strong> {{ dummyPerson.email }}</div>
-          <div><strong>Birthday:</strong> {{ dummyPerson.birthday }}</div>
-          <div><strong>Age:</strong> {{ dummyPerson.birthday }}</div>
-          <div><strong>Gender:</strong> {{ dummyPerson.gender }}</div>
-          <div><strong>Contact Number:</strong> {{ dummyPerson.contactNumber }}</div>
-          <div><strong>Height:</strong> {{ dummyPerson.height }} cm</div>
-          <div><strong>Weight:</strong> {{ dummyPerson.weight }} kg</div>
-          <div><strong>Weight Class:</strong> {{ dummyPerson.weight }}</div>
-          <div><strong>City:</strong> {{ dummyPerson.city }}</div>
-          <div><strong>Barangay:</strong> {{ dummyPerson.barangay }}</div>
-          <div><strong>Street Name, Building, House No.:</strong> {{ dummyPerson.streetName }}</div>
-          <div><strong>Father's Name:</strong> {{ dummyPerson.fathersName }}</div>
-          <div><strong>Mother's Name:</strong> {{ dummyPerson.mothersName }}</div>
-          <div><strong>Legal Guardian:</strong> {{ dummyPerson.legalGuardian }}</div>
-          <div><strong>Contact # of Legal Guardian:</strong> {{ dummyPerson.legalGuardianContact }}</div>
-          <div><strong>Med Cert:</strong> {{ dummyPerson.medCert }}</div>
+          <div><strong>Last Name:</strong> {{ previewMember.lastName }}</div>
+          <div><strong>First Name:</strong> {{ previewMember.firstName }}</div>
+          <div><strong>Middle Name:</strong> {{ previewMember.middleName }}</div>
+          <div><strong>Email:</strong> {{ previewMember.email }}</div>
+          <div><strong>Birthday:</strong> {{ previewMember.birthday }}</div>
+          <div><strong>Age:</strong> {{ previewMember.birthday }}</div>
+          <div><strong>Gender:</strong> {{ previewMember.gender }}</div>
+          <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
+          <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
+          <div><strong>Weight:</strong> {{ previewMember.weight }} kg</div>
+          <div><strong>Weight Class:</strong> {{ previewMember.weight }}</div>
+          <div><strong>City:</strong> {{ previewMember.city }}</div>
+          <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
+          <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.street }}</div>
+          <div><strong>Father's Name:</strong> {{ previewMember.fathersName }}</div>
+          <div><strong>Mother's Name:</strong> {{ previewMember.mothersName }}</div>
+          <div><strong>Legal Guardian:</strong> {{ previewMember.legalGuardian }}</div>
+          <div><strong>Contact # of Legal Guardian:</strong> {{ previewMember.legalGuardianContact }}</div>
+          <div><strong>Med Cert:</strong> {{ previewMember.medCert }}</div>
 
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn dense label="Edit" color="primary" v-close-popup />
-          <q-btn dense label="Delete" color="red-8" v-close-popup />
+          <q-btn @click="editMember(previewMember)" dense label="Edit" color="primary" v-close-popup />
+          <q-btn @click="deleteMember(previewMember)" dense label="Delete" color="red-8" v-close-popup />
           <q-btn flat label="Close" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
@@ -106,15 +110,82 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useMemberStore } from 'src/stores/members';
+import { useQuasar } from 'quasar';
+import { getFullname, getAddress } from 'src/composables/filters'
 
 const addUserDialog = ref(false)
 const viewDetailsDialog = ref(false)
-const check = ref(false)
-const birthday = ref('')
-const age = ref()
-const weight = ref(null);
-const height = ref(null);
+const search = ref("")
+const medCert = ref(null)
+const $q = useQuasar()
+
+const form = reactive({
+  lastName: "",
+  firstName: "",
+  middleName: "",
+  email: "",
+  birthday: "",
+  age: "",
+  gender: "",
+  contactNo: "",
+  height: "",
+  weight: "",
+  weightClass: "",
+  barangay: "",
+  street: "",
+  fathersName: "",
+  mothersName: "",
+  legalGuardian: "",
+  legalGuardianContact: ""
+})
+
+const handleMemberDialog = () => {
+  previewMember.value = null
+  addUserDialog.value = true
+}
+
+const deleteMember = (data) => {
+  viewDetailsDialog.value = false
+  useMemberStore().delete(data.id)
+}
+
+
+const isLoading = ref(false)
+const createMember = async () => {
+  isLoading.value = true
+  // Check if medcert available
+  const res = await useMemberStore().create(form)
+  if (form.medCert) {
+  } else {
+    $q.dialog({
+      title: "Oops!",
+      message: "You need to upload the medical certificate.",
+    })
+  }
+  isLoading.value = false
+  if (res) {
+    addUserDialog.value = false
+  }
+}
+
+const updateMember = async () => {
+  isLoading.value = true
+  // Check if medcert available
+  const res = await useMemberStore().update(form.id, form)
+  // if (form.medCert) {
+  // } else {
+  //   $q.dialog({
+  //     title: "Oops!",
+  //     message: "You need to upload the medical certificate.",
+  //   })
+  // }
+  isLoading.value = false
+  if (res) {
+    addUserDialog.value = false
+  }
+}
 
 const genders = [
   "Male",
@@ -139,24 +210,25 @@ const barangays = [
   'Rizal',
   'San Juan (Sipaway)'
 ]
+
 // CALCULATE BIRTHDAY FUNCTION
 const calculateAge = () => {
-  if (birthday.value) {
-    const birthdayDate = new Date(birthday.value);
+  if (form.birthday) {
+    const birthdayDate = new Date(form.birthday);
     const today = new Date();
     let ageCalc = today.getFullYear() - birthdayDate.getFullYear();
     const m = today.getMonth() - birthdayDate.getMonth();
     if (m < 0 || (m === 0 && today.getDate() < birthdayDate.getDate())) {
       ageCalc--;
     }
-    age.value = ageCalc;
+    form.age = ageCalc;
   } else {
-    age.value = '';
+    form.age = '';
   }
 }
 //CALCULATE WEIGHT CLASS
 const weightClass = computed(() => {
-  const w = weight.value;
+  const w = form.weight;
 
   if (!w || w < 30 || w > 80) {
     return "Invalid Input";
@@ -175,53 +247,24 @@ const weightClass = computed(() => {
     return "Invalid Weight Class";
   }
 });
-// DUMMY DATA RANI SIR
+
 const columns = [
-  { name: 'name', required: true, label: 'Name', align: 'left', field: 'name', sortable: true },
+  { name: 'name', required: true, label: 'Name', format: (val, row) => getFullname(row), align: 'left', field: 'name', sortable: true },
   { name: 'gender', align: 'center', label: 'Gender', field: 'gender', sortable: true },
   { name: 'age', label: 'Age', field: 'age', sortable: true },
-  { name: 'address', label: 'Address', field: 'address' },
+  { name: 'address', label: 'Address', format: (val, row) => getAddress(row), field: 'address' },
   { name: 'action', label: 'Actions', align: 'center', sortable: false }
 ]
-const rows = [
-  {
-    name: 'Alice Smith',
-    gender: 'Female',
-    age: 28,
-    address: '123 Maple Street'
-  },
-  {
-    name: 'Bob Johnson',
-    gender: 'Male',
-    age: 35,
-    address: '456 Oak Avenue'
-  },
-  {
-    name: 'Charlie Davis',
-    gender: 'Non-Binary',
-    age: 40,
-    address: '789 Pine Road'
-  },
-  {
-    name: 'Diana Taylor',
-    gender: 'Female',
-    age: 22,
-    address: '321 Birch Lane'
-  },
-  {
-    name: 'Edward Brown',
-    gender: 'Male',
-    age: 30,
-    address: '654 Cedar Blvd'
-  },
-]
-const viewDetails = (row) => {
-  console.log('Viewing details for:', row.name);
+
+const membersData = computed(() => useMemberStore().members)
+
+const viewDetails = (data) => {
   viewDetailsDialog.value = true;
   //PUT IN A DIALOG ANG FULL DETAILS
+  previewMember.value = data
 }
 
-const dummyPerson = {
+const dummy = {
   lastName: 'Doe',
   firstName: 'John',
   middleName: 'Etlog',
@@ -229,16 +272,35 @@ const dummyPerson = {
   birthday: '1990-01-01', // format YYYY-MM-DD
   age: 21,
   gender: 'Male',
-  contactNumber: '123456789',
+  contactNo: '123456789',
   height: 180, // in cm
   weight: 70, // in kg
   city: 'San Carlos City',
   barangay: 'Nataban',
-  streetName: '123, Elm Street',
+  street: '123, Elm Street',
   fathersName: 'Richard Doe',
   mothersName: 'Jane Doe',
   legalGuardian: 'N/A',
   legalGuardianContact: '0987654321',
-  medCert: 'Insert Med Cert Here kaw na bahala ani sir ahhaha'
 };
+
+const previewMember = ref(null)
+
+const isLoadingMembersTable = ref(false)
+const fetchMembers = async () => {
+  isLoadingMembersTable.value = true
+  await useMemberStore().fetchAll()
+  isLoadingMembersTable.value = false
+}
+
+const editMember = (data) => {
+  Object.assign(form, data)
+  addUserDialog.value = true
+}
+
+
+onMounted(async () => {
+  Object.assign(form, dummy)
+  await fetchMembers()
+})
 </script>

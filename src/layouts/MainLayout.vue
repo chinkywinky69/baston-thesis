@@ -56,7 +56,7 @@
       <q-list class="q-pa-md text-center">
         <q-item>
           <q-item-section>
-            <q-btn label="Logout" color="red-8" glossy />
+            <q-btn @click="logout" label="Logout" color="red-8" glossy />
           </q-item-section>
         </q-item>
 
@@ -77,6 +77,7 @@
 </template>
 
 <script setup>
+import { useAuthStore } from 'src/stores/auth';
 import { ref } from 'vue'
 
 const leftDrawerOpen = ref(false)
@@ -84,6 +85,9 @@ const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
+const logout = () => {
+  useAuthStore().logOut()
+}
 </script>
 
 
