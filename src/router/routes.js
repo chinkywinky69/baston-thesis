@@ -23,6 +23,17 @@ const routes = [
   },
 
   {
+    path: "/welcomePage",
+    component: () => import("layouts/AuthLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("pages/WelcomePage.vue"),
+      },
+    ],
+  },
+
+  {
     path: "/createTeam",
     component: () => import("layouts/MainLayout.vue"),
     children: [

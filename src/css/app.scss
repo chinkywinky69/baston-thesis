@@ -2,3 +2,15 @@
 * {
   font-family: "Poppins", sans-serif;
 }
+
+@media (max-width: 1024px) {
+  .for-desktop {
+    display: none;
+  }
+}
+
+@media (min-width: 1023px) {
+  .for-mobile {
+    display: none;
+  }
+}
