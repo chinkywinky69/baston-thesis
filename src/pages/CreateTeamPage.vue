@@ -9,8 +9,8 @@
     </div>
     <div v-if="createTeam">
       <div class="row justify-center q-gutter-sm">
-        <q-select class="col q-mb-sm" :options="weightDivision" outlined bg-color="white" label="Weight Division" />
-        <q-select class="col q-mb-sm" :options="categories" outlined bg-color="white" label="Category" />
+        <q-select class="col q-mb-sm" dense :options="weightDivision" outlined bg-color="white" label="Weight Division" />
+        <q-select class="col q-mb-sm" dense :options="categories" outlined bg-color="white" label="Category" />
       </div>
       <div class="row justify-center">
         <div class="col-12 col-md-6 q-pa-xs">
