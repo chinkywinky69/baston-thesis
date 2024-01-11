@@ -14,6 +14,19 @@
           </div>
         </div>
       </q-img>
+      <q-img class="for-mobile" src="../img/welcomePage2.jpg">
+        <div class="absolute-full text-subtitle2 flex-center text-center">
+          <div class=" text-h3 text-bold q-mb-sm">
+            BASTON
+          </div>
+          <div class="text-body1 q-mb-md q-px-md">
+            Arnis tournaments to a simpler, convenient way!
+          </div>
+          <div class="q-mb-sm">
+            <q-btn dense label="Be a Member" color="red-8" />
+          </div>
+        </div>
+      </q-img>
     </div>
     <div class="q-pa-xl">
       <div class="text-h3 text-black text-bold text-center q-mb-xl">ABOUT US</div>
