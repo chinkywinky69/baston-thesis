@@ -3,14 +3,18 @@
     <div class="text-center q-mb-md text-h6 text-bold">Member Information</div>
     <div class="flex flex-start q-gutter-sm q-mb-md">
       <div><q-btn @click="handleMemberDialog" label="Add Member" color="red-8" /></div>
-      <div style="width:350px">
-        <q-input v-model="search" label="search" filled bg-color="white" outlined dense />
-      </div>
     </div>
 
     <div class="q-mb-md">
-      <q-table :loading="isLoadingMembersTable" title="Verified Users" :rows="membersData" :columns="columns"
-        row-key="name">
+      <q-table :loading="isLoadingMembersTable" :rows="membersData" :columns="columns" row-key="name">
+        <template v-slot:top>
+          <div class="text-h6 q-mr-md">Verified Members</div>
+          <q-input placeholder="search" outlined dense>
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
             <q-btn flat label="View Details" color="red-8" @click="viewDetails(props.row)" />
@@ -21,6 +25,14 @@
 
     <div>
       <q-table title="Pending Users" :rows="membersData" :columns="columns" row-key="name">
+        <template v-slot:top>
+          <div class="text-h6 q-mr-md">Pending Members</div>
+          <q-input placeholder="search" outlined dense>
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
             <q-btn flat label="Reject" color="red-8" @click="viewDetails(props.row)" />
@@ -37,32 +49,43 @@
           <q-card-section>
             <div class="text-bold text-h6 q-mb-md">Add Member</div>
             <q-input v-model="form.lastName" class="q-mb-sm" label="Last Name" outlined dense :rules="[(val) => !!val]" />
-            <q-input v-model="form.firstName" class="q-mb-sm" label="First Name" outlined dense />
-            <q-input v-model="form.middleName" class="q-mb-sm" label="Middle Name" outlined dense />
-            <q-input v-model="form.email" class="q-mb-sm" label="Email" outlined dense type="email" />
+            <q-input v-model="form.firstName" class="q-mb-sm" label="First Name" outlined dense
+              :rules="[(val) => !!val]" />
+            <q-input v-model="form.middleName" class="q-mb-sm" label="Middle Name" outlined dense
+              :rules="[(val) => !!val]" />
+            <q-input v-model="form.email" class="q-mb-sm" label="Email" outlined dense type="email"
+              :rules="[(val) => !!val]" />
             <div class="row">
               <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
-                @change="calculateAge" />
+                @change="calculateAge" :rules="[(val) => !!val]" />
               <q-input v-model="form.age" class="col q-mb-sm" label="Age" outlined dense type="number" readonly />
             </div>
-            <q-select v-model="form.gender" class="q-mb-sm" :options="genders" outlined dense label="Gender" />
-            <q-input v-model="form.contactNo" class="q-mb-sm" label="Contact Number" outlined dense />
+            <q-select v-model="form.gender" class="q-mb-sm" :options="genders" outlined dense label="Gender"
+              :rules="[(val) => !!val]" />
+            <q-input v-model="form.contactNo" class="q-mb-sm" label="Contact Number" outlined dense
+              :rules="[(val) => !!val]" />
             <div class="row">
-              <q-input v-model="form.height" class="col q-mb-sm" label="Height (cm)" outlined dense type="number" />
-              <q-input v-model="form.weight" class="col q-mb-sm" label="Weight (kg)" outlined dense type="number" />
+              <q-input v-model="form.height" class="col q-mb-sm" label="Height (cm)" outlined dense type="number"
+                :rules="[(val) => !!val]" />
+              <q-input v-model="form.weight" class="col q-mb-sm" label="Weight (kg)" outlined dense type="number"
+                :rules="[(val) => !!val]" />
 
             </div>
             <q-input v-model="form.weightClass" label="Weight Class" outlined dense readonly />
             <q-input class="col q-mb-sm" label="City: San Carlos City" outlined dense type="number" readonly />
-            <q-select v-model="form.barangay" class="q-mb-sm" :options="barangays" outlined dense label="Barangay" />
+            <q-select v-model="form.barangay" class="q-mb-sm" :options="barangays" outlined dense label="Barangay"
+              :rules="[(val) => !!val]" />
             <q-input v-model="form.street" class="q-mb-sm" label="Street Name, Building, House no." outlined dense />
-            <q-input v-model="form.fathersName" class="q-mb-sm" label="Fathers Name" outlined dense />
-            <q-input v-model="form.mothersName" class="q-mb-sm" label="Mothers Name" outlined dense />
-            <q-input v-model="form.legalGuardian" class="q-mb-sm" label="Legal Guardian that is Present" outlined dense />
+            <q-input v-model="form.fathersName" class="q-mb-sm" label="Fathers Name" outlined dense
+              :rules="[(val) => !!val]" />
+            <q-input v-model="form.mothersName" class="q-mb-sm" label="Mothers Name" outlined dense
+              :rules="[(val) => !!val]" />
+            <q-input v-model="form.legalGuardian" class="q-mb-sm" label="Legal Guardian that is Present" outlined dense
+              :rules="[(val) => !!val]" />
             <q-input v-model="form.legalGuardianContact" class="q-mb-sm" label="Contact # of Legal Guardian " outlined
-              dense type="number" />
+              dense type="number" :rules="[(val) => !!val]" />
             <q-separator />
-            <q-file v-model="medCert" class="q-mb-sm" label="Upload Med Cert" outlined dense>
+            <q-file v-model="medCert" class="q-mb-sm" label="Upload Med Cert" outlined dense :rules="[(val) => !!val]">
               <template v-slot:prepend>
                 <q-icon name="attach_file" />
               </template>
@@ -96,8 +119,9 @@
           <div><strong>Mother's Name:</strong> {{ previewMember.mothersName }}</div>
           <div><strong>Legal Guardian:</strong> {{ previewMember.legalGuardian }}</div>
           <div><strong>Contact # of Legal Guardian:</strong> {{ previewMember.legalGuardianContact }}</div>
-          <div><strong>Med Cert:</strong> {{ previewMember.medCert }}</div>
-
+          <div><strong>Med Cert:</strong> {{ previewMember.medCert }} <q-btn @click="viewMedCert" class="q-ml-sm"
+              label="View Details" dense />
+          </div>
         </q-card-section>
         <q-card-actions align="right">
           <q-btn @click="editMember(previewMember)" dense label="Edit" color="primary" v-close-popup />
@@ -105,6 +129,16 @@
           <q-btn flat label="Close" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
+      <!-- view medcert dialog -->
+      <q-dialog v-model="medCertDialog">
+        <q-card style="width: 350px;">
+          <q-card-section>
+            <div class="text-h6 text-bold text-center">Med Cert</div>
+            <q-img
+              src="https://preview.redd.it/n9p8aheg9jw91.jpg?width=1080&format=pjpg&auto=webp&s=73d5a30807275340645d8dbc9586cffa598a86ff" />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </q-dialog>
   </q-page>
 </template>
@@ -119,6 +153,7 @@ const addUserDialog = ref(false)
 const viewDetailsDialog = ref(false)
 const search = ref("")
 const medCert = ref(null)
+const medCertDialog = ref(false)
 const $q = useQuasar()
 
 const form = reactive({
@@ -185,6 +220,10 @@ const updateMember = async () => {
   if (res) {
     addUserDialog.value = false
   }
+}
+
+const viewMedCert = () => {
+  medCertDialog.value = true
 }
 
 const genders = [

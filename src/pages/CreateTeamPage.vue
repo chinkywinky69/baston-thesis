@@ -37,7 +37,7 @@
             </template>
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
-                <q-btn icon="delete" dense color="red-8" />
+                <q-btn icon="close" dense color="red-8" round size="sm" outline />
               </q-td>
             </template>
           </q-table>
