@@ -38,6 +38,11 @@ const routes = [
     component: () => import("layouts/MainLayout.vue"),
     children: [
       { path: "", component: () => import("pages/CreateTeamPage.vue") },
+      {
+        name: "viewTeam",
+        path: "viewTeam",
+        component: () => import("pages/viewTeamPage.vue"),
+      },
     ],
   },
 

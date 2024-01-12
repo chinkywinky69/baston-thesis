@@ -55,6 +55,8 @@
               :rules="[(val) => !!val]" />
             <q-input v-model="form.email" class="q-mb-sm" label="Email" outlined dense type="email"
               :rules="[(val) => !!val]" />
+            <q-input v-model="form.school" class="q-mb-sm" label="School" outlined dense type="text"
+              :rules="[(val) => !!val]" />
             <div class="row">
               <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
                 @change="calculateAge" :rules="[(val) => !!val]" />
@@ -105,6 +107,7 @@
           <div><strong>First Name:</strong> {{ previewMember.firstName }}</div>
           <div><strong>Middle Name:</strong> {{ previewMember.middleName }}</div>
           <div><strong>Email:</strong> {{ previewMember.email }}</div>
+          <div><strong>School:</strong> {{ previewMember.school }}</div>
           <div><strong>Birthday:</strong> {{ previewMember.birthday }}</div>
           <div><strong>Age:</strong> {{ previewMember.birthday }}</div>
           <div><strong>Gender:</strong> {{ previewMember.gender }}</div>
@@ -130,10 +133,15 @@
         </q-card-actions>
       </q-card>
       <!-- view medcert dialog -->
-      <q-dialog v-model="medCertDialog">
-        <q-card style="width: 350px;">
+      <q-dialog :maximized="maximizedToggle" transition-show="slide-up" transition-hide="slide-down"
+        v-model="medCertDialog">
+        <q-card style="width: 850px;">
+          <q-card-section class="row items-center q-pb-none">
+            <div class="text-h6">Med Cert</div>
+            <q-space />
+            <q-btn icon="close" flat round dense v-close-popup />
+          </q-card-section>
           <q-card-section>
-            <div class="text-h6 text-bold text-center">Med Cert</div>
             <q-img
               src="https://preview.redd.it/n9p8aheg9jw91.jpg?width=1080&format=pjpg&auto=webp&s=73d5a30807275340645d8dbc9586cffa598a86ff" />
           </q-card-section>
@@ -155,12 +163,14 @@ const search = ref("")
 const medCert = ref(null)
 const medCertDialog = ref(false)
 const $q = useQuasar()
+const maximizedToggle = ref(true)
 
 const form = reactive({
   lastName: "",
   firstName: "",
   middleName: "",
   email: "",
+  school: "",
   birthday: "",
   age: "",
   gender: "",
@@ -336,7 +346,6 @@ const editMember = (data) => {
   Object.assign(form, data)
   addUserDialog.value = true
 }
-
 
 onMounted(async () => {
   Object.assign(form, dummy)

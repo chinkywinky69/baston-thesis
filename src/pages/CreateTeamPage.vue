@@ -8,10 +8,6 @@
       </div>
     </div>
     <div v-if="createTeam">
-      <div class="row justify-center q-gutter-sm">
-        <q-select class="col q-mb-sm" dense :options="weightDivision" outlined bg-color="white" label="Weight Division" />
-        <q-select class="col q-mb-sm" dense :options="categories" outlined bg-color="white" label="Category" />
-      </div>
       <div class="row justify-center">
         <div class="col-12 col-md-6 q-pa-xs">
           <q-table :rows="rows" :columns="columns" row-key="name">
@@ -68,7 +64,7 @@
             </q-card-section>
             <q-separator />
             <q-card-actions>
-              <q-btn class="" label="View" @click="toggleTeam" />
+              <q-btn label="View" @click="handleViewTeam" />
             </q-card-actions>
           </q-card>
         </div>
@@ -109,14 +105,20 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router';
+
+
+const router = useRouter();
+const handleViewTeam = () => {
+  router.push({ name: 'viewTeam' });
+}
+
 const selectedPlayers = ref([])
 const createTeam = ref(false)
 const existingTeam = ref(false)
 const viewTeam = ref(false)
 
-const toggleTeam = () => {
-  viewTeam.value = true
-}
+
 
 const existingTeamToggle = () => {
   existingTeam.value = true

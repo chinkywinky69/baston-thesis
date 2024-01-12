@@ -1,0 +1,114 @@
+<template>
+  <q-page padding>
+    <div class="flex column flex-center">
+      <div class="text-h4 text-bold q-mb-md">
+        Team Name
+      </div>
+      <div class="row q-gutter-sm">
+        <div>
+          <q-select v-model="selectedGender" style="width: 150px;" :options="gender" placeholder="Category" outlined
+            bg-color="white" dense />
+        </div>
+        <div>
+          <q-select v-model="selectedCategory" style="width: 150px;" :options="categories" placeholder="Category" outlined
+            bg-color="white" dense />
+        </div>
+      </div>
+    </div>
+    <q-separator class="q-my-sm" />
+    <div class="row justify-around">
+      <div>
+        <div class="column items-center">
+          <div class="col">
+            <q-btn class="text-white q-pa-sm q-mb-sm text-body1" label="Labanan" color="red-8" dense />
+          </div>
+          <div v-for="w in weightDivision" :key="w" class="col q-mb-sm">
+            <q-card style="width: 370px;">
+              <q-card-section class="row justify-between">
+                <div class="text-body1 text-bold">{{ w }}</div>
+                <div class="text-body1 ">{{ categoryBoys }}</div>
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                <div>Justin Villacampa</div>
+              </q-card-section>
+              <q-separator />
+              <q-card-actions class="row justify-end">
+                <q-btn label="delete" color="red-8" dense />
+              </q-card-actions>
+            </q-card>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="column items-center">
+          <div class="col">
+            <q-btn class="text-white q-pa-sm q-mb-sm text-body1" label="Anyo" color="blue-8" dense />
+          </div>
+          <div v-for="i in individualAnyo" :key="i" class="col q-mb-sm">
+            <q-card style="width: 370px;">
+              <q-card-section class="row justify-between">
+                <div class="text-body1 text-bold">{{ i }}</div>
+                <div class="text-body1 ">{{ category }}</div>
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                <q-select v-model="individualAnyoMember" :options="dummyMembers" dense outlined bg-color="white" />
+              </q-card-section>
+              <q-separator />
+            </q-card>
+          </div>
+          <div v-for="t in teamAnyo" :key="t" class="col q-mb-sm">
+            <q-card style="width: 370px;">
+              <q-card-section class="row justify-between">
+                <div class="text-body1 text-bold">{{ t }}</div>
+                <div class="text-body1 ">{{ category }}</div>
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                <q-select v-model="individualAnyoMember" :options="dummyMembers" dense outlined bg-color="white" />
+                <q-select v-model="individualAnyoMember" :options="dummyMembers" dense outlined bg-color="white" />
+                <q-select v-model="individualAnyoMember" :options="dummyMembers" dense outlined bg-color="white" />
+
+              </q-card-section>
+              <q-separator />
+            </q-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </q-page>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const selectedGender = ref('Boys')
+const selectedCategory = ref('Kids')
+const individualAnyoMember = ref('None')
+
+
+const gender = [
+  'Boys', 'Girls'
+]
+
+const categories = [
+  'Kids', 'Junior', 'Senior'
+]
+
+const weightDivision = [
+  'Pinweight', 'Bantanweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
+]
+
+const individualAnyo = [
+  "Individual Likha Single Weapon", "Individual Likha Double Weapon", "Individual Likha Espada Y Daga Weapon"
+]
+
+const teamAnyo = [
+  "Team Likha Single Weapon", "Team Likha Double Weapon", "Team Likha Espada Y Daga Weapon"
+]
+
+const dummyMembers = [
+  'None', 'Tatin Tambok', 'Janbins Paderna', 'Injil Burt', 'Sir Clint', 'Nami Dog'
+]
+</script>
