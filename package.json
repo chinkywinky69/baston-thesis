@@ -19,6 +19,8 @@
     "quasar": "^2.6.0",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0",
+    "vue-tournament": "^1.1.1",
+    "vue-tournament-bracket": "^2.1.4",
     "vuefire": "^3.1.22"
   },
   "devDependencies": {

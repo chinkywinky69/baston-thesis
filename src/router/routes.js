@@ -56,8 +56,9 @@ const routes = [
         component: () => import("pages/SelectPlayersPage.vue"),
       },
       {
-        path: "/assignPlayersLabanan",
-        component: () => import("pages/AssignPlayersLabananPage.vue"),
+        name: "chooseMatch",
+        path: "/chooseMatchLabanan/:matchType",
+        component: () => import("pages/ChooseMatchLabananPage.vue"),
       },
     ],
   },

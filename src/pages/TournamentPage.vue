@@ -9,7 +9,7 @@
         <img width="100px" src="../img/sccarnislogo.png" />
       </div>
     </div>
-    <div v-if="tournamentTypes" class="row justify-around q-gutter-md">
+    <div class="row justify-around q-gutter-md">
       <q-card @click="labanan(' Full Contact (Bladed Weapon Concept) Padded Sticks Competition')"
         class="text-center card-type" style="width: 500px; height: 350px">
         <q-card-section>
@@ -28,58 +28,27 @@
         </div>
       </q-card>
     </div>
-    <div v-if="labananOptions" class="flex flex-center">
-      <div class="q-mb-md text-h6 text-bold">Match Type: {{ selectedMatchType }}</div>
-      <div class="row justify-center q-gutter-sm" style="width: 100%;">
-        <div class="column items-center q-gutter-sm">
-          <div class="text-bold">Girls Category</div>
-          <q-btn to="/assignPlayersLabanan" style="width: 500px" class="text-white" color="grey-9" v-for="g in girlsCat"
-            :key="g" :label="g" />
-        </div>
-        <div class="column items-center q-gutter-sm">
-          <div class="text-bold">Boys Category</div>
-          <q-btn to="/assignPlayersLabanan" style="width: 500px" class="text-white" color="grey-9" v-for="b in boysCat"
-            :key="b" :label="b" />
-        </div>
-      </div>
-    </div>
-
-    <div v-if="anyoOptions" class="flex flex-center">
-      <div class="q-mb-md text-h6 text-bold">Match Type: {{ selectedMatchType }}</div>
-      <div style="width: 100%;">
-        <q-select class="q-mb-sm" :options="weightDivision" outlined bg-color="white" label="Weight Division" />
-        <q-select class="q-mb-sm" :options="categories" outlined bg-color="white" label="Category" />
-      </div>
-      <div class="row q-gutter-sm q-mt-md">
-        <q-btn @click="back" label="back" color="blue-8" />
-        <q-btn to="/selectPlayers" label="continue" color="red-8" />
-      </div>
-    </div>
-
   </q-page>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router';
 
-const labananOptions = ref(false)
-const anyoOptions = ref(false)
-const tournamentTypes = ref(true)
+const router = useRouter()
+
+
 const selectedMatchType = ref('')
 
-const back = () => {
-  labananOptions.value = false
-  tournamentTypes.value = true
-  labananOptions.value = false
-  anyoOptions.value = false
-}
 
 const labanan = (matchType) => {
-  labananOptions.value = true
-  anyoOptions.value = false
-  selectedMatchType.value = matchType
-  tournamentTypes.value = false
-}
+  selectedMatchType.value = matchType;
+  router.push({
+    name: 'chooseMatch',
+    params: { matchType: selectedMatchType.value },
+  });
+};
+
 
 const anyo = (matchType) => {
   labananOptions.value = false
@@ -97,16 +66,7 @@ const categories = [
   'Girls (Kids)', 'Boys (Kids)', 'Girls Secondary (Junior)', 'Boys Secondary (Junior)', 'Boys Senior', 'Girs Senior'
 ]
 
-const girlsCat = [
-  'Pinweight(36-40 kgs)', 'Bantamweight(40-44 kgs)', 'Featherweight(44-48 kgs)', 'Extra Lightweight(48-52 kgs)', 'Half Lightweight(52-56 kgs)'
-]
 
-const boysCat = [
-  'Pinweight(43-47 kgs)', 'Bantamweight(47-51 kgs)', 'Featherweight(51-55 kgs)', 'Extra Lightweight(56-60 kgs)', 'Half Lightweight(60-65 kgs)'
-]
-
-const selectedGirlsCat = ref('')
-const selectedBoysCat = ref('')
 </script>
 
 
