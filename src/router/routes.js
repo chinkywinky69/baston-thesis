@@ -55,6 +55,10 @@ const routes = [
         path: "/selectPlayers",
         component: () => import("pages/SelectPlayersPage.vue"),
       },
+      {
+        path: "/assignPlayersLabanan",
+        component: () => import("pages/AssignPlayersLabananPage.vue"),
+      },
     ],
   },
 
