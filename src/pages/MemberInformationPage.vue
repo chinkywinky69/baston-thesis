@@ -87,7 +87,8 @@
             <q-input v-model="form.legalGuardianContact" class="q-mb-sm" label="Contact # of Legal Guardian " outlined
               dense type="number" :rules="[(val) => !!val]" />
             <q-separator />
-            <q-file v-model="medCert" class="q-mb-sm" label="Upload Med Cert" outlined dense :rules="[(val) => !!val]">
+            <q-file v-model="medCert" accept=".jpg, image/*" @rejected="onRejected" class="q-mb-sm"
+              label="Upload Med Cert" outlined dense :rules="[(val) => !!val]">
               <template v-slot:prepend>
                 <q-icon name="attach_file" />
               </template>
@@ -196,13 +197,19 @@ const deleteMember = (data) => {
   useMemberStore().delete(data.id)
 }
 
+const onRejected = (rejectedEntries) => {
+  $q.dialog({
+    title: "Oops!",
+    message: `I'm sorry only image file is accepted.`
+  })
+}
 
 const isLoading = ref(false)
 const createMember = async () => {
   isLoading.value = true
   // Check if medcert available
-  const res = await useMemberStore().create(form)
-  if (form.medCert) {
+  if (medCert.value) {
+    const res = await useMemberStore().create(form, medCert.value)
   } else {
     $q.dialog({
       title: "Oops!",
@@ -218,14 +225,14 @@ const createMember = async () => {
 const updateMember = async () => {
   isLoading.value = true
   // Check if medcert available
-  const res = await useMemberStore().update(form.id, form)
-  // if (form.medCert) {
-  // } else {
-  //   $q.dialog({
-  //     title: "Oops!",
-  //     message: "You need to upload the medical certificate.",
-  //   })
-  // }
+  if (medCert.value) {
+    const res = await useMemberStore().update(form.id, form,)
+  } else {
+    $q.dialog({
+      title: "Oops!",
+      message: "You need to upload the medical certificate.",
+    })
+  }
   isLoading.value = false
   if (res) {
     addUserDialog.value = false

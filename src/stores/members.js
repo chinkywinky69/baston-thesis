@@ -28,7 +28,7 @@ export const useMemberStore = defineStore("members", {
   }),
 
   actions: {
-    async create(data) {
+    async create(data, file) {
       const dataRef = collection(db, "members");
       const doc = await addDoc(dataRef, {
         ...data,
@@ -164,6 +164,47 @@ export const useMemberStore = defineStore("members", {
       for (const url of urls) {
         const fileRef = storageRef(storage, url);
         await deleteObject(fileRef);
+      }
+    },
+
+    async uploadMedcert(id, files) {
+      try {
+        Loading.show({
+          message: "Saving file details...",
+        });
+
+        const imageUrls = [];
+        const dataRef = doc(db, "members", id);
+
+        for (const file of files) {
+          const fileRef = storageRef(storage, `members/id/${file.name}`);
+          const snapshot = await uploadBytes(fileRef, file);
+          const downloadURL = await getDownloadURL(snapshot.ref);
+          imageUrls.push(downloadURL);
+        }
+
+        const docSnapshot = await getDoc(dataRef);
+        const existingData = docSnapshot.data() || {};
+        const mergedImageUrls = [
+          ...(existingData.imageUrls || []),
+          ...imageUrls,
+        ];
+
+        await updateDoc(dataRef, {
+          imageUrls: mergedImageUrls,
+          updatedAt: serverTimestamp(),
+        });
+
+        const i = this.members.findIndex((item) => item.id === id);
+        if (i > -1) {
+          this.members[i].imageUrls = mergedImageUrls;
+        }
+
+        Loading.hide();
+        return true;
+      } catch (error) {
+        console.error("Error updating images:", error);
+        return false;
       }
     },
   },
