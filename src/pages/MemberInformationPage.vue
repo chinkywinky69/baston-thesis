@@ -6,7 +6,7 @@
     </div>
 
     <div class="q-mb-md">
-      <q-table :loading="isLoadingMembersTable" :rows="membersData" :columns="columns" row-key="name">
+      <q-table :loading="isLoadingMembersTable" :rows="approvedMembers" :columns="columns" row-key="name">
         <template v-slot:top>
           <div class="text-h6 q-mr-md">Verified Members</div>
           <q-input placeholder="search" outlined dense>
@@ -24,7 +24,8 @@
     </div>
 
     <div>
-      <q-table title="Pending Users" :rows="membersData" :columns="columns" row-key="name">
+      <q-table :loading="isLoadingMembersTable" title="Pending Users" :rows="pendingMembers" :columns="columns"
+        row-key="name">
         <template v-slot:top>
           <div class="text-h6 q-mr-md">Pending Members</div>
           <q-input placeholder="search" outlined dense>
@@ -123,8 +124,8 @@
           <div><strong>Mother's Name:</strong> {{ previewMember.mothersName }}</div>
           <div><strong>Legal Guardian:</strong> {{ previewMember.legalGuardian }}</div>
           <div><strong>Contact # of Legal Guardian:</strong> {{ previewMember.legalGuardianContact }}</div>
-          <div><strong>Med Cert:</strong> {{ previewMember.medCert }} <q-btn @click="viewMedCert" class="q-ml-sm"
-              label="View Details" dense />
+          <div><strong>Med Cert:</strong> <q-btn @click="viewMedCert" flat size="12px"
+              class="text-indigo text-bold q-ml-sm" label="View Details" dense />
           </div>
         </q-card-section>
         <q-card-actions align="right">
@@ -199,7 +200,7 @@ const handleMemberDialog = () => {
 
 const deleteMember = (data) => {
   viewDetailsDialog.value = false
-  useMemberStore().delete(data.id)
+  useMemberStore().delete(data.id, data.medCert ?? null)
 }
 
 const onRejected = (rejectedEntries) => {
@@ -211,6 +212,7 @@ const onRejected = (rejectedEntries) => {
 
 const isLoading = ref(false)
 const createMember = async () => {
+  form.approved = true
   isLoading.value = true
   // Check if medcert available
   if (medCert.value) {
@@ -315,7 +317,8 @@ const columns = [
   { name: 'action', label: 'Actions', align: 'center', sortable: false }
 ]
 
-const membersData = computed(() => useMemberStore().members)
+const approvedMembers = computed(() => useMemberStore().getApproved)
+const pendingMembers = computed(() => useMemberStore().getPending)
 
 const viewDetails = (data) => {
   viewDetailsDialog.value = true;

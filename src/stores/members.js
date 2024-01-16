@@ -27,6 +27,15 @@ export const useMemberStore = defineStore("members", {
     member: null,
   }),
 
+  getters: {
+    getApproved: (state) => {
+      return state.members.filter((member) => member.approved);
+    },
+    getPending: (state) => {
+      return state.members.filter((member) => !member.approved);
+    },
+  },
+
   actions: {
     async create(data, file) {
       const dataRef = collection(db, "members");
@@ -84,7 +93,7 @@ export const useMemberStore = defineStore("members", {
       return true;
     },
 
-    async delete(id) {
+    async delete(id, medCertUrl) {
       Dialog.create({
         title: "Confirm",
         message: "Are you sure you want to permanently delete this data?",
@@ -93,6 +102,8 @@ export const useMemberStore = defineStore("members", {
         Loading.show();
         const dataRef = doc(db, "members", id);
         await deleteDoc(dataRef);
+
+        if (medCertUrl) await this.deleteMedcert(medCertUrl);
         Loading.hide();
 
         const i = this.members.findIndex((item) => item.id === id);
@@ -168,11 +179,9 @@ export const useMemberStore = defineStore("members", {
       }
     },
 
-    async deleteImages(urls) {
-      for (const url of urls) {
-        const fileRef = storageRef(storage, url);
-        await deleteObject(fileRef);
-      }
+    async deleteMedcert(url) {
+      const fileRef = storageRef(storage, url);
+      await deleteObject(fileRef);
     },
 
     async uploadMedcert(id, file) {

@@ -254,9 +254,11 @@ const handleMemberDialog = () => {
 const isLoading = ref(false)
 const createMember = async () => {
   isLoading.value = true
-  // Check if medcert available
-  const res = await useMemberStore().create(form)
-  if (form.medCert) {
+  if (medCert.value) {
+    const res = await useMemberStore().create(form, medCert.value)
+    if (res) {
+      addUserDialog.value = false
+    }
   } else {
     $q.dialog({
       title: "Oops!",
@@ -264,9 +266,6 @@ const createMember = async () => {
     })
   }
   isLoading.value = false
-  if (res) {
-    addUserDialog.value = false
-  }
 }
 
 const genders = [
