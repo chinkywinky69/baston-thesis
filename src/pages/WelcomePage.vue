@@ -37,6 +37,7 @@
             <q-input v-model="form.firstName" class="q-mb-sm" label="First Name" outlined dense />
             <q-input v-model="form.middleName" class="q-mb-sm" label="Middle Name" outlined dense />
             <q-input v-model="form.email" class="q-mb-sm" label="Email" outlined dense type="email" />
+            <q-input v-model="form.email" class="q-mb-sm" label="School" outlined dense />
             <div class="row">
               <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
                 @change="calculateAge" />
@@ -231,6 +232,7 @@ const form = reactive({
   firstName: "",
   middleName: "",
   email: "",
+  school: "",
   birthday: "",
   age: "",
   gender: "",

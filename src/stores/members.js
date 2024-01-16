@@ -37,7 +37,7 @@ export const useMemberStore = defineStore("members", {
   },
 
   actions: {
-    async create(data, file) {
+    async create(data) {
       const dataRef = collection(db, "members");
       const doc = await addDoc(dataRef, {
         ...data,

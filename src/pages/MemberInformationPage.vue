@@ -36,8 +36,7 @@
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
-            <q-btn flat label="Reject" color="red-8" @click="viewDetails(props.row)" />
-            <q-btn flat label="Accept" color="green-8" @click="viewDetails(props.row)" />
+            <q-btn flat label="View Details" color="blue-8" @click="viewDetails(props.row)" />
           </q-td>
         </template>
       </q-table>
@@ -203,12 +202,6 @@ const deleteMember = (data) => {
   useMemberStore().delete(data.id, data.medCert ?? null)
 }
 
-const onRejected = (rejectedEntries) => {
-  $q.dialog({
-    title: "Oops!",
-    message: `I'm sorry only image file is accepted.`
-  })
-}
 
 const isLoading = ref(false)
 const createMember = async () => {

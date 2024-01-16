@@ -12,7 +12,7 @@
         <div class="col-12 col-md-6 q-pa-xs">
           <q-table :rows="rows" :columns="columns" row-key="name">
             <template v-slot:top>
-              <div class="text-h6 q-mr-md">Users</div>
+              <div class="text-h6 q-mr-md">Players</div>
               <q-input placeholder="search" outlined dense>
                 <template v-slot:prepend>
                   <q-icon name="search" />
