@@ -244,6 +244,12 @@ const updateMember = async () => {
   }
 }
 
+const acceptMember = async (id) => {
+  $q.loading.show()
+  const res = await useMemberStore().update(id, { approved: true })
+  $q.loading.hide()
+}
+
 const viewMedCert = () => {
   medCertDialog.value = true
 }
