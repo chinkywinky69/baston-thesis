@@ -43,7 +43,7 @@
     </div>
 
     <!-- ADD MEMBER DIALOG -->
-    <q-dialog v-model="addUserDialog">
+    <q-dialog v-model="addUserDialog" @hide="clearForm(form)">
       <q-card style="width: 400px">
         <q-form @submit="previewMember ? updateMember() : createMember()">
           <q-card-section>
@@ -88,7 +88,7 @@
               dense type="number" :rules="[(val) => !!val]" />
             <q-separator />
             <q-file v-model="medCert" accept=".jpg, image/*" @rejected="onRejected" class="q-mb-sm"
-              label="Upload Med Cert" outlined dense :rules="[(val) => !!val]">
+              label="Upload Med Cert" outlined dense>
               <template v-slot:prepend>
                 <q-icon name="attach_file" />
               </template>
@@ -143,8 +143,7 @@
             <q-btn icon="close" flat round dense v-close-popup />
           </q-card-section>
           <q-card-section>
-            <q-img
-              src="https://preview.redd.it/n9p8aheg9jw91.jpg?width=1080&format=pjpg&auto=webp&s=73d5a30807275340645d8dbc9586cffa598a86ff" />
+            <q-img v-if="previewMember.medCert" :src="previewMember.medCert" />
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -187,6 +186,12 @@ const form = reactive({
   legalGuardianContact: ""
 })
 
+const clearForm = (form) => {
+  Object.keys(form).forEach((key) => {
+    form[key] = "";
+  });
+};
+
 const handleMemberDialog = () => {
   previewMember.value = null
   addUserDialog.value = true
@@ -210,6 +215,9 @@ const createMember = async () => {
   // Check if medcert available
   if (medCert.value) {
     const res = await useMemberStore().create(form, medCert.value)
+    if (res) {
+      addUserDialog.value = false
+    }
   } else {
     $q.dialog({
       title: "Oops!",
@@ -217,22 +225,17 @@ const createMember = async () => {
     })
   }
   isLoading.value = false
-  if (res) {
-    addUserDialog.value = false
-  }
 }
 
 const updateMember = async () => {
   isLoading.value = true
   // Check if medcert available
+  let file = null
   if (medCert.value) {
-    const res = await useMemberStore().update(form.id, form,)
-  } else {
-    $q.dialog({
-      title: "Oops!",
-      message: "You need to upload the medical certificate.",
-    })
+    file = medCert.value
   }
+  const res = await useMemberStore().update(form.id, form, file)
+
   isLoading.value = false
   if (res) {
     addUserDialog.value = false

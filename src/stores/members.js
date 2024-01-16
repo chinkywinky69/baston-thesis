@@ -19,7 +19,7 @@ import {
 } from "firebase/storage";
 import { defineStore } from "pinia";
 import { Dialog, Loading, Notify } from "quasar";
-import { db, auth, storage } from "src/boot/firebase";
+import { db, storage } from "src/boot/firebase";
 
 export const useMemberStore = defineStore("members", {
   state: () => ({
@@ -34,6 +34,10 @@ export const useMemberStore = defineStore("members", {
         ...data,
         createdAt: serverTimestamp(),
       });
+
+      if (file) {
+        await this.uploadMedcert(doc.id, file);
+      }
 
       this.members.unshift({
         ...data,
@@ -51,12 +55,16 @@ export const useMemberStore = defineStore("members", {
       return { success: true, id: doc.id };
     },
 
-    async update(id, data) {
+    async update(id, data, file) {
       const dataRef = doc(db, "members", id);
       await updateDoc(dataRef, {
         ...data,
         updatedAt: serverTimestamp(),
       });
+
+      if (file) {
+        await this.uploadMedcert(id, file);
+      }
 
       const i = this.members.findIndex((item) => item.id === id);
       if (i > -1) {
@@ -167,37 +175,24 @@ export const useMemberStore = defineStore("members", {
       }
     },
 
-    async uploadMedcert(id, files) {
+    async uploadMedcert(id, file) {
       try {
         Loading.show({
           message: "Saving file details...",
         });
 
-        const imageUrls = [];
         const dataRef = doc(db, "members", id);
-
-        for (const file of files) {
-          const fileRef = storageRef(storage, `members/id/${file.name}`);
-          const snapshot = await uploadBytes(fileRef, file);
-          const downloadURL = await getDownloadURL(snapshot.ref);
-          imageUrls.push(downloadURL);
-        }
-
-        const docSnapshot = await getDoc(dataRef);
-        const existingData = docSnapshot.data() || {};
-        const mergedImageUrls = [
-          ...(existingData.imageUrls || []),
-          ...imageUrls,
-        ];
+        const fileRef = storageRef(storage, `members/${id}/med-cert`);
+        const snapshot = await uploadBytes(fileRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
 
         await updateDoc(dataRef, {
-          imageUrls: mergedImageUrls,
-          updatedAt: serverTimestamp(),
+          medCert: downloadURL,
         });
 
         const i = this.members.findIndex((item) => item.id === id);
         if (i > -1) {
-          this.members[i].imageUrls = mergedImageUrls;
+          this.members[i].medCert = downloadURL;
         }
 
         Loading.hide();
