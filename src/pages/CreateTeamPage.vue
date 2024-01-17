@@ -114,7 +114,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router';
 import { Dialog } from 'quasar';
 
@@ -202,32 +202,38 @@ const rowsSelectPlayer = ref([
 const rowsTeam = ref([
 
 ])
+//add player to team table
+watch(() => selectedPlayers.value, (newSelectedPlayers) => {
+  // Clear existing rowsTeam
+  rowsTeam.value = [];
 
-const addPlayers = () => {
-  // Assuming you want to add all selected players to the team
-  rowsTeam.value.push(...selectedPlayers.value);
+  // Add the selected players to rowsTeam
+  rowsTeam.value.push(...newSelectedPlayers);
 
   // Remove the selected players from rowsSelectPlayer
-  selectedPlayers.value.forEach((player) => {
+  newSelectedPlayers.forEach((player) => {
     const index = rowsSelectPlayer.value.findIndex((selectPlayer) => selectPlayer === player);
     if (index !== -1) {
       rowsSelectPlayer.value.splice(index, 1);
     }
   });
-
-  // Clear the selected players
-  selectedPlayers.value = [];
-}
-
+});
 
 const removePlayerFromTeam = (player) => {
   // Remove the player from rowsTeam
-  const index = rowsTeam.value.findIndex((teamPlayer) => teamPlayer === player)
+  const index = rowsTeam.value.findIndex((teamPlayer) => teamPlayer.name === player.name);
   if (index !== -1) {
-    rowsTeam.value.splice(index, 1)
+    rowsTeam.value.splice(index, 1);
+
+    // Deselect the player
+    const playerIndex = selectedPlayers.value.findIndex((selectedPlayer) => selectedPlayer.name === player.name);
+    if (playerIndex !== -1) {
+      selectedPlayers.value.splice(playerIndex, 1);
+    }
+    // Add the player back to selectPlayersTable
     rowsSelectPlayer.value.unshift(player);
   }
-}
+};
 
 
 const handleCreateTeam = () => {
