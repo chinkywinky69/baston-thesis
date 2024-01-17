@@ -34,7 +34,7 @@
         <div class="col-12 col-md-6 q-pa-xs">
           <q-table :rows="rowsTeam" :columns="columnsTeam" row-key="name">
             <template v-slot:top>
-              <q-input placeholder="Team Name" dense outlined />
+              <q-input v-model="teamName" placeholder="Team Name" dense outlined />
             </template>
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
@@ -44,7 +44,7 @@
             </template>
           </q-table>
           <div v-if="rowsTeam.length > 0" class="row justify-center q-mt-md">
-            <q-btn label="create" color="red-8" />
+            <q-btn @click="handleCreateTeam" :disable="!teamName" label="create" color="red-8" />
           </div>
         </div>
       </div>
@@ -116,6 +116,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
+import { Dialog } from 'quasar';
 
 
 const router = useRouter();
@@ -124,6 +125,7 @@ const handleViewTeam = () => {
 }
 
 const selectedPlayers = ref([])
+const teamName = ref('')
 const createTeam = ref(false)
 const existingTeam = ref(true)
 const viewTeam = ref(false)
@@ -215,5 +217,18 @@ const removePlayerFromTeam = (player) => {
   if (index !== -1) {
     rowsTeam.value.splice(index, 1)
   }
+}
+
+const handleCreateTeam = () => {
+  Dialog.create({
+    title: 'Create Team?',
+    message: 'Are you sure you want to create this team?',
+    cancel: true,
+    persistent: true
+  })
+    .onOk(() => {
+      existingTeamToggle()
+    })
+
 }
 </script>

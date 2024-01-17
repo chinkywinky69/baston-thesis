@@ -62,7 +62,7 @@
           </q-list>
           <q-separator />
           <q-card-actions class="row justify-center">
-            <q-btn :disabled="dummyMatchData.length != 3" label="proceed" color="green-8" />
+            <q-btn @click="proceedMatch" label="proceed" color="green-8" />
           </q-card-actions>
         </q-card>
       </div>
@@ -91,10 +91,12 @@
 
 <script setup>
 import { ref, watchEffect } from 'vue'
-import { uid } from 'quasar';
+import { uid, useQuasar, Dialog } from 'quasar';
+import { useRouter } from 'vue-router';
 
 const id = uid()
-
+const $q = useQuasar()
+const router = useRouter()
 const pairDialog = ref(false)
 const selectedPlayers = ref([])
 
@@ -156,6 +158,20 @@ const deleteMatch = (matchId) => {
     }
   }
 };
+
+const proceedMatch = () => {
+  Dialog.create({
+    title: 'Proceed Match?',
+    message: 'Are you sure you want to proceed?',
+    cancel: true,
+    persistent: true
+  })
+    .onOk(() => {
+      router.push({
+        name: 'matchPage'
+      })
+    })
+}
 
 const selectedGender = ref('Boys')
 const selectedCategory = ref('Kids')
@@ -225,6 +241,18 @@ const rows = ref([
   },
   {
     name: 'Tatin Tambok',
+    gender: 'Male',
+    weightClass: 'Heavyweight'
+
+  },
+  {
+    name: 'Mikmok Tambok',
+    gender: 'Male',
+    weightClass: 'Heavyweight'
+
+  },
+  {
+    name: 'Oreo Tambok',
     gender: 'Male',
     weightClass: 'Heavyweight'
 

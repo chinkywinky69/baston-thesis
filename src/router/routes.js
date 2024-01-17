@@ -60,6 +60,11 @@ const routes = [
         path: "/chooseMatchLabanan/:matchType",
         component: () => import("pages/ChooseMatchLabananPage.vue"),
       },
+      {
+        name: "matchPage",
+        path: "/matchPage",
+        component: () => import("pages/MatchPage.vue"),
+      },
     ],
   },
 
