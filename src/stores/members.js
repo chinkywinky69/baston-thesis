@@ -32,7 +32,9 @@ export const useMemberStore = defineStore("members", {
       return state.members.filter((member) => member.approved);
     },
     getPending: (state) => {
-      return state.members.filter((member) => !member.approved);
+      return state.members.filter(
+        (member) => !member.approved && !member.rejected
+      );
     },
   },
 

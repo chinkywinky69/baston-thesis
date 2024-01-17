@@ -17,7 +17,7 @@
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
-            <q-btn class="text-bold" flat label="View Details" color="red-8" @click="viewDetails(props.row)" />
+            <q-btn class="text-bold" flat label="View Details" color="red-8" @click="viewDetails(props.row, false)" />
           </q-td>
         </template>
       </q-table>
@@ -36,7 +36,7 @@
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
-            <q-btn class="text-bold" flat label="View Details" color="blue-8" @click="viewDetails(props.row)" />
+            <q-btn class="text-bold" flat label="View Details" color="blue-8" @click="viewDetails(props.row, true)" />
           </q-td>
         </template>
       </q-table>
@@ -99,39 +99,50 @@
         </q-form>
       </q-card>
     </q-dialog>
+
+    <!-- Preview member -->
     <q-dialog v-model="viewDetailsDialog">
-      <q-card>
+      <q-card style="border-radius: 12px; max-width: 100vw; width: 500px">
         <q-card-section>
-          <div class="text-h6">Member Data </div>
-          <q-separator class="q-my-md" />
-          <div><strong>Last Name:</strong> {{ previewMember.lastName }}</div>
-          <div><strong>First Name:</strong> {{ previewMember.firstName }}</div>
-          <div><strong>Middle Name:</strong> {{ previewMember.middleName }}</div>
-          <div><strong>Email:</strong> {{ previewMember.email }}</div>
-          <div><strong>School:</strong> {{ previewMember.school }}</div>
-          <div><strong>Birthday:</strong> {{ previewMember.birthday }}</div>
-          <div><strong>Age:</strong> {{ previewMember.birthday }}</div>
-          <div><strong>Gender:</strong> {{ previewMember.gender }}</div>
-          <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
-          <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
-          <div><strong>Weight:</strong> {{ previewMember.weight }} kg</div>
-          <div><strong>Weight Class:</strong> {{ previewMember.weight }}</div>
-          <div><strong>City:</strong> {{ previewMember.city }}</div>
-          <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
-          <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.street }}</div>
-          <div><strong>Father's Name:</strong> {{ previewMember.fathersName }}</div>
-          <div><strong>Mother's Name:</strong> {{ previewMember.mothersName }}</div>
-          <div><strong>Legal Guardian:</strong> {{ previewMember.legalGuardian }}</div>
-          <div><strong>Contact # of Legal Guardian:</strong> {{ previewMember.legalGuardianContact }}</div>
-          <div><strong>Med Cert:</strong> <q-btn @click="viewMedCert" flat size="12px"
-              class="text-indigo text-bold q-ml-sm" label="View Details" dense />
+          <div class="flex">
+            <div class="text-h6">Member Data </div>
+            <q-space />
+            <q-btn round dense icon="close" v-close-popup />
           </div>
+          <q-separator class="q-my-md" />
+          <div class="q-gutter-xs">
+            <div><strong>Last Name:</strong> {{ previewMember.lastName }}</div>
+            <div><strong>First Name:</strong> {{ previewMember.firstName }}</div>
+            <div><strong>Middle Name:</strong> {{ previewMember.middleName }}</div>
+            <div><strong>Email:</strong> {{ previewMember.email }}</div>
+            <div><strong>School:</strong> {{ previewMember.school }}</div>
+            <div><strong>Birthday:</strong> {{ previewMember.birthday }}</div>
+            <div><strong>Age:</strong> {{ previewMember.birthday }}</div>
+            <div><strong>Gender:</strong> {{ previewMember.gender }}</div>
+            <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
+            <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
+            <div><strong>Weight:</strong> {{ previewMember.weight }} kg</div>
+            <div><strong>Weight Class:</strong> {{ previewMember.weight }}</div>
+            <div><strong>City:</strong> {{ previewMember.city }}</div>
+            <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
+            <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.street }}</div>
+            <div><strong>Father's Name:</strong> {{ previewMember.fathersName }}</div>
+            <div><strong>Mother's Name:</strong> {{ previewMember.mothersName }}</div>
+            <div><strong>Legal Guardian:</strong> {{ previewMember.legalGuardian }}</div>
+            <div><strong>Contact # of Legal Guardian:</strong> {{ previewMember.legalGuardianContact }}</div>
+            <div><strong>Med Cert:</strong> <q-btn @click="viewMedCert" flat size="12px"
+                class="text-indigo text-bold q-ml-sm" label="View Details" dense />
+            </div>
+          </div>
+          <q-card-actions v-if="pendingMode" align="right">
+            <q-btn @click="acceptMember(previewMember.id)" label="Accept" color="primary" v-close-popup />
+            <q-btn @click="rejectMember(previewMember.id)" label="Reject" color="red-8" v-close-popup />
+          </q-card-actions>
+          <q-card-actions v-else align="right">
+            <q-btn @click="editMember(previewMember)" label="Edit" color="primary" v-close-popup />
+            <q-btn @click="deleteMember(previewMember)" label="Delete" color="red-8" v-close-popup />
+          </q-card-actions>
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn @click="editMember(previewMember)" dense label="Edit" color="primary" v-close-popup />
-          <q-btn @click="deleteMember(previewMember)" dense label="Delete" color="red-8" v-close-popup />
-          <q-btn flat label="Close" color="primary" v-close-popup />
-        </q-card-actions>
       </q-card>
       <!-- view medcert dialog -->
       <q-dialog :maximized="maximizedToggle" transition-show="slide-up" transition-hide="slide-down"
@@ -243,6 +254,12 @@ const acceptMember = async (id) => {
   $q.loading.hide()
 }
 
+const rejectMember = async (id) => {
+  $q.loading.show()
+  const res = await useMemberStore().update(id, { approved: false, rejected: true })
+  $q.loading.hide()
+}
+
 const viewMedCert = () => {
   medCertDialog.value = true
 }
@@ -319,7 +336,9 @@ const columns = [
 const approvedMembers = computed(() => useMemberStore().getApproved)
 const pendingMembers = computed(() => useMemberStore().getPending)
 
-const viewDetails = (data) => {
+const pendingMode = ref(false)
+const viewDetails = (data, pending) => {
+  pendingMode.value = pending
   viewDetailsDialog.value = true;
   //PUT IN A DIALOG ANG FULL DETAILS
   previewMember.value = data
