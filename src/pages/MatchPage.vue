@@ -2,7 +2,7 @@
   <q-page padding>
     <div class="text-h6 text-center text-bold q-mb-md">Available Matches</div>
     <div>
-      <q-table :columns="columns" :rows="rows">
+      <q-table table-header-class="text-red" :columns="columns" :rows="rows">
         <template v-slot:top>
           <q-input v-model="teamName" placeholder="Search" dense outlined />
         </template>

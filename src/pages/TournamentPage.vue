@@ -1,14 +1,6 @@
 <template>
   <q-page padding>
-    <div class="text-center q-mb-md text-h6 text-bold">Create a Tournament</div>
-    <div class="flex justify-between q-mt-lg">
-      <div class="text-h4">
-        Select Match Type
-      </div>
-      <div class="q-mb-md">
-        <img width="100px" src="../img/sccarnislogo.png" />
-      </div>
-    </div>
+    <div class="text-center q-mb-xl text-h6 text-bold">Create a Tournament</div>
     <div class="row justify-around q-gutter-md">
       <q-card @click="labanan(' Full Contact (Bladed Weapon Concept) Padded Sticks Competition')"
         class="text-center card-type" style="width: 500px; height: 350px">
