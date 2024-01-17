@@ -9,8 +9,10 @@
     </div>
     <div v-if="createTeam">
       <div class="row justify-center">
+        <!-- SELECT PLAYERS TABLE -->
         <div class="col-12 col-md-6 q-pa-xs">
-          <q-table :rows="rows" :columns="columns" row-key="name">
+          <q-table v-model:selected="selectedPlayers" selection="multiple" :rows="rowsSelectPlayer"
+            :columns="columnsSelectPlayer" row-key="name">
             <template v-slot:top>
               <div class="text-h6 q-mr-md">Players</div>
               <q-input placeholder="search" outlined dense>
@@ -18,6 +20,8 @@
                   <q-icon name="search" />
                 </template>
               </q-input>
+              <q-select class="q-ml-sm" style="width: 100px;" label="Weight" :options="weightDivision" dense outlined />
+              <q-select class="q-ml-sm" style="width: 100px;" label="Gender" :options="gender" dense outlined />
             </template>
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
@@ -26,30 +30,36 @@
             </template>
           </q-table>
         </div>
+        <!-- TEAM VIEW TABLE -->
         <div class="col-12 col-md-6 q-pa-xs">
-          <q-table :rows="rows" :columns="columns" row-key="name">
+          <q-table :rows="rowsTeam" :columns="columnsTeam" row-key="name">
             <template v-slot:top>
-              <q-input placeholder="Team Name" dense />
+              <q-input v-model="teamName" placeholder="Team Name" dense outlined />
             </template>
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
-                <q-btn icon="close" dense color="red-8" round size="sm" outline />
+                <q-btn @click="removePlayerFromTeam(props.row)" icon="close" dense color="red-8" round size="sm"
+                  outline />
               </q-td>
             </template>
           </q-table>
+          <div v-if="rowsTeam.length > 0" class="row justify-center q-mt-md">
+            <q-btn @click="handleCreateTeam" :disable="!teamName" label="create" color="red-8" />
+          </div>
         </div>
       </div>
       <div class="text-center q-mt-md">
-        <q-btn label="Submit" color="red-8" />
+        <q-btn @click="addPlayers" label="Submit" color="red-8" />
       </div>
     </div>
+    <!-- EXISTING TEAMS -->
     <div v-if="existingTeam">
       <div class="text-h6 text-bold">
         Existing Teams:
       </div>
       <div class="row justify-center q-gutter-sm">
-        <q-select class="col q-mb-sm" :options="weightDivision" outlined bg-color="white" label="Weight Division" />
-        <q-select class="col q-mb-sm" :options="categories" outlined bg-color="white" label="Category" />
+        <q-select class="col q-mb-sm" dense :options="weightDivision" outlined bg-color="white" label="Weight Division" />
+        <q-select class="col q-mb-sm" dense :options="categories" outlined bg-color="white" label="Category" />
       </div>
       <div class="row justify-start ">
         <div v-for="(item, i) in 5" :key="i" class="col-6 col-md-3 q-mt-md q-pa-xs">
@@ -106,6 +116,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
+import { Dialog } from 'quasar';
 
 
 const router = useRouter();
@@ -114,11 +125,10 @@ const handleViewTeam = () => {
 }
 
 const selectedPlayers = ref([])
+const teamName = ref('')
 const createTeam = ref(false)
-const existingTeam = ref(false)
+const existingTeam = ref(true)
 const viewTeam = ref(false)
-
-
 
 const existingTeamToggle = () => {
   existingTeam.value = true
@@ -138,14 +148,24 @@ const categories = [
   'Girls (Kids)', 'Boys (Kids)', 'Girls Secondary (Junior)', 'Boys Secondary (Junior)', 'Boys Senior', 'Girs Senior'
 ]
 
+const gender = [
+  'Boy', 'Girl'
+]
+
 // DUMMY DATA RANI SIR
-const columns = [
+const columnsSelectPlayer = ref([
+  { name: 'name', required: true, label: 'Name', align: 'left', field: 'name', sortable: true },
+  { name: 'gender', align: 'center', label: 'Gender', field: 'gender', sortable: true },
+  { name: 'weightClass', label: 'Weight Class', field: 'weightClass', sortable: true },
+])
+
+const columnsTeam = ref([
   { name: 'name', required: true, label: 'Name', align: 'left', field: 'name', sortable: true },
   { name: 'gender', align: 'center', label: 'Gender', field: 'gender', sortable: true },
   { name: 'weightClass', label: 'Weight Class', field: 'weightClass', sortable: true },
   { name: 'action', label: 'Actions', align: 'center', sortable: false }
-]
-const rows = [
+])
+const rowsSelectPlayer = ref([
   {
     name: 'Alice Smith',
     gender: 'Female',
@@ -177,5 +197,38 @@ const rows = [
     weightClass: 'Heavyweight'
 
   },
-]
+])
+
+const rowsTeam = ref([
+
+])
+
+const addPlayers = () => {
+  // Assuming you want to add all selected players to the team
+  rowsTeam.value.push(...selectedPlayers.value);
+
+  // Clear the selected players
+  selectedPlayers.value = [];
+}
+
+const removePlayerFromTeam = (player) => {
+  // Remove the player from rowsTeam
+  const index = rowsTeam.value.findIndex((teamPlayer) => teamPlayer === player)
+  if (index !== -1) {
+    rowsTeam.value.splice(index, 1)
+  }
+}
+
+const handleCreateTeam = () => {
+  Dialog.create({
+    title: 'Create Team?',
+    message: 'Are you sure you want to create this team?',
+    cancel: true,
+    persistent: true
+  })
+    .onOk(() => {
+      existingTeamToggle()
+    })
+
+}
 </script>
