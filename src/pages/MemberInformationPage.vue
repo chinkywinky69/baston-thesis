@@ -126,8 +126,8 @@
           </div>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn @click="editMember(previewMember)" dense label="Edit" color="primary" v-close-popup />
-          <q-btn @click="deleteMember(previewMember)" dense label="Delete" color="red-8" v-close-popup />
+          <q-btn @click="editMember(previewMember)" dense label="Accept" color="green-8" v-close-popup />
+          <q-btn @click="deleteMember(previewMember)" dense label="Reject" color="red-8" v-close-popup />
           <q-btn flat label="Close" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
