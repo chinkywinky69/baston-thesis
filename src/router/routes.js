@@ -69,6 +69,18 @@ const routes = [
   },
 
   {
+    path: "/matchlist",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        name: "matchPage",
+        path: "",
+        component: () => import("pages/MatchPage.vue"),
+      },
+    ],
+  },
+
+  {
     path: "/:catchAll(.*)*",
     component: () => import("pages/ErrorNotFound.vue"),
   },

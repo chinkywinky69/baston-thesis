@@ -43,7 +43,7 @@
           </q-item>
 
 
-          <q-item clickable v-ripple>
+          <q-item to="/matchList" clickable v-ripple>
             <q-item-section avatar>
               <q-icon color="red-8" name="fa-solid fa-tv" />
             </q-item-section>

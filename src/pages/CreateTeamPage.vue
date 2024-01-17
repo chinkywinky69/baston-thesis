@@ -207,17 +207,28 @@ const addPlayers = () => {
   // Assuming you want to add all selected players to the team
   rowsTeam.value.push(...selectedPlayers.value);
 
+  // Remove the selected players from rowsSelectPlayer
+  selectedPlayers.value.forEach((player) => {
+    const index = rowsSelectPlayer.value.findIndex((selectPlayer) => selectPlayer === player);
+    if (index !== -1) {
+      rowsSelectPlayer.value.splice(index, 1);
+    }
+  });
+
   // Clear the selected players
   selectedPlayers.value = [];
 }
+
 
 const removePlayerFromTeam = (player) => {
   // Remove the player from rowsTeam
   const index = rowsTeam.value.findIndex((teamPlayer) => teamPlayer === player)
   if (index !== -1) {
     rowsTeam.value.splice(index, 1)
+    rowsSelectPlayer.value.unshift(player);
   }
 }
+
 
 const handleCreateTeam = () => {
   Dialog.create({
