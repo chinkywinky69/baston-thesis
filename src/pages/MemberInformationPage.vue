@@ -17,7 +17,7 @@
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
-            <q-btn flat label="View Details" color="red-8" @click="viewDetails(props.row)" />
+            <q-btn class="text-bold" flat label="View Details" color="red-8" @click="viewDetails(props.row)" />
           </q-td>
         </template>
       </q-table>
@@ -35,7 +35,7 @@
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
-            <q-btn flat label="View Details" color="blue-8" @click="viewDetails(props.row)" />
+            <q-btn class="text-bold" flat label="View Details" color="blue-8" @click="viewDetails(props.row)" />
           </q-td>
         </template>
       </q-table>

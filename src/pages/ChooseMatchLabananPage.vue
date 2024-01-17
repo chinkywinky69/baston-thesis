@@ -18,6 +18,7 @@
         </div>
       </div>
     </div>
+    <!-- FILTER PLAYERS -->
     <div class="row justify-center" v-if="pickPlayers">
       <div class="col col-md-12 row justify-center q-gutter-sm">
         <div>
@@ -29,6 +30,7 @@
             bg-color="white" dense />
         </div>
       </div>
+      <!-- CHOOSE PLAYERS TABLE -->
       <div class="col col-md-6 col-xs-12 q-pa-xs">
         <div class="text-center text-h6 q-mb-md text-bold">Choose Players</div>
         <q-table :rows="rows" :columns="columns" row-key="name" selection="multiple" v-model:selected="selectedPlayers">
@@ -42,6 +44,7 @@
           </template>
         </q-table>
       </div>
+      <!-- MATCH PLAYERS LIST -->
       <div class="col col-md-6 col-xs-12 q-pa-xs">
         <div class="text-center text-h6 q-mb-md text-bold">Matches</div>
         <q-card class="bg-white q-mt-md">
@@ -53,10 +56,14 @@
                 <q-item-label class="text-body1">{{ match.players[0].player2.name }}</q-item-label>
               </q-item-section>
               <q-item-section avatar>
-                <q-btn color="blue-8" label="edit" />
+                <q-btn @click="deleteMatch(match.matchId)" color="red-8" label="delete" />
               </q-item-section>
             </q-item>
           </q-list>
+          <q-separator />
+          <q-card-actions class="row justify-center">
+            <q-btn :disabled="dummyMatchData.length != 3" label="proceed" color="green-8" />
+          </q-card-actions>
         </q-card>
       </div>
       <div class="q-mt-md flex q-gutter-sm">
@@ -99,14 +106,27 @@ const matchPlayers = () => {
         player1: {
           playerId: id,
           name: selectedPlayers.value[0].name,
+          gender: selectedPlayers.value[0].gender,
+          weightClass: selectedPlayers.value[0].weightClass,
         },
         player2: {
           playerId: id,
           name: selectedPlayers.value[1].name,
+          gender: selectedPlayers.value[1].gender,
+          weightClass: selectedPlayers.value[1].weightClass,
         },
       },
     ]
   }
+
+  selectedPlayers.value.forEach(selectedPlayer => {
+    const index = rows.value.findIndex(row => row.name === selectedPlayer.name);
+    console.log('Removing player at index:', index);
+    if (index !== -1) {
+      rows.value.splice(index, 1);
+    }
+  });
+
   dummyMatchData.value.push(newMatch)
   selectedPlayers.value = []
 }
@@ -117,11 +137,25 @@ watchEffect(() => {
     pairDialog.value = true
   }
 })
-
 const cancel = () => {
   selectedPlayers.value = []
 }
 
+const deleteMatch = (matchId) => {
+  const index = dummyMatchData.value.findIndex(match => match.matchId === matchId);
+
+  if (index !== -1) {
+    // Remove the match from dummyMatchData
+    const deletedMatch = dummyMatchData.value.splice(index, 1)[0];
+
+    // Add the players back to the rows array
+    if (deletedMatch) {
+      const { player1, player2 } = deletedMatch.players[0];
+      rows.value.push({ name: player1.name, gender: player1.gender, weightClass: player1.weightClass });
+      rows.value.push({ name: player2.name, gender: player2.gender, weightClass: player2.weightClass });
+    }
+  }
+};
 
 const selectedGender = ref('Boys')
 const selectedCategory = ref('Kids')
@@ -152,12 +186,12 @@ const categories = [
 ]
 
 // DUMMY DATA RANI SIR
-const columns = [
+const columns = ref([
   { name: 'name', required: true, label: 'Name', align: 'left', field: 'name', sortable: true },
   { name: 'gender', align: 'center', label: 'Gender', field: 'gender', sortable: true },
   { name: 'weightClass', label: 'Weight Class', field: 'weightClass', sortable: true },
-]
-const rows = [
+])
+const rows = ref([
   {
     name: 'Alice Smith',
     gender: 'Female',
@@ -189,54 +223,16 @@ const rows = [
     weightClass: 'Heavyweight'
 
   },
-]
+  {
+    name: 'Tatin Tambok',
+    gender: 'Male',
+    weightClass: 'Heavyweight'
 
+  },
+]
+)
 const dummyMatchData = ref([
-  {
-    matchId: id,
-    players: [
-      {
-        player1: {
-          playerId: id,
-          name: 'Justin Villacampa'
-        },
-        player2: {
-          playerId: id,
-          name: 'John Vince Paderna'
-        },
-      },
-    ],
-  },
-  {
-    matchId: id,
-    players: [
-      {
-        player1: {
-          playerId: id,
-          name: 'Sir Clint'
-        },
-        player2: {
-          playerId: id,
-          name: 'Nami Dog'
-        },
-      },
-    ],
-  },
-  {
-    matchId: id,
-    players: [
-      {
-        player1: {
-          playerId: id,
-          name: 'Angel'
-        },
-        player2: {
-          playerId: id,
-          name: 'Oreo'
-        },
-      },
-    ],
-  },
+
 ])
 
 
