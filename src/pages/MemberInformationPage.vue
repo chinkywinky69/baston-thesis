@@ -292,7 +292,7 @@ const weightClass = computed(() => {
   } else if (w < 66) {
     return "Half Lightweight";
   } else {
-    return "Invalid Weight Class";
+    return "Open Weight";
   }
 });
 
