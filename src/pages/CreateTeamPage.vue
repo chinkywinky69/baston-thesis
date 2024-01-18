@@ -117,6 +117,7 @@
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router';
 import { Dialog } from 'quasar';
+import { useTeamStore } from 'src/stores/teams';
 
 
 const router = useRouter();

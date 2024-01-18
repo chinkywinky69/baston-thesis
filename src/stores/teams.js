@@ -21,7 +21,7 @@ import { defineStore } from "pinia";
 import { Dialog, Loading, Notify } from "quasar";
 import { db, auth, storage } from "src/boot/firebase";
 
-export const useteamStore = defineStore("teams", {
+export const useTeamStore = defineStore("teams", {
   state: () => ({
     teams: [],
     team: null,
