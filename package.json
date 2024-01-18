@@ -12,6 +12,7 @@
     "dev": "quasar dev",
     "deploy:storage": "firebase deploy --only storage",
     "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:db": "firebase deploy --only firestore:rules",
     "build": "quasar build"
   },
   "dependencies": {

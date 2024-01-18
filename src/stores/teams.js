@@ -29,6 +29,7 @@ export const useTeamStore = defineStore("teams", {
 
   actions: {
     async create(data) {
+      Loading.show();
       const dataRef = collection(db, "teams");
       const doc = await addDoc(dataRef, {
         ...data,
@@ -40,6 +41,8 @@ export const useTeamStore = defineStore("teams", {
         createdAt: Timestamp.now(),
         id: doc.id,
       });
+
+      Loading.hide();
 
       Notify.create({
         type: "positive",
