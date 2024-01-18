@@ -69,8 +69,8 @@
               :rules="[(val) => !!val]" />
             <q-input v-model="form.legalGuardian" class="q-mb-sm" label="Legal Guardian that is Present" outlined dense
               :rules="[(val) => !!val]" />
-            <q-input v-model="form.legalGuardianContact" class="q-mb-sm" label="Contact # of Legal Guardian " outlined
-              dense type="number" :rules="[(val) => !!val]" />
+            <q-input v-model="form.legalGuardianContact" class="q-mb-sm" label="Emergency Contact #" outlined dense
+              type="number" />
             <q-separator />
             <q-file v-model="medCert" class="q-mb-sm" label="Upload Med Cert" outlined dense :rules="[(val) => !!val]">
               <template v-slot:prepend>
