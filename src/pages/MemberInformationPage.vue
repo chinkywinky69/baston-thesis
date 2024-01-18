@@ -331,7 +331,6 @@ const viewDetails = (data) => {
   previewMember.value = memberDataCopy;
 };
 
-
 const dummy = {
   lastName: 'Doe',
   firstName: 'John',

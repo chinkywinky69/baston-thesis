@@ -34,33 +34,45 @@
           <q-card-section>
             <div class="text-bold text-h6 q-mb-md">Add Member</div>
             <q-input v-model="form.lastName" class="q-mb-sm" label="Last Name" outlined dense :rules="[(val) => !!val]" />
-            <q-input v-model="form.firstName" class="q-mb-sm" label="First Name" outlined dense />
-            <q-input v-model="form.middleName" class="q-mb-sm" label="Middle Name" outlined dense />
-            <q-input v-model="form.email" class="q-mb-sm" label="Email" outlined dense type="email" />
-            <q-input v-model="form.email" class="q-mb-sm" label="School" outlined dense />
+            <q-input v-model="form.firstName" class="q-mb-sm" label="First Name" outlined dense
+              :rules="[(val) => !!val]" />
+            <q-input v-model="form.middleName" class="q-mb-sm" label="Middle Name" outlined dense
+              :rules="[(val) => !!val]" />
+            <q-input v-model="form.email" class="q-mb-sm" label="Email" outlined dense type="email"
+              :rules="[(val) => !!val]" />
+            <q-input v-model="form.school" class="q-mb-sm" label="School" outlined dense type="text"
+              :rules="[(val) => !!val]" />
             <div class="row">
               <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
-                @change="calculateAge" />
+                @change="calculateAge" :rules="[(val) => !!val]" />
               <q-input v-model="form.age" class="col q-mb-sm" label="Age" outlined dense type="number" readonly />
             </div>
-            <q-select v-model="form.gender" class="q-mb-sm" :options="genders" outlined dense label="Gender" />
-            <q-input v-model="form.contactNo" class="q-mb-sm" label="Contact Number" outlined dense />
+            <q-select v-model="form.gender" class="q-mb-sm" :options="genders" outlined dense label="Gender"
+              :rules="[(val) => !!val]" />
+            <q-input v-model="form.contactNo" class="q-mb-sm" label="Contact Number" outlined dense
+              :rules="[(val) => !!val]" />
             <div class="row">
-              <q-input v-model="form.height" class="col q-mb-sm" label="Height (cm)" outlined dense type="number" />
-              <q-input v-model="form.weight" class="col q-mb-sm" label="Weight (kg)" outlined dense type="number" />
+              <q-input v-model="form.height" class="col q-mb-sm" label="Height (cm)" outlined dense type="number"
+                :rules="[(val) => !!val]" />
+              <q-input v-model="form.weight" class="col q-mb-sm" label="Weight (kg)" outlined dense type="number"
+                :rules="[(val) => !!val]" />
 
             </div>
-            <q-input v-model="form.weightClass" label="Weight Class" outlined dense readonly />
+            <q-input :label="`${calculateWeightClass(form.weight, form.gender)}`" outlined dense readonly />
             <q-input class="col q-mb-sm" label="City: San Carlos City" outlined dense type="number" readonly />
-            <q-select v-model="form.barangay" class="q-mb-sm" :options="barangays" outlined dense label="Barangay" />
+            <q-select v-model="form.barangay" class="q-mb-sm" :options="barangays" outlined dense label="Barangay"
+              :rules="[(val) => !!val]" />
             <q-input v-model="form.street" class="q-mb-sm" label="Street Name, Building, House no." outlined dense />
-            <q-input v-model="form.fathersName" class="q-mb-sm" label="Fathers Name" outlined dense />
-            <q-input v-model="form.mothersName" class="q-mb-sm" label="Mothers Name" outlined dense />
-            <q-input v-model="form.legalGuardian" class="q-mb-sm" label="Legal Guardian that is Present" outlined dense />
+            <q-input v-model="form.fathersName" class="q-mb-sm" label="Fathers Name" outlined dense
+              :rules="[(val) => !!val]" />
+            <q-input v-model="form.mothersName" class="q-mb-sm" label="Mothers Name" outlined dense
+              :rules="[(val) => !!val]" />
+            <q-input v-model="form.legalGuardian" class="q-mb-sm" label="Legal Guardian that is Present" outlined dense
+              :rules="[(val) => !!val]" />
             <q-input v-model="form.legalGuardianContact" class="q-mb-sm" label="Contact # of Legal Guardian " outlined
-              dense type="number" />
+              dense type="number" :rules="[(val) => !!val]" />
             <q-separator />
-            <q-file v-model="medCert" class="q-mb-sm" label="Upload Med Cert" outlined dense>
+            <q-file v-model="medCert" class="q-mb-sm" label="Upload Med Cert" outlined dense :rules="[(val) => !!val]">
               <template v-slot:prepend>
                 <q-icon name="attach_file" />
               </template>
@@ -311,26 +323,44 @@ const calculateAge = () => {
   }
 }
 //CALCULATE WEIGHT CLASS
-const weightClass = computed(() => {
-  const w = form.weight;
-
-  if (!w || w < 30 || w > 80) {
+const calculateWeightClass = (weight, gender) => {
+  if (!weight || weight <= 0) {
     return "Invalid Input";
   }
-  if (w < 45) {
-    return "Pinweight";
-  } else if (w < 50) {
-    return "Bantamweight";
-  } else if (w < 55) {
-    return "Featherweight";
-  } else if (w < 60) {
-    return "Extra Lightweight";
-  } else if (w < 66) {
-    return "Half Lightweight";
+
+  if (gender === "Male") {
+    if (weight >= 43 && weight <= 47) {
+      return "Pinweight";
+    } else if (weight > 47 && weight <= 51) {
+      return "Bantamweight";
+    } else if (weight > 51 && weight <= 55) {
+      return "Featherweight";
+    } else if (weight > 55 && weight <= 60) {
+      return "Extra Lightweight";
+    } else if (weight > 60 && weight <= 65) {
+      return "Half Lightweight";
+    } else {
+      return "Open Weight";
+    }
+  } else if (gender === "Female") {
+    if (weight >= 37 && weight <= 40) {
+      return "Pinweight";
+    } else if (weight > 40 && weight <= 44) {
+      return "Bantamweight";
+    } else if (weight > 44 && weight <= 48) {
+      return "Featherweight";
+    } else if (weight > 48 && weight <= 52) {
+      return "Extra Lightweight";
+    } else if (weight > 52 && weight <= 56) {
+      return "Half Lightweight";
+    } else {
+      return "Open Weight";
+    }
   } else {
-    return "Invalid Weight Class";
+    return "Invalid Gender";
   }
-});
+};
+
 
 const columns = [
   { name: 'name', required: true, label: 'Name', format: (val, row) => getFullname(row), align: 'left', field: 'name', sortable: true },
