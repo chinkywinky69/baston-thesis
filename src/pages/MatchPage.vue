@@ -2,14 +2,20 @@
   <q-page padding>
     <div class="text-h6 text-center text-bold q-mb-md">Available Matches</div>
     <div>
-      <q-table :columns="columns" :rows="rows">
+      <q-table table-header-class="text-red" :columns="columns" :rows="rows">
         <template v-slot:top>
-          <q-input v-model="teamName" placeholder="Search" dense outlined />
+          <div class="text-h6 q-mr-md">Matches</div>
+          <q-input placeholder="search" outlined dense>
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+          <q-select class="q-ml-sm" style="width: 150px;" label="Weight" :options="weightDivision" dense outlined />
+          <q-select class="q-ml-sm" style="width: 150px;" label="Gender" :options="gender" dense outlined />
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
-            <q-btn @click="removePlayerFromTeam(props.row)" icon="fa-solid fa-right-long" dense color="red-8" size="sm"
-              outline />
+            <q-btn @click="startMatch" label="Proceed" color="red-8" size="sm" />
           </q-td>
         </template>
       </q-table>
@@ -19,6 +25,23 @@
 
 <script setup>
 import { ref } from 'vue'
+import { Dialog } from 'quasar';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
+
+const startMatch = () => {
+  Dialog.create({
+    title: "Start a new match?",
+    message: "Are you sure you're going to start this match?",
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    router.push({
+      path: '/bracketPage'
+    })
+  })
+}
 
 const columns = ref([
   { name: 'weightDivision', required: true, label: 'Weight Division', align: 'left', field: 'weightDivision', sortable: true },
@@ -42,4 +65,10 @@ const rows = ref([
 
 ])
 
+const weightDivision = [
+  'Pinweight', 'Bantanweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
+]
+const gender = [
+  'Boy', 'Girl'
+]
 </script>

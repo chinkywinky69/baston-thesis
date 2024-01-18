@@ -47,7 +47,7 @@
       <!-- MATCH PLAYERS LIST -->
       <div class="col col-md-6 col-xs-12 q-pa-xs">
         <div class="text-center text-h6 q-mb-md text-bold">Matches</div>
-        <q-card class="bg-white q-mt-md">
+        <q-card flat class="bg-white q-mt-md">
           <q-list separator>
             <q-item v-for="(match, index) in dummyMatchData" :key="match.matchId" clickable v-ripple>
               <q-item-section>
@@ -61,7 +61,7 @@
             </q-item>
           </q-list>
           <q-separator />
-          <q-card-actions class="row justify-center">
+          <q-card-actions v-if="dummyMatchData.length > 0" class="row justify-center">
             <q-btn @click="proceedMatch" label="proceed" color="green-8" />
           </q-card-actions>
         </q-card>
@@ -190,7 +190,7 @@ const back = () => {
 }
 
 const weightDivision = [
-  'Pinweight', 'Bantanweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
+  'Pinweight', 'Bantamweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
 ]
 
 const gender = [
