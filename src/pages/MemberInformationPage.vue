@@ -122,7 +122,7 @@
             <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
             <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
             <div><strong>Weight:</strong> {{ previewMember.weight }} kg</div>
-            <div><strong>Weight Class:</strong> {{ previewMember.weight }}</div>
+            <div><strong>Weight Class:</strong> {{ previewMember.weightClass }}</div>
             <div><strong>City:</strong> {{ previewMember.city }}</div>
             <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
             <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.street }}</div>
