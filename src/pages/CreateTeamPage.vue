@@ -23,6 +23,14 @@
               <q-select class="q-ml-sm" style="width: 100px;" label="Weight" :options="weightDivision" dense outlined />
               <q-select class="q-ml-sm" style="width: 100px;" label="Gender" :options="gender" dense outlined />
             </template>
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <q-th auto-width />
+                <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                  {{ col.label }}
+                </q-th>
+              </q-tr>
+            </template>
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
                 <q-radio v-model="selectedPlayers" color="red-8" dense />
@@ -32,9 +40,9 @@
         </div>
         <!-- TEAM VIEW TABLE -->
         <div class="col-12 col-md-6 q-pa-xs">
-          <q-table :rows="rowsTeam" :columns="columnsTeam" row-key="name">
+          <q-table :rows="rowsTeam" :columns="columnsTeam" row-key="name" hide-pagination>
             <template v-slot:top>
-              <q-input v-model="teamName" placeholder="Team Name" dense outlined />
+              <q-input v-model="teamName" placeholder="Team Name" dense />
             </template>
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
@@ -43,13 +51,11 @@
               </q-td>
             </template>
           </q-table>
-          <div v-if="rowsTeam.length > 0" class="row justify-center q-mt-md">
+          <div v-if="rowsTeam.length > 0" class="row justify-center q-mt-md q-gutter-sm">
             <q-btn @click="handleCreateTeam" :disable="!teamName" label="create" color="red-8" />
+            <q-btn @click="clearTable" label="clear" color="blue-8" />
           </div>
         </div>
-      </div>
-      <div class="text-center q-mt-md">
-        <q-btn @click="addPlayers" label="Submit" color="red-8" />
       </div>
     </div>
     <!-- EXISTING TEAMS -->
@@ -220,6 +226,19 @@ watch(() => selectedPlayers.value, (newSelectedPlayers) => {
   });
 });
 
+const clearTable = () => {
+  // Add the cleared players back to the select players table
+  rowsSelectPlayer.value.push(...rowsTeam.value);
+
+  // Clear the team table
+  rowsTeam.value = [];
+
+  // Deselect all players
+  selectedPlayers.value = [];
+};
+
+
+
 const removePlayerFromTeam = (player) => {
   // Remove the player from rowsTeam
   const index = rowsTeam.value.findIndex((teamPlayer) => teamPlayer.name === player.name);
@@ -235,7 +254,6 @@ const removePlayerFromTeam = (player) => {
     rowsSelectPlayer.value.unshift(player);
   }
 };
-
 
 const handleCreateTeam = () => {
   Dialog.create({

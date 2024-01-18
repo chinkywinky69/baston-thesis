@@ -73,7 +73,7 @@
                 :rules="[(val) => !!val]" />
 
             </div>
-            <q-input v-model="form.weightClass" label="Weight Class" outlined dense readonly />
+            <q-input :label="`${calculateWeightClass(form.weight, form.gender)}`" outlined dense readonly />
             <q-input class="col q-mb-sm" label="City: San Carlos City" outlined dense type="number" readonly />
             <q-select v-model="form.barangay" class="q-mb-sm" :options="barangays" outlined dense label="Barangay"
               :rules="[(val) => !!val]" />
@@ -122,7 +122,7 @@
             <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
             <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
             <div><strong>Weight:</strong> {{ previewMember.weight }} kg</div>
-            <div><strong>Weight Class:</strong> {{ previewMember.weight }}</div>
+            <div><strong>Weight Class:</strong> {{ previewMember.weightClass }}</div>
             <div><strong>City:</strong> {{ previewMember.city }}</div>
             <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
             <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.street }}</div>
@@ -304,26 +304,44 @@ const calculateAge = () => {
   }
 }
 //CALCULATE WEIGHT CLASS
-const weightClass = computed(() => {
-  const w = form.weight;
-
-  if (!w || w < 30 || w > 80) {
+const calculateWeightClass = (weight, gender) => {
+  if (!weight || weight <= 0) {
     return "Invalid Input";
   }
-  if (w < 45) {
-    return "Pinweight";
-  } else if (w < 50) {
-    return "Bantamweight";
-  } else if (w < 55) {
-    return "Featherweight";
-  } else if (w < 60) {
-    return "Extra Lightweight";
-  } else if (w < 66) {
-    return "Half Lightweight";
+
+  if (gender === "Male") {
+    if (weight >= 43 && weight <= 47) {
+      return "Pinweight";
+    } else if (weight > 47 && weight <= 51) {
+      return "Bantamweight";
+    } else if (weight > 51 && weight <= 55) {
+      return "Featherweight";
+    } else if (weight > 55 && weight <= 60) {
+      return "Extra Lightweight";
+    } else if (weight > 60 && weight <= 65) {
+      return "Half Lightweight";
+    } else {
+      return "Open Weight";
+    }
+  } else if (gender === "Female") {
+    if (weight >= 37 && weight <= 40) {
+      return "Pinweight";
+    } else if (weight > 40 && weight <= 44) {
+      return "Bantamweight";
+    } else if (weight > 44 && weight <= 48) {
+      return "Featherweight";
+    } else if (weight > 48 && weight <= 52) {
+      return "Extra Lightweight";
+    } else if (weight > 52 && weight <= 56) {
+      return "Half Lightweight";
+    } else {
+      return "Open Weight";
+    }
   } else {
-    return "Invalid Weight Class";
+    return "Invalid Gender";
   }
-});
+};
+
 
 const columns = [
   { name: 'name', required: true, label: 'Name', format: (val, row) => getFullname(row), align: 'left', field: 'name', sortable: true },
@@ -340,9 +358,10 @@ const pendingMode = ref(false)
 const viewDetails = (data, pending) => {
   pendingMode.value = pending
   viewDetailsDialog.value = true;
-  //PUT IN A DIALOG ANG FULL DETAILS
-  previewMember.value = data
-}
+  const memberDataCopy = { ...data };
+  memberDataCopy.weightClass = calculateWeightClass(data.weight, data.gender);
+  previewMember.value = memberDataCopy;
+};
 
 const dummy = {
   lastName: 'Doe',

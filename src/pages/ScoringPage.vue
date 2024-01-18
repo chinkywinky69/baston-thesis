@@ -141,7 +141,6 @@ const minus1 = (playerScore) => {
     player2DisarmScore.value -= 1;
   }
 }
-
 </script>
 
 <style scoped>
@@ -155,7 +154,6 @@ const minus1 = (playerScore) => {
   text-align: center;
   font-size: 100px;
 }
-
 
 .comic-button {
   display: inline-block;
