@@ -19,38 +19,23 @@ import {
 } from "firebase/storage";
 import { defineStore } from "pinia";
 import { Dialog, Loading, Notify } from "quasar";
-import { db, storage } from "src/boot/firebase";
+import { db, auth, storage } from "src/boot/firebase";
 
-export const useMemberStore = defineStore("members", {
+export const useteamStore = defineStore("teams", {
   state: () => ({
-    members: [],
-    member: null,
+    teams: [],
+    team: null,
   }),
-
-  getters: {
-    getApproved: (state) => {
-      return state.members.filter((member) => member.approved);
-    },
-    getPending: (state) => {
-      return state.members.filter(
-        (member) => !member.approved && !member.rejected
-      );
-    },
-  },
 
   actions: {
     async create(data) {
-      const dataRef = collection(db, "members");
+      const dataRef = collection(db, "teams");
       const doc = await addDoc(dataRef, {
         ...data,
         createdAt: serverTimestamp(),
       });
 
-      if (file) {
-        await this.uploadMedcert(doc.id, file);
-      }
-
-      this.members.unshift({
+      this.teams.unshift({
         ...data,
         createdAt: Timestamp.now(),
         id: doc.id,
@@ -66,20 +51,16 @@ export const useMemberStore = defineStore("members", {
       return { success: true, id: doc.id };
     },
 
-    async update(id, data, file) {
-      const dataRef = doc(db, "members", id);
+    async update(id, data) {
+      const dataRef = doc(db, "teams", id);
       await updateDoc(dataRef, {
         ...data,
         updatedAt: serverTimestamp(),
       });
 
-      if (file) {
-        await this.uploadMedcert(id, file);
-      }
-
-      const i = this.members.findIndex((item) => item.id === id);
+      const i = this.teams.findIndex((item) => item.id === id);
       if (i > -1) {
-        Object.assign(this.members[i], {
+        Object.assign(this.teams[i], {
           ...data,
           updatedAt: Timestamp.now(),
         });
@@ -95,22 +76,20 @@ export const useMemberStore = defineStore("members", {
       return true;
     },
 
-    async delete(id, medCertUrl) {
+    async delete(id) {
       Dialog.create({
         title: "Confirm",
         message: "Are you sure you want to permanently delete this data?",
         cancel: true,
       }).onOk(async () => {
         Loading.show();
-        const dataRef = doc(db, "members", id);
+        const dataRef = doc(db, "teams", id);
         await deleteDoc(dataRef);
-
-        if (medCertUrl) await this.deleteMedcert(medCertUrl);
         Loading.hide();
 
-        const i = this.members.findIndex((item) => item.id === id);
+        const i = this.teams.findIndex((item) => item.id === id);
         if (i > -1) {
-          this.members.splice(i, 1);
+          this.teams.splice(i, 1);
         }
 
         Notify.create({
@@ -123,20 +102,22 @@ export const useMemberStore = defineStore("members", {
     },
 
     async fetchAll() {
-      const dataRef = collection(db, "members");
+      Loading.show();
+      const dataRef = collection(db, "teams");
       const q = query(dataRef, orderBy("createdAt", "desc"));
       const snapshot = await getDocs(q);
+      Loading.hide();
 
-      this.members = snapshot.docs.map((doc) => ({
+      this.teams = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
     },
 
     async fetchOne(id) {
-      const dataRef = doc(db, "members", id);
+      const dataRef = doc(db, "teams", id);
       const docSnap = await getDoc(dataRef);
-      this.member = docSnap.data();
+      this.team = docSnap.data();
       return true;
     },
 
@@ -147,10 +128,10 @@ export const useMemberStore = defineStore("members", {
         });
 
         const imageUrls = [];
-        const dataRef = doc(db, "members", id);
+        const dataRef = doc(db, "teams", id);
 
         for (const file of files) {
-          const fileRef = storageRef(storage, `members/id/${file.name}`);
+          const fileRef = storageRef(storage, `teams/id/${file.name}`);
           const snapshot = await uploadBytes(fileRef, file);
           const downloadURL = await getDownloadURL(snapshot.ref);
           imageUrls.push(downloadURL);
@@ -168,9 +149,9 @@ export const useMemberStore = defineStore("members", {
           updatedAt: serverTimestamp(),
         });
 
-        const i = this.members.findIndex((item) => item.id === id);
+        const i = this.teams.findIndex((item) => item.id === id);
         if (i > -1) {
-          this.members[i].imageUrls = mergedImageUrls;
+          this.teams[i].imageUrls = mergedImageUrls;
         }
 
         Loading.hide();
@@ -181,36 +162,10 @@ export const useMemberStore = defineStore("members", {
       }
     },
 
-    async deleteMedcert(url) {
-      const fileRef = storageRef(storage, url);
-      await deleteObject(fileRef);
-    },
-
-    async uploadMedcert(id, file) {
-      try {
-        Loading.show({
-          message: "Saving file details...",
-        });
-
-        const dataRef = doc(db, "members", id);
-        const fileRef = storageRef(storage, `members/${id}/med-cert`);
-        const snapshot = await uploadBytes(fileRef, file);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-
-        await updateDoc(dataRef, {
-          medCert: downloadURL,
-        });
-
-        const i = this.members.findIndex((item) => item.id === id);
-        if (i > -1) {
-          this.members[i].medCert = downloadURL;
-        }
-
-        Loading.hide();
-        return true;
-      } catch (error) {
-        console.error("Error updating images:", error);
-        return false;
+    async deleteImages(urls) {
+      for (const url of urls) {
+        const fileRef = storageRef(storage, url);
+        await deleteObject(fileRef);
       }
     },
   },

@@ -10,6 +10,8 @@
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
+    "deploy:storage": "firebase deploy --only storage",
+    "deploy:hosting": "firebase deploy --only hosting",
     "build": "quasar build"
   },
   "dependencies": {

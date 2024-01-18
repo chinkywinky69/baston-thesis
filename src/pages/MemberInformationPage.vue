@@ -6,7 +6,7 @@
     </div>
 
     <div class="q-mb-md">
-      <q-table :loading="isLoadingMembersTable" :rows="membersData" :columns="columns" row-key="name">
+      <q-table :loading="isLoadingMembersTable" :rows="approvedMembers" :columns="columns" row-key="name">
         <template v-slot:top>
           <div class="text-h6 q-mr-md">Verified Members</div>
           <q-input placeholder="search" outlined dense>
@@ -17,14 +17,15 @@
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
-            <q-btn class="text-bold" flat label="View Details" color="red-8" @click="viewDetails(props.row)" />
+            <q-btn class="text-bold" flat label="View Details" color="red-8" @click="viewDetails(props.row, false)" />
           </q-td>
         </template>
       </q-table>
     </div>
 
     <div>
-      <q-table title="Pending Users" :rows="membersData" :columns="columns" row-key="name">
+      <q-table :loading="isLoadingMembersTable" title="Pending Users" :rows="pendingMembers" :columns="columns"
+        row-key="name">
         <template v-slot:top>
           <div class="text-h6 q-mr-md">Pending Members</div>
           <q-input placeholder="search" outlined dense>
@@ -35,14 +36,14 @@
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
-            <q-btn class="text-bold" flat label="View Details" color="blue-8" @click="viewDetails(props.row)" />
+            <q-btn class="text-bold" flat label="View Details" color="blue-8" @click="viewDetails(props.row, true)" />
           </q-td>
         </template>
       </q-table>
     </div>
 
     <!-- ADD MEMBER DIALOG -->
-    <q-dialog v-model="addUserDialog">
+    <q-dialog v-model="addUserDialog" @hide="clearForm(form)">
       <q-card style="width: 400px">
         <q-form @submit="previewMember ? updateMember() : createMember()">
           <q-card-section>
@@ -86,7 +87,8 @@
             <q-input v-model="form.legalGuardianContact" class="q-mb-sm" label="Contact # of Legal Guardian " outlined
               dense type="number" :rules="[(val) => !!val]" />
             <q-separator />
-            <q-file v-model="medCert" class="q-mb-sm" label="Upload Med Cert" outlined dense :rules="[(val) => !!val]">
+            <q-file v-model="medCert" accept=".jpg, image/*" @rejected="onRejected" class="q-mb-sm"
+              label="Upload Med Cert" outlined dense>
               <template v-slot:prepend>
                 <q-icon name="attach_file" />
               </template>
@@ -97,39 +99,50 @@
         </q-form>
       </q-card>
     </q-dialog>
+
+    <!-- Preview member -->
     <q-dialog v-model="viewDetailsDialog">
-      <q-card>
+      <q-card style="border-radius: 12px; max-width: 100vw; width: 500px">
         <q-card-section>
-          <div class="text-h6">Member Data </div>
-          <q-separator class="q-my-md" />
-          <div><strong>Last Name:</strong> {{ previewMember.lastName }}</div>
-          <div><strong>First Name:</strong> {{ previewMember.firstName }}</div>
-          <div><strong>Middle Name:</strong> {{ previewMember.middleName }}</div>
-          <div><strong>Email:</strong> {{ previewMember.email }}</div>
-          <div><strong>School:</strong> {{ previewMember.school }}</div>
-          <div><strong>Birthday:</strong> {{ previewMember.birthday }}</div>
-          <div><strong>Age:</strong> {{ previewMember.birthday }}</div>
-          <div><strong>Gender:</strong> {{ previewMember.gender }}</div>
-          <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
-          <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
-          <div><strong>Weight:</strong> {{ previewMember.weight }} kg</div>
-          <div><strong>Weight Class:</strong> {{ previewMember.weightClass }}</div>
-          <div><strong>City:</strong> {{ previewMember.city }}</div>
-          <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
-          <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.street }}</div>
-          <div><strong>Father's Name:</strong> {{ previewMember.fathersName }}</div>
-          <div><strong>Mother's Name:</strong> {{ previewMember.mothersName }}</div>
-          <div><strong>Legal Guardian:</strong> {{ previewMember.legalGuardian }}</div>
-          <div><strong>Contact # of Legal Guardian:</strong> {{ previewMember.legalGuardianContact }}</div>
-          <div><strong>Med Cert:</strong> {{ previewMember.medCert }} <q-btn @click="viewMedCert" class="q-ml-sm"
-              label="View Details" dense />
+          <div class="flex">
+            <div class="text-h6">Member Data </div>
+            <q-space />
+            <q-btn round dense icon="close" v-close-popup />
           </div>
+          <q-separator class="q-my-md" />
+          <div class="q-gutter-xs">
+            <div><strong>Last Name:</strong> {{ previewMember.lastName }}</div>
+            <div><strong>First Name:</strong> {{ previewMember.firstName }}</div>
+            <div><strong>Middle Name:</strong> {{ previewMember.middleName }}</div>
+            <div><strong>Email:</strong> {{ previewMember.email }}</div>
+            <div><strong>School:</strong> {{ previewMember.school }}</div>
+            <div><strong>Birthday:</strong> {{ previewMember.birthday }}</div>
+            <div><strong>Age:</strong> {{ previewMember.birthday }}</div>
+            <div><strong>Gender:</strong> {{ previewMember.gender }}</div>
+            <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
+            <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
+            <div><strong>Weight:</strong> {{ previewMember.weight }} kg</div>
+            <div><strong>Weight Class:</strong> {{ previewMember.weight }}</div>
+            <div><strong>City:</strong> {{ previewMember.city }}</div>
+            <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
+            <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.street }}</div>
+            <div><strong>Father's Name:</strong> {{ previewMember.fathersName }}</div>
+            <div><strong>Mother's Name:</strong> {{ previewMember.mothersName }}</div>
+            <div><strong>Legal Guardian:</strong> {{ previewMember.legalGuardian }}</div>
+            <div><strong>Contact # of Legal Guardian:</strong> {{ previewMember.legalGuardianContact }}</div>
+            <div><strong>Med Cert:</strong> <q-btn @click="viewMedCert" flat size="12px"
+                class="text-indigo text-bold q-ml-sm" label="View Details" dense />
+            </div>
+          </div>
+          <q-card-actions v-if="pendingMode" align="right">
+            <q-btn @click="acceptMember(previewMember.id)" label="Accept" color="primary" v-close-popup />
+            <q-btn @click="rejectMember(previewMember.id)" label="Reject" color="red-8" v-close-popup />
+          </q-card-actions>
+          <q-card-actions v-else align="right">
+            <q-btn @click="editMember(previewMember)" label="Edit" color="primary" v-close-popup />
+            <q-btn @click="deleteMember(previewMember)" label="Delete" color="red-8" v-close-popup />
+          </q-card-actions>
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn @click="editMember(previewMember)" dense label="Accept" color="green-8" v-close-popup />
-          <q-btn @click="deleteMember(previewMember)" dense label="Reject" color="red-8" v-close-popup />
-          <q-btn flat label="Close" color="primary" v-close-popup />
-        </q-card-actions>
       </q-card>
       <!-- view medcert dialog -->
       <q-dialog :maximized="maximizedToggle" transition-show="slide-up" transition-hide="slide-down"
@@ -141,8 +154,7 @@
             <q-btn icon="close" flat round dense v-close-popup />
           </q-card-section>
           <q-card-section>
-            <q-img
-              src="https://preview.redd.it/n9p8aheg9jw91.jpg?width=1080&format=pjpg&auto=webp&s=73d5a30807275340645d8dbc9586cffa598a86ff" />
+            <q-img v-if="previewMember.medCert" :src="previewMember.medCert" />
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -185,6 +197,12 @@ const form = reactive({
   legalGuardianContact: ""
 })
 
+const clearForm = (form) => {
+  Object.keys(form).forEach((key) => {
+    form[key] = "";
+  });
+};
+
 const handleMemberDialog = () => {
   previewMember.value = null
   addUserDialog.value = true
@@ -192,16 +210,20 @@ const handleMemberDialog = () => {
 
 const deleteMember = (data) => {
   viewDetailsDialog.value = false
-  useMemberStore().delete(data.id)
+  useMemberStore().delete(data.id, data.medCert ?? null)
 }
 
 
 const isLoading = ref(false)
 const createMember = async () => {
+  form.approved = true
   isLoading.value = true
   // Check if medcert available
-  const res = await useMemberStore().create(form)
-  if (form.medCert) {
+  if (medCert.value) {
+    const res = await useMemberStore().create(form, medCert.value)
+    if (res) {
+      addUserDialog.value = false
+    }
   } else {
     $q.dialog({
       title: "Oops!",
@@ -209,26 +231,33 @@ const createMember = async () => {
     })
   }
   isLoading.value = false
-  if (res) {
-    addUserDialog.value = false
-  }
 }
 
 const updateMember = async () => {
   isLoading.value = true
   // Check if medcert available
-  const res = await useMemberStore().update(form.id, form)
-  // if (form.medCert) {
-  // } else {
-  //   $q.dialog({
-  //     title: "Oops!",
-  //     message: "You need to upload the medical certificate.",
-  //   })
-  // }
+  let file = null
+  if (medCert.value) {
+    file = medCert.value
+  }
+  const res = await useMemberStore().update(form.id, form, file)
+
   isLoading.value = false
   if (res) {
     addUserDialog.value = false
   }
+}
+
+const acceptMember = async (id) => {
+  $q.loading.show()
+  const res = await useMemberStore().update(id, { approved: true })
+  $q.loading.hide()
+}
+
+const rejectMember = async (id) => {
+  $q.loading.show()
+  const res = await useMemberStore().update(id, { approved: false, rejected: true })
+  $q.loading.hide()
 }
 
 const viewMedCert = () => {
@@ -322,9 +351,12 @@ const columns = [
   { name: 'action', label: 'Actions', align: 'center', sortable: false }
 ]
 
-const membersData = computed(() => useMemberStore().members)
+const approvedMembers = computed(() => useMemberStore().getApproved)
+const pendingMembers = computed(() => useMemberStore().getPending)
 
-const viewDetails = (data) => {
+const pendingMode = ref(false)
+const viewDetails = (data, pending) => {
+  pendingMode.value = pending
   viewDetailsDialog.value = true;
   const memberDataCopy = { ...data };
   memberDataCopy.weightClass = calculateWeightClass(data.weight, data.gender);
