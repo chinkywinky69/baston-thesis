@@ -61,6 +61,11 @@ const routes = [
         component: () => import("pages/ChooseMatchLabananPage.vue"),
       },
       {
+        name: "bracketPage",
+        path: "/bracketPage",
+        component: () => import("pages/BracketPage.vue"),
+      },
+      {
         name: "scoringPage",
         path: "/scoringPage",
         component: () => import("pages/ScoringPage.vue"),

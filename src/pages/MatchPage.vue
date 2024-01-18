@@ -15,7 +15,7 @@
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
-            <q-btn @click="startMatch" label="start match" color="red-8" size="sm" />
+            <q-btn @click="startMatch" label="Proceed" color="red-8" size="sm" />
           </q-td>
         </template>
       </q-table>
@@ -38,9 +38,8 @@ const startMatch = () => {
     persistent: true
   }).onOk(() => {
     router.push({
-      path: '/scoringPage'
+      path: '/bracketPage'
     })
-    console.log('otin')
   })
 }
 

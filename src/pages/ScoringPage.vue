@@ -1,6 +1,5 @@
 <template>
   <q-page padding>
-    <div class="text-center text-h6 text-bold q-mb-sm">Scoring Page</div>
     <div class="row justify-center q-gutter-md">
       <q-card class="" style="width: 350px;">
         <q-card-section class="text-center q-pa-">
