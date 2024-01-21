@@ -77,7 +77,7 @@ const dummyMatchData = ref([
         },
         player2: {
           playerId: id,
-          name: 'Clint Clarido',
+          name: 'Tiban',
           gender: "Boys Senior",
           weightClass: 'Heavyweight',
         },
