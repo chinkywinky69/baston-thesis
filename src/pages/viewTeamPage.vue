@@ -17,12 +17,28 @@
     </div>
     <q-separator class="q-my-sm" />
     <div class="row justify-around">
+      <!-- Labanan -->
       <div>
         <div class="column items-center">
           <div class="col">
             <q-btn class="text-white q-pa-sm q-mb-sm text-body1" label="Labanan" color="red-8" dense />
           </div>
-          <div v-for="w in weightDivision" :key="w" class="col q-mb-sm">
+          <div v-for="item in playersData" :key="item.id" class="col q-mb-sm">
+            <q-card style="width: 370px;">
+              <q-card-section class="row justify-between">
+                <div class="text-body1 text-bold">{{ item.weightClass }}</div>
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                <div>{{ getFullname(item) }}</div>
+              </q-card-section>
+              <q-separator />
+              <q-card-actions class="row justify-end">
+                <q-btn label="delete" color="red-8" dense />
+              </q-card-actions>
+            </q-card>
+          </div>
+          <!-- <div v-for="w in weightDivision" :key="w" class="col q-mb-sm">
             <q-card style="width: 370px;">
               <q-card-section class="row justify-between">
                 <div class="text-body1 text-bold">{{ w }}</div>
@@ -37,9 +53,10 @@
                 <q-btn label="delete" color="red-8" dense />
               </q-card-actions>
             </q-card>
-          </div>
+          </div> -->
         </div>
       </div>
+
       <div>
         <div class="column items-center">
           <div class="col">
@@ -49,7 +66,6 @@
             <q-card style="width: 370px;">
               <q-card-section class="row justify-between">
                 <div class="text-body1 text-bold">{{ i }}</div>
-                <div class="text-body1 ">{{ category }}</div>
               </q-card-section>
               <q-separator />
               <q-card-section>
@@ -62,7 +78,6 @@
             <q-card style="width: 370px;">
               <q-card-section class="row justify-between">
                 <div class="text-body1 text-bold">{{ t }}</div>
-                <div class="text-body1 ">{{ category }}</div>
               </q-card-section>
               <q-separator />
               <q-card-section>
@@ -81,12 +96,27 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onBeforeMount, computed, watch } from 'vue'
+import { useRoute } from 'vue-router';
+import { assignProperty } from 'src/composables/tournament'
+import { getFullname } from 'src/composables/filters';
+import { useTeamStore } from 'stores/teams'
 
+const route = useRoute()
 const selectedGender = ref('Boys')
 const selectedCategory = ref('Kids')
 const individualAnyoMember = ref('None')
+const teamData = computed(() => useTeamStore().team);
+const playersData = ref([])
 
+watch(
+  () => teamData.value,
+  (newValue) => {
+    if (newValue !== null) {
+      playersData.value = assignProperty(teamData.value.players)
+    }
+  }
+);
 
 const gender = [
   'Boys', 'Girls'
@@ -111,4 +141,12 @@ const teamAnyo = [
 const dummyMembers = [
   'None', 'Tatin Tambok', 'Janbins Paderna', 'Injil Burt', 'Sir Clint', 'Nami Dog'
 ]
+
+const feachTeam = async () => {
+  await useTeamStore().fetchOne(route.params.id)
+}
+
+onBeforeMount(async () => {
+  await feachTeam()
+})
 </script>

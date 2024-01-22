@@ -104,7 +104,7 @@
               </q-card-section>
               <q-separator />
               <q-card-actions>
-                <q-btn label="View" @click="handleViewTeam" />
+                <q-btn label="View" @click="handleViewTeam(item.id)" />
               </q-card-actions>
             </q-card>
           </div>
@@ -157,8 +157,8 @@ import { useTeamStore } from 'src/stores/teams';
 const tab = ref('existing')
 
 const router = useRouter();
-const handleViewTeam = () => {
-  router.push({ name: 'viewTeam' });
+const handleViewTeam = (teamId) => {
+  router.push({ path: '/team/view/' + teamId });
 }
 
 const selectedPlayers = ref([])

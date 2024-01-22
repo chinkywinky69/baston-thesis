@@ -27,7 +27,7 @@
           </q-item>
 
 
-          <q-item to="/createTeam" clickable v-ripple>
+          <q-item to="/team" clickable v-ripple>
             <q-item-section avatar>
               <q-icon color="red-8" name="fa-solid fa-people-group" />
             </q-item-section>

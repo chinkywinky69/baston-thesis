@@ -118,9 +118,11 @@ export const useTeamStore = defineStore("teams", {
     },
 
     async fetchOne(id) {
+      Loading.show();
       const dataRef = doc(db, "teams", id);
       const docSnap = await getDoc(dataRef);
       this.team = docSnap.data();
+      Loading.hide();
       return true;
     },
 

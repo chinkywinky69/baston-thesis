@@ -34,13 +34,13 @@ const routes = [
   },
 
   {
-    path: "/createTeam",
+    path: "/team",
     component: () => import("layouts/MainLayout.vue"),
     children: [
       { path: "", component: () => import("pages/CreateTeamPage.vue") },
       {
         name: "viewTeam",
-        path: "viewTeam",
+        path: "view/:id",
         component: () => import("pages/viewTeamPage.vue"),
       },
     ],
