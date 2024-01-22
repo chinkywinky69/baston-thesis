@@ -23,7 +23,7 @@
           <div class="col">
             <q-btn class="text-white q-pa-sm q-mb-sm text-body1" label="Labanan" color="red-8" dense />
           </div>
-          <div v-for="item in playersData" :key="item.id" class="col q-mb-sm">
+          <div v-for="item in filtered" :key="item.id" class="col q-mb-sm">
             <q-card style="width: 370px;">
               <q-card-section class="row justify-between">
                 <div class="text-body1 text-bold">{{ item.weightClass }}</div>
@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, computed, watch } from 'vue'
+import { ref, onBeforeMount, computed, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router';
 import { assignProperty } from 'src/composables/tournament'
 import { getFullname } from 'src/composables/filters';
@@ -108,7 +108,7 @@ const selectedCategory = ref('Kids')
 const individualAnyoMember = ref('None')
 const teamData = computed(() => useTeamStore().team);
 const playersData = ref([])
-
+const filtered = ref([])
 watch(
   () => teamData.value,
   (newValue) => {
@@ -117,6 +117,12 @@ watch(
     }
   }
 );
+
+watchEffect(() => {
+  if (playersData.value?.length) {
+    filtered.value = playersData.value.filter(item => item.category == selectedCategory.value)
+  }
+})
 
 const gender = [
   'Boys', 'Girls'
