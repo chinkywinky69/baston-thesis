@@ -39,33 +39,46 @@ export const useMemberStore = defineStore("members", {
   },
 
   actions: {
-    async create(data) {
-      const dataRef = collection(db, "members");
-      const doc = await addDoc(dataRef, {
-        ...data,
-        createdAt: serverTimestamp(),
-      });
+    async create(data, file) {
+      try {
+        const dataRef = collection(db, "members");
+        const docRef = await addDoc(dataRef, {
+          ...data,
+          createdAt: serverTimestamp(),
+        });
 
-      if (file) {
-        await this.uploadMedcert(doc.id, file);
+        if (file) {
+          const uploadResult = await this.uploadMedcert(docRef.id, file);
+          if (!uploadResult) {
+            throw new Error("Failed to upload medical certificate.");
+          }
+        }
+
+        this.members.unshift({
+          ...data,
+          createdAt: Timestamp.now(),
+          id: docRef.id,
+        });
+
+        Notify.create({
+          type: "positive",
+          icon: "thumb_up",
+          position: "bottom-right",
+          message: "Added successfully!",
+        });
+
+        return { success: true, id: docRef.id };
+      } catch (error) {
+        console.error("Error creating member:", error);
+        Notify.create({
+          type: "negative",
+          icon: "report_problem",
+          position: "bottom-right",
+          message: "Error adding member.",
+        });
+        return { success: false };
       }
-
-      this.members.unshift({
-        ...data,
-        createdAt: Timestamp.now(),
-        id: doc.id,
-      });
-
-      Notify.create({
-        type: "positive",
-        icon: "thumb_up",
-        position: "bottom-right",
-        message: "Added successfully!",
-      });
-
-      return { success: true, id: doc.id };
     },
-
     async update(id, data, file) {
       const dataRef = doc(db, "members", id);
       await updateDoc(dataRef, {

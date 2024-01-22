@@ -159,6 +159,7 @@
         </q-card>
       </q-dialog>
     </q-dialog>
+    <q-linear-progress :value="uploadProgress" />
   </q-page>
 </template>
 
@@ -175,6 +176,7 @@ const medCert = ref(null)
 const medCertDialog = ref(false)
 const $q = useQuasar()
 const maximizedToggle = ref(true)
+
 
 const form = reactive({
   lastName: "",
@@ -216,22 +218,29 @@ const deleteMember = (data) => {
 
 const isLoading = ref(false)
 const createMember = async () => {
-  form.approved = true
-  isLoading.value = true
-  // Check if medcert available
-  if (medCert.value) {
-    const res = await useMemberStore().create(form, medCert.value)
-    if (res) {
-      addUserDialog.value = false
+  form.approved = true;
+  isLoading.value = true;
+  try {
+    if (medCert.value) {
+      const res = await useMemberStore().create(form, medCert.value);
+      if (res) {
+        addUserDialog.value = false;
+      } else {
+        console.error("Member creation failed");
+      }
+    } else {
+      $q.dialog({
+        title: "Oops!",
+        message: "You need to upload the medical certificate.",
+      });
     }
-  } else {
-    $q.dialog({
-      title: "Oops!",
-      message: "You need to upload the medical certificate.",
-    })
+  } catch (error) {
+    console.error("Error in member creation:", error);
+  } finally {
+    isLoading.value = false;
   }
-  isLoading.value = false
-}
+};
+
 
 const updateMember = async () => {
   isLoading.value = true
