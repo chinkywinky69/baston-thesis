@@ -50,7 +50,7 @@
           <div class="text-body1">Openweight</div>
         </q-card-section>
         <q-card-section class="q-my-sm bg-red-8 q-pa-md">
-          <div class="text-white text-body1 text-bold text-end">Round: 1</div>
+          <div class="text-white text-body1 text-bold text-end">Round: {{ round }}</div>
         </q-card-section>
         <q-card-section class="row justify-center q-pa-none q-mt-md">
           <q-btn square class="q-px-xl text-body1 " color="red-8" label="Player 2" />
@@ -89,16 +89,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const player1Score = ref(0)
 const player1FoulScore = ref(0)
 const player1DisarmScore = ref(0)
-
+const round = ref(1);
 const player2Score = ref(0)
 const player2FoulScore = ref(0)
 const player2DisarmScore = ref(0)
-
+const player1RoundsWon = ref(0);
+const player2RoundsWon = ref(0);
+const matchWinner = ref(null);
 
 const plus1 = (playerScore) => {
   if (playerScore === 1) {
@@ -115,9 +117,12 @@ const plus1 = (playerScore) => {
   }
   else if (playerScore === 'disarm1') {
     player1DisarmScore.value += 1;
+    player2Score.value += 1;
+
   }
   else if (playerScore === 'disarm2') {
     player2DisarmScore.value += 1;
+    player1Score.value += 1;
   }
 }
 
@@ -136,11 +141,44 @@ const minus1 = (playerScore) => {
   }
   else if (playerScore === 'disarm1') {
     player1DisarmScore.value -= 1;
+    player2Score.value -= 1;
+
   }
   else if (playerScore === 'disarm2') {
     player2DisarmScore.value -= 1;
+    player2Score.value += 1;
+
   }
 }
+
+const checkScore = () => {
+  if (player1Score.value === 5) {
+    player1RoundsWon.value++;
+    if (player1RoundsWon.value === 2) {
+      matchWinner.value = 'Player 1';
+      console.log('Match winner: Player 1');
+    } else {
+      console.log('Player 1 wins the round');
+      round.value++;
+    }
+    player1Score.value = 0;
+    player2Score.value = 0;
+  } else if (player2Score.value === 5) {
+    player2RoundsWon.value++;
+    if (player2RoundsWon.value === 2) {
+      matchWinner.value = 'Player 2';
+      console.log('Match winner: Player 2');
+    } else {
+      console.log('Player 2 wins the round');
+      round.value++;
+    }
+    player1Score.value = 0;
+    player2Score.value = 0;
+  }
+};
+
+watch([player1Score, player2Score], checkScore);
+
 </script>
 
 <style scoped>

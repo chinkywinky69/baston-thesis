@@ -155,6 +155,9 @@
           </q-card-section>
           <q-card-section>
             <q-img v-if="previewMember.medCert" :src="previewMember.medCert" />
+            <div v-else>
+              Still uploading...
+            </div>
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -176,6 +179,7 @@ const medCert = ref(null)
 const medCertDialog = ref(false)
 const $q = useQuasar()
 const maximizedToggle = ref(true)
+const memberStore = useMemberStore()
 
 
 const form = reactive({

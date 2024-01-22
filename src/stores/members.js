@@ -25,6 +25,7 @@ export const useMemberStore = defineStore("members", {
   state: () => ({
     members: [],
     member: null,
+    isUploadingMedCert: false,
   }),
 
   getters: {
@@ -200,6 +201,7 @@ export const useMemberStore = defineStore("members", {
     },
 
     async uploadMedcert(id, file) {
+      this.isUploadingMedCert = true;
       try {
         Loading.show({
           message: "Saving file details...",
@@ -218,12 +220,13 @@ export const useMemberStore = defineStore("members", {
         if (i > -1) {
           this.members[i].medCert = downloadURL;
         }
-
-        Loading.hide();
         return true;
       } catch (error) {
         console.error("Error updating images:", error);
         return false;
+      } finally {
+        this.isUploadingMedCert = false;
+        Loading.hide();
       }
     },
   },
