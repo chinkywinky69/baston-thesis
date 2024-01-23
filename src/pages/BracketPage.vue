@@ -30,6 +30,7 @@ import { uid, Dialog } from 'quasar';
 
 const id = uid()
 const router = useRouter()
+const matchHasEnded = ref(false)
 
 const startMatch = () => {
   Dialog.create({
@@ -77,7 +78,7 @@ const dummyMatchData = ref([
         },
         player2: {
           playerId: id,
-          name: 'Clint Clarido',
+          name: 'Tiban',
           gender: "Boys Senior",
           weightClass: 'Heavyweight',
         },

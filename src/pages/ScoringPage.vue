@@ -50,7 +50,7 @@
           <div class="text-body1">Openweight</div>
         </q-card-section>
         <q-card-section class="q-my-sm bg-red-8 q-pa-md">
-          <div class="text-white text-body1 text-bold text-end">Round: 1</div>
+          <div class="text-white text-body1 text-bold text-end">Round: {{ round }}</div>
         </q-card-section>
         <q-card-section class="row justify-center q-pa-none q-mt-md">
           <q-btn square class="q-px-xl text-body1 " color="red-8" label="Player 2" />
@@ -84,21 +84,92 @@
           </div>
         </q-card-section>
       </q-card>
+      <!-- match details -->
+      <q-dialog v-model="showMatchDetailsDialog">
+        <q-card style="width: 500px" bordered>
+          <q-card-section>
+            <div class="text-center text-h6 ">Match Details</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section style="max-height: 60vh" class="scroll">
+            <q-list bordered separator>
+              <div class="text-center text-bold text-h6">Winner: {{ matchWinner }}</div>
+
+              <q-item class="flex column " v-for="(round, index) in rounds" :key="index">
+                <q-item-section>
+                  <div class="text-bold text-center">Round: {{ index + 1 }}</div>
+                </q-item-section>
+
+                <q-item-label class="text-body1 text-bold text-red-8">Player 1</q-item-label>
+                <q-item-label>Points: {{ round.player1.points }}</q-item-label>
+                <q-item-label>Fouls: {{ round.player1.fouls }}</q-item-label>
+                <q-item-label>Disarm: {{ round.player1.disarm }}</q-item-label>
+
+                <q-separator spaced />
+
+                <q-item-label class="text-body1 text-bold text-blue-8">Player 2</q-item-label>
+                <q-item-label>Points: {{ round.player2.points }}</q-item-label>
+                <q-item-label>Fouls: {{ round.player2.fouls }}</q-item-label>
+                <q-item-label>Disarm: {{ round.player2.disarm }}</q-item-label>
+              </q-item>
+              <q-separator v-if="index < rounds.length - 1" spaced />
+            </q-list>
+          </q-card-section>
+          <q-separator />
+          <q-card-actions align="right">
+            <q-btn @click="matchDone" label="continue" color="blue-8" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </div>
   </q-page>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { Dialog } from 'quasar';
+import { useRouter } from 'vue-router';
+import { useScoringStore } from 'src/stores/scoring';
+
+
+const router = useRouter()
+const scoringStore = useScoringStore()
+
+const matchDone = () => {
+  router.push({ name: 'bracketPage' })
+  scoringStore.isMatchDone.value = true
+}
+
+const rounds = ref([]);
+
 
 const player1Score = ref(0)
 const player1FoulScore = ref(0)
 const player1DisarmScore = ref(0)
-
+const round = ref(1);
 const player2Score = ref(0)
 const player2FoulScore = ref(0)
 const player2DisarmScore = ref(0)
+const player1RoundsWon = ref(0);
+const player2RoundsWon = ref(0);
+const matchWinner = ref(null);
+const showMatchDetailsDialog = ref(false)
 
+const addRoundData = () => {
+  rounds.value.push({
+    roundNumber: 1,
+    player1: {
+      points: player1Score.value,
+      fouls: player1FoulScore.value,
+      disarm: player1DisarmScore.value,
+    },
+    player2: {
+      points: player2Score.value,
+      fouls: player2FoulScore.value,
+      disarm: player2DisarmScore.value,
+    }
+  });
+};
 
 const plus1 = (playerScore) => {
   if (playerScore === 1) {
@@ -115,9 +186,12 @@ const plus1 = (playerScore) => {
   }
   else if (playerScore === 'disarm1') {
     player1DisarmScore.value += 1;
+    player2Score.value += 1;
+
   }
   else if (playerScore === 'disarm2') {
     player2DisarmScore.value += 1;
+    player1Score.value += 1;
   }
 }
 
@@ -136,11 +210,122 @@ const minus1 = (playerScore) => {
   }
   else if (playerScore === 'disarm1') {
     player1DisarmScore.value -= 1;
+    player2Score.value -= 1;
+
   }
   else if (playerScore === 'disarm2') {
     player2DisarmScore.value -= 1;
+    player2Score.value += 1;
+
   }
 }
+
+const resetScoresAndFouls = () => {
+  player1Score.value = 0;
+  player2Score.value = 0;
+  player1FoulScore.value = 0;
+  player2FoulScore.value = 0;
+  player1DisarmScore.value = 0;
+  player2DisarmScore.value = 0;
+
+};
+
+const checkMatchWinner = () => {
+  if (player1RoundsWon.value === 2) {
+    matchWinner.value = 'Player 1';
+    console.log('Match winner: Player 1');
+    addRoundData()
+    displayMatchResult(1);
+  } else if (player2RoundsWon.value === 2) {
+    matchWinner.value = 'Player 2';
+    console.log('Match winner: Player 2');
+    addRoundData()
+    displayMatchResult(2);
+  }
+};
+
+const displayMatchResult = (winnerPlayerNumber) => {
+  Dialog.create({
+    title: `Player ${winnerPlayerNumber} Wins!`,
+    message: `Player ${winnerPlayerNumber} wins the match, continue to show results`,
+    persistent: true
+  }).onOk(() => {
+    showMatchDetailsDialog.value = true
+    resetScoresAndFouls();
+  });
+};
+
+const checkRoundWinner = () => {
+  if (player1FoulScore.value === 3) {
+    player2RoundsWon.value++;
+    checkMatchWinner();
+    resetScoresAndFouls();
+  } else if (player2FoulScore.value === 3) {
+    player1RoundsWon.value++;
+    checkMatchWinner();
+    resetScoresAndFouls();
+  } else if (player1Score.value === 5) {
+    player1RoundsWon.value++;
+    // Check if Player 1 has won two rounds and won the match
+    if (player1RoundsWon.value === 2) {
+      checkMatchWinner(); // This will display the match result if Player 1 has won
+    } else {
+      // If Player 1 hasn't won the match yet, ask to proceed to the next round
+      Dialog.create({
+        title: 'Player 1 Won!',
+        message: 'Player 1 Won this round, proceed to next round?',
+        ok: true,
+        cancel: true,
+        persistent: true
+      }).onOk(() => {
+        round.value += 1;
+        resetScoresAndFouls();
+        addRoundData()
+      }).onCancel(() => {
+        resetScoresAndFouls()
+        player1RoundsWon.value = -1
+      })
+    }
+  } else if (player2Score.value === 5) {
+    player2RoundsWon.value++;
+    // Check if Player 1 has won two rounds and won the match
+    if (player2RoundsWon.value === 2) {
+      checkMatchWinner(); // This will display the match result if Player 1 has won
+    } else {
+      // If Player 1 hasn't won the match yet, ask to proceed to the next round
+      Dialog.create({
+        title: 'Player 2 Won!',
+        message: 'Player 2 Won this round, proceed to next round?',
+        ok: true,
+        cancel: true,
+        persistent: true
+      }).onOk(() => {
+        round.value += 1;
+        resetScoresAndFouls();
+        addRoundData()
+      }).onCancel(() => {
+        resetScoresAndFouls()
+        player2RoundsWon.value = -1
+      })
+    }
+  } else if (player1RoundsWon.value === 2 && player2RoundsWon.value === 1 && round.value === 3) {
+    resetScoresAndFouls();
+
+  } else if (player1RoundsWon.value === 1 && player2RoundsWon.value === 2 && round.value === 3) {
+    resetScoresAndFouls();
+
+  }
+};
+
+// Initial setup or after a match is complete
+round.value = 1;
+player1RoundsWon.value = 0;
+player2RoundsWon.value = 0;
+matchWinner.value = null;
+
+watch([player1Score, player2Score, player1FoulScore, player2FoulScore], checkRoundWinner);
+
+
 </script>
 
 <style scoped>
