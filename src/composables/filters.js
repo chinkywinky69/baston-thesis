@@ -1,5 +1,11 @@
 export function getFullname(data) {
-  return `${data.lastName}, ${data.firstName} ${data.middleName[0]}`;
+  if (data && data.lastName && data.firstName) {
+    const middleInitial =
+      data.middleName && data.middleName.length > 0 ? data.middleName[0] : "";
+    return `${data.lastName}, ${data.firstName} ${middleInitial}`;
+  } else {
+    return "";
+  }
 }
 
 export function getAddress(data) {
@@ -43,3 +49,23 @@ export const getWeightClass = (weight, gender) => {
     return "Invalid Gender";
   }
 };
+
+export function getAge(birthday) {
+  const birthDate = new Date(birthday);
+  const currentDate = new Date();
+
+  let age = currentDate.getFullYear() - birthDate.getFullYear();
+
+  // Check if birthday for the current year has occurred or not
+  const hasBirthdayOccurred =
+    currentDate.getMonth() > birthDate.getMonth() ||
+    (currentDate.getMonth() === birthDate.getMonth() &&
+      currentDate.getDate() >= birthDate.getDate());
+
+  // If birthday for the current year has not occurred, subtract 1 from the age
+  if (!hasBirthdayOccurred) {
+    age--;
+  }
+
+  return age;
+}

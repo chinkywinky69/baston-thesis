@@ -6,8 +6,8 @@
       </div>
       <div class="row q-gutter-sm">
         <div>
-          <q-select v-model="selectedGender" style="width: 150px;" :options="gender" placeholder="Category" outlined
-            bg-color="white" dense />
+          <q-select v-model="selectedGender" style="width: 150px;" :options="gender" option-label="label"
+            option-value="value" emit-value map-options placeholder="Category" outlined bg-color="white" dense />
         </div>
         <div>
           <q-select v-model="selectedCategory" style="width: 150px;" :options="categories" placeholder="Category" outlined
@@ -30,7 +30,17 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                <div>{{ getFullname(item) }}</div>
+                <q-item>
+                  <q-item-section avatar>
+                    <q-avatar icon="person" color="red-1" size="50px" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>{{
+                      getFullname(item) }}</q-item-label>
+                    <q-item-label caption>{{ `${getAge(item.birthday)}yo. • ${item.weight}kg • ${item.gender}`
+                    }}</q-item-label>
+                  </q-item-section>
+                </q-item>
               </q-card-section>
               <q-separator />
               <q-card-actions class="row justify-end">
@@ -38,22 +48,6 @@
               </q-card-actions>
             </q-card>
           </div>
-          <!-- <div v-for="w in weightDivision" :key="w" class="col q-mb-sm">
-            <q-card style="width: 370px;">
-              <q-card-section class="row justify-between">
-                <div class="text-body1 text-bold">{{ w }}</div>
-                <div class="text-body1 ">{{ categoryBoys }}</div>
-              </q-card-section>
-              <q-separator />
-              <q-card-section>
-                <div>Justin Villacampa</div>
-              </q-card-section>
-              <q-separator />
-              <q-card-actions class="row justify-end">
-                <q-btn label="delete" color="red-8" dense />
-              </q-card-actions>
-            </q-card>
-          </div> -->
         </div>
       </div>
 
@@ -69,7 +63,8 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                <q-select v-model="individualAnyoMember" :options="dummyMembers" dense outlined bg-color="white" />
+                <q-select v-model="individualAnyoMember" :options="filtered" :option-label="(val) => getFullname(val)"
+                  dense outlined bg-color="white" />
               </q-card-section>
               <q-separator />
             </q-card>
@@ -99,7 +94,7 @@
 import { ref, onBeforeMount, computed, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router';
 import { assignProperty } from 'src/composables/tournament'
-import { getFullname } from 'src/composables/filters';
+import { getFullname, getAge } from 'src/composables/filters';
 import { useTeamStore } from 'stores/teams'
 
 const route = useRoute()
@@ -119,13 +114,30 @@ watch(
 );
 
 watchEffect(() => {
+  updateFilteredData();
+});
+
+// Watcher for selectedGender
+watch(selectedGender, () => {
+  updateFilteredData();
+});
+
+// Watcher for selectedCategory
+watch(selectedCategory, () => {
+  updateFilteredData();
+});
+
+function updateFilteredData() {
   if (playersData.value?.length) {
-    filtered.value = playersData.value.filter(item => item.category == selectedCategory.value)
+    filtered.value = playersData.value.filter(item => item.category === selectedCategory.value && item.gender === selectedGender.value);
   }
-})
+}
+
+
 
 const gender = [
-  'Boys', 'Girls'
+  { label: "Boys", value: "Male" },
+  { label: "Girls", value: "Female" },
 ]
 
 const categories = [
