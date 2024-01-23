@@ -19,7 +19,20 @@
       </q-list>
     </q-card>
 
-
+    <q-card v-if="isMatchDone" flat class="bg-white q-mt-md">
+      <q-list separator>
+        <q-item v-for="(match, index) in dummyMatchData" :key="match.matchId">
+          <q-item-section>
+            <q-item-label overline>Match #{{ index + 1 }}</q-item-label>
+            <q-item-label class="text-body1 lt ">{{ match.players[0].player1.name }}</q-item-label>
+            <q-item-label class="text-body1">{{ match.players[0].player2.name }}</q-item-label>
+          </q-item-section>
+          <q-item-section avatar>
+            <q-btn @click="startMatch" color="red-8" label="start match" />
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-card>
   </q-page>
 </template>
 
@@ -27,10 +40,12 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
 import { uid, Dialog } from 'quasar';
+import { useScoringStore } from 'src/stores/scoring';
 
 const id = uid()
 const router = useRouter()
-const matchHasEnded = ref(false)
+const scoringStore = useScoringStore()
+const isMatchDone = scoringStore.isMatchDone
 
 const startMatch = () => {
   Dialog.create({
