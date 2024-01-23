@@ -104,7 +104,8 @@
               </q-card-section>
               <q-separator />
               <q-card-actions>
-                <q-btn label="View" @click="handleViewTeam" />
+                <q-btn label="View" @click="handleViewTeam" color="blue-8" />
+                <q-btn label="delete" color="red-8" />
               </q-card-actions>
             </q-card>
           </div>
