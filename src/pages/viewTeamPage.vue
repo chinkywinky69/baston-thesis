@@ -9,10 +9,6 @@
           <q-select v-model="selectedGender" style="width: 150px;" :options="gender" placeholder="Category" outlined
             bg-color="white" dense />
         </div>
-        <div>
-          <q-select v-model="selectedCategory" style="width: 150px;" :options="categories" placeholder="Category" outlined
-            bg-color="white" dense />
-        </div>
       </div>
     </div>
     <q-separator class="q-my-sm" />
