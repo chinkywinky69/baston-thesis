@@ -10,8 +10,8 @@
               <q-icon name="search" />
             </template>
           </q-input>
-          <q-select class="q-ml-sm" style="width: 150px;" label="Weight" :options="weightDivision" dense outlined />
-          <q-select class="q-ml-sm" style="width: 150px;" label="Gender" :options="gender" dense outlined />
+          <q-select class="q-ml-sm" style="width: 150px;" label="Category" :options="categories" dense outlined
+            v-model="selectedCategory" />
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
@@ -65,10 +65,10 @@ const rows = ref([
 
 ])
 
-const weightDivision = [
-  'Pinweight', 'Bantanweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
+const categories = [
+  'Junior', 'Kids', 'Senior'
 ]
-const gender = [
-  'Boy', 'Girl'
-]
+
+const selectedCategory = ref('Select')
+
 </script>

@@ -198,7 +198,7 @@ const gender = [
 ]
 
 const categories = [
-  'Kids', 'Junior', 'Senior'
+  'Junior', 'Senior'
 ]
 
 // DUMMY DATA RANI SIR
