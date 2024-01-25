@@ -59,8 +59,22 @@
               </q-card-section>
               <q-separator />
               <q-card-section>
-                <q-select v-model="individualAnyoMember" :options="filtered" :option-label="(val) => getFullname(val)"
-                  dense outlined bg-color="white" />
+                <q-select @update:model-value="(val) => setRepresentative(i, val)" :model-value="getSelectedRep(i)"
+                  :options="playersData" :option-label="(val) => getFullname(val)" dense outlined bg-color="white">
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section avatar>
+                        <q-icon name="person" />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label>{{ getFullname(scope.opt) }}</q-item-label>
+                        <q-item-label caption>{{ `${getAge(scope.opt.birthday)}yo. • ${scope.opt.weight}kg •
+                                                  ${scope.opt.gender}`
+                        }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
               </q-card-section>
               <q-separator />
             </q-card>
@@ -94,8 +108,7 @@ import { getFullname, getAge } from 'src/composables/filters';
 import { useTeamStore } from 'stores/teams'
 
 const route = useRoute()
-const selectedGender = ref('Boys')
-const selectedCategory = ref('Kids')
+const selectedGender = ref('Male')
 const individualAnyoMember = ref('None')
 const teamData = computed(() => useTeamStore().team);
 const playersData = ref([])
@@ -118,14 +131,9 @@ watch(selectedGender, () => {
   updateFilteredData();
 });
 
-// Watcher for selectedCategory
-watch(selectedCategory, () => {
-  updateFilteredData();
-});
-
 function updateFilteredData() {
   if (playersData.value?.length) {
-    filtered.value = playersData.value.filter(item => item.category === selectedCategory.value && item.gender === selectedGender.value);
+    filtered.value = playersData.value.filter(item => item.gender === selectedGender.value && item.category != 'Kids');
   }
 }
 
@@ -136,9 +144,9 @@ const gender = [
   { label: "Girls", value: "Female" },
 ]
 
-const categories = [
-  'Kids', 'Junior', 'Senior'
-]
+// const categories = [
+//   'Kids', 'Junior', 'Senior'
+// ]
 
 const weightDivision = [
   'Pinweight', 'Bantanweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
@@ -163,4 +171,19 @@ const feachTeam = async () => {
 onBeforeMount(async () => {
   await feachTeam()
 })
+
+const getSelectedRep = (matchType) => {
+  const anyoArray = teamData.value?.anyo;
+  if (anyoArray && anyoArray.length > 0) {
+    const foundAnyo = anyoArray.find(an => an.matchType === matchType);
+    if (foundAnyo) {
+      return foundAnyo.selectedPlayer || 'none';
+    }
+  }
+  return 'none';
+}
+
+const setRepresentative = async (matchType, player) => {
+  const res = await useTeamStore().setRepresentative(route.params.id, matchType, player)
+}
 </script>

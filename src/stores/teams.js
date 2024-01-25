@@ -79,6 +79,45 @@ export const useTeamStore = defineStore("teams", {
       return true;
     },
 
+    async setRepresentative(id, matchType, player) {
+      const dataRef = doc(db, "teams", id);
+      // Check if there is rep already
+      if (
+        this.team.anyo &&
+        this.team.anyo.find((item) => item.matchType == matchType)
+      ) {
+        // replace player
+        this.team.anyo.map((item) => {
+          item.player = player;
+        });
+      } else {
+        const newData = { matchType: matchType, player: player };
+        this.team.anyo = newData;
+      }
+
+      await updateDoc(dataRef, {
+        ...data,
+        updatedAt: serverTimestamp(),
+      });
+
+      const i = this.teams.findIndex((item) => item.id === id);
+      if (i > -1) {
+        Object.assign(this.teams[i], {
+          ...data,
+          updatedAt: Timestamp.now(),
+        });
+      }
+
+      Notify.create({
+        type: "positive",
+        icon: "thumb_up",
+        position: "bottom-right",
+        message: "Updated successfully!",
+      });
+
+      return true;
+    },
+
     async delete(id) {
       Dialog.create({
         title: "Confirm",
