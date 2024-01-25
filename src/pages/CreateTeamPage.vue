@@ -45,8 +45,14 @@
           </div>
           <!-- TEAM VIEW TABLE -->
           <div class="col-12 col-md-6 q-pa-xs">
-            <div class="row full-width justify-center q-mb-md">
-              <q-input v-model="teamName" placeholder="Team Name" dense style="width: 280px;" />
+            <div class="row full-width justify-center q-gutter-sm q-mb-md">
+              <div>
+                <q-input v-model="teamName" placeholder="Team Name" dense style="width: 280px;" />
+              </div>
+              <div>
+                <q-select v-model="selectedCategory" style="width: 150px;" :options="categories" outlined bg-color="white"
+                  dense />
+              </div>
             </div>
             <q-list>
               <q-item v-for="(item, i) in rowsTeam" :key="i">
@@ -164,30 +170,12 @@ const handleViewTeam = (teamId) => {
 
 const selectedPlayers = ref([])
 const teamName = ref('')
-const createTeam = ref(false)
-const existingTeam = ref(true)
 const viewTeam = ref(false)
 
-const existingTeamToggle = () => {
-  existingTeam.value = true
-  createTeam.value = false
-}
-
-const createTeamToggle = () => {
-  existingTeam.value = false
-  createTeam.value = true
-}
-
-const weightDivision = [
-  'Pinweight', 'Bantanweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
-]
+const selectedCategory = ref('Select')
 
 const categories = [
-  'Girls (Kids)', 'Boys (Kids)', 'Girls Secondary (Junior)', 'Boys Secondary (Junior)', 'Boys Senior', 'Girs Senior'
-]
-
-const gender = [
-  'Boy', 'Girl'
+  'Junior', 'Kids', 'Senior'
 ]
 
 // DUMMY DATA RANI SIR

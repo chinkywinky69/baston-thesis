@@ -136,8 +136,8 @@ const router = useRouter()
 const scoringStore = useScoringStore()
 
 const matchDone = () => {
-  router.push({ name: 'bracketPage' })
-  scoringStore.isMatchDone.value = true
+  router.push({ path: '/bracketPage' })
+  scoringStore.isMatchDone = true
 }
 
 const rounds = ref([]);
