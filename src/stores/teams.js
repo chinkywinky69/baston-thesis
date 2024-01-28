@@ -79,35 +79,35 @@ export const useTeamStore = defineStore("teams", {
       return true;
     },
 
-    async setRepresentative(id, matchType, player) {
+    async setRepresentative(id, matchType, gender, player) {
+      Loading.show();
       const dataRef = doc(db, "teams", id);
-      // Check if there is rep already
-      if (
-        this.team.anyo &&
-        this.team.anyo.find((item) => item.matchType == matchType)
-      ) {
-        // replace player
-        this.team.anyo.map((item) => {
-          item.player = player;
-        });
-      } else {
-        const newData = { matchType: matchType, player: player };
-        this.team.anyo = newData;
-      }
-
+      // const matchTypeModified = matchType.replace(" ", "_");
+      const fieldKey = `${matchType}.${gender}`;
       await updateDoc(dataRef, {
-        ...data,
+        [fieldKey]: player,
         updatedAt: serverTimestamp(),
       });
 
-      const i = this.teams.findIndex((item) => item.id === id);
-      if (i > -1) {
-        Object.assign(this.teams[i], {
-          ...data,
+      if (this.team) {
+        Object.assign(this.team, {
+          [matchType]: {
+            [gender]: player,
+          },
           updatedAt: Timestamp.now(),
         });
       }
 
+      const i = this.teams.findIndex((item) => item.id === id);
+      if (i > -1) {
+        Object.assign(this.teams[i], {
+          [matchType]: {
+            [gender]: player,
+          },
+          updatedAt: Timestamp.now(),
+        });
+      }
+      Loading.hide();
       Notify.create({
         type: "positive",
         icon: "thumb_up",
