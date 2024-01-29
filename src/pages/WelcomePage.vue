@@ -42,6 +42,8 @@
               :rules="[(val) => !!val]" />
             <q-input v-model="form.school" class="q-mb-sm" label="School" outlined dense type="text"
               :rules="[(val) => !!val]" />
+            <q-input v-model="form.team" class="q-mb-sm" label="Team" outlined dense type="text"
+              :rules="[(val) => !!val]" />
             <div class="row">
               <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
                 @change="calculateAge" :rules="[(val) => !!val]" />
@@ -245,6 +247,7 @@ const form = reactive({
   middleName: "",
   email: "",
   school: "",
+  team: "",
   birthday: "",
   age: "",
   gender: "",
