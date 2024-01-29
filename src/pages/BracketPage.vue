@@ -55,7 +55,7 @@ const startMatch = () => {
     persistent: true,
   }).onOk(() => {
     router.push({
-      path: '/scoringPage'
+      path: '/labananScoringPage'
     })
   })
 }

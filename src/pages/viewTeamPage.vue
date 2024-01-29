@@ -124,13 +124,6 @@ const gender = [
   'Boys', 'Girls'
 ]
 
-const categories = [
-  'Kids', 'Junior', 'Senior'
-]
-
-const weightDivision = [
-  'Pinweight', 'Bantanweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
-]
 
 const individualAnyo = [
   "Individual Likha Single Weapon", "Individual Likha Double Weapon", "Individual Likha Espada Y Daga Weapon"
