@@ -52,6 +52,10 @@ const routes = [
     children: [
       { path: "", component: () => import("pages/TournamentPage.vue") },
       {
+        path: "/chooseTournamentType/:id",
+        component: () => import("pages/ChooseTournamentTypePage.vue"),
+      },
+      {
         path: "/selectPlayers",
         component: () => import("pages/SelectPlayersPage.vue"),
       },
