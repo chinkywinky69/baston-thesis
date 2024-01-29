@@ -16,7 +16,7 @@ const getWeightClass = (weight, gender) => {
   } else if (gender === "Female") {
     if (weight >= 37 && weight <= 40) {
       return "Pinweight";
-    } else if (weight > 40 && weight <= 44) {
+    } else if (weight >= 40 && weight <= 44) {
       return "Bantamweight";
     } else if (weight > 44 && weight <= 48) {
       return "Featherweight";

@@ -79,6 +79,45 @@ export const useTeamStore = defineStore("teams", {
       return true;
     },
 
+    async setRepresentative(id, matchType, gender, player) {
+      Loading.show();
+      const dataRef = doc(db, "teams", id);
+      // const matchTypeModified = matchType.replace(" ", "_");
+      const fieldKey = `${matchType}.${gender}`;
+      await updateDoc(dataRef, {
+        [fieldKey]: player,
+        updatedAt: serverTimestamp(),
+      });
+
+      if (this.team) {
+        Object.assign(this.team, {
+          [matchType]: {
+            [gender]: player,
+          },
+          updatedAt: Timestamp.now(),
+        });
+      }
+
+      const i = this.teams.findIndex((item) => item.id === id);
+      if (i > -1) {
+        Object.assign(this.teams[i], {
+          [matchType]: {
+            [gender]: player,
+          },
+          updatedAt: Timestamp.now(),
+        });
+      }
+      Loading.hide();
+      Notify.create({
+        type: "positive",
+        icon: "thumb_up",
+        position: "bottom-right",
+        message: "Updated successfully!",
+      });
+
+      return true;
+    },
+
     async delete(id) {
       Dialog.create({
         title: "Confirm",
