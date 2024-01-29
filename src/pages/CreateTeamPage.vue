@@ -99,9 +99,9 @@
         </div>
         <div class="row justify-start ">
           <div v-for="(item, i) in teams" :key="i" class="col-6 col-md-3 q-mt-md q-pa-xs">
-            <q-card>
+            <q-card class="rb-1">
               <q-card-section>
-                <div class="text-h6 text-red-7 text-bold">
+                <div class="text-subtitle1 text-red-7 text-bold">
                   {{ item.name }}
                 </div>
                 <div>
@@ -110,8 +110,10 @@
               </q-card-section>
               <q-separator />
               <q-card-actions>
-                <q-btn label="View" @click="handleViewTeam(item.id)" color="blue-8" />
-                <q-btn label="Delete" color="red-8" />
+                <q-btn label="View" @click="handleViewTeam(item.id)" class="rb-1" dense style="width: 75px;"
+                  color="blue-8" />
+                <q-space />
+                <q-btn @click="deleteTeam(item)" size="sm" round icon="delete" outline color="red-8" />
               </q-card-actions>
             </q-card>
           </div>
@@ -288,5 +290,9 @@ const handleCreateTeam = () => {
       })
       if (res) tab.value = 'existing'
     })
+}
+
+const deleteTeam = (team) => {
+  useTeamStore().delete(team.id)
 }
 </script>

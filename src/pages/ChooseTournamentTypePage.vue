@@ -27,9 +27,10 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter()
+const route = useRoute()
 
 const selectedMatchType = ref('')
 
@@ -40,6 +41,7 @@ const chooseMatch = (matchType) => {
     router.push({
       name: 'labanan',
       params: { matchType: selectedMatchType.value },
+      query: { tournaId: route.params.id }
     });
   } else {
     router.push({

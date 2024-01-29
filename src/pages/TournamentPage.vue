@@ -28,15 +28,10 @@
 <script setup>
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router';
-<<<<<<< HEAD
 import { useTournamentStore } from 'src/stores/tournaments';
-=======
-import { uid } from 'quasar';
->>>>>>> c0d51d3d8ca6c11db4fd25b4f0f921c285bd237f
 
 const tournaStore = useTournamentStore()
 const router = useRouter()
-const id = uid()
 
 const tournamentForm = reactive({
   name: '',
@@ -45,14 +40,10 @@ const tournamentForm = reactive({
 })
 
 const handleSubmitTournamentName = async () => {
-  submitTournamentName.value = false
-
-  await tournaStore.create(tournamentForm)
-
-  pickTournamentType.value = true
+  const res = await tournaStore.create(tournamentForm)
+  if (res.success) router.push(`/chooseTournamentType/${res.id}`)
 }
 
-}
 </script>
 
 
