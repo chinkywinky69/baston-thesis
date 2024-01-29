@@ -24,20 +24,21 @@
     </div>
     <div v-if="pickTournamentType">
       <div class="row justify-around q-gutter-md">
-        <q-card @click="labanan(' Full Contact (Bladed Weapon Concept) Padded Sticks Competition')"
-          class="text-center card-type" style="width: 500px; height: 350px">
+        <q-card @click="chooseMatch('Labanan')" class="text-center card-type col-md-12 col-xs-6"
+          style="width: 500px; height: 350px">
           <q-card-section>
-            <img src="../img/arnispic2.png" alt="">
+            <q-img width="250px" src="../img/arnispic2.png" />
           </q-card-section>
-          <div class="text-bold text-h5">
+          <div class="text-bold text-h6 q-mt-lg">
             Full Contact (Bladed Weapon Concept) Padded Sticks Competition
           </div>
         </q-card>
-        <q-card @click="anyo('Anyo')" class="text-center card-type" style="width: 500px; height: 350px">
+        <q-card @click="chooseMatch('Anyo')" class="text-center card-type col-md-12 col-xs-6"
+          style="width: 500px; height: 350px">
           <q-card-section>
-            <img src="../img/arnispic1.png" alt="">
+            <q-img width="200px" src="../img/arnispic1.png" />
           </q-card-section>
-          <div class="text-bold text-h5">
+          <div class="text-bold text-h6">
             Likha Anyo Competition
           </div>
         </q-card>
@@ -69,12 +70,20 @@ const handleSubmitTournamentName = () => {
 const selectedMatchType = ref('')
 
 
-const labanan = (matchType) => {
+const chooseMatch = (matchType) => {
   selectedMatchType.value = matchType;
-  router.push({
-    name: 'chooseMatch',
-    params: { matchType: selectedMatchType.value },
-  });
+  if (matchType === 'Labanan') {
+    router.push({
+      name: 'labanan',
+      params: { matchType: selectedMatchType.value },
+    });
+  } else {
+    router.push({
+      name: 'anyo',
+      params: { matchType: selectedMatchType.value },
+    });
+  }
+
 };
 
 

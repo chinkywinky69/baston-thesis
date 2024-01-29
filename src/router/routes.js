@@ -56,9 +56,24 @@ const routes = [
         component: () => import("pages/SelectPlayersPage.vue"),
       },
       {
-        name: "chooseMatch",
+        name: "labanan",
         path: "/chooseMatchLabanan/:matchType",
         component: () => import("pages/ChooseMatchLabananPage.vue"),
+      },
+      {
+        name: "anyo",
+        path: "/chooseMatchAnyo/:matchType",
+        component: () => import("pages/ChooseMatchAnyoPage.vue"),
+      },
+      {
+        name: "choose-anyo-team",
+        path: "/chooseMatchAnyo/:anyoType",
+        component: () => import("pages/ChooseTeamAnyoPage.vue"),
+      },
+      {
+        name: "anyo-individual-scoring",
+        path: "/anyoScoringPage",
+        component: () => import("pages/AnyoScoringPage.vue"),
       },
       {
         name: "bracketPage",
@@ -67,8 +82,8 @@ const routes = [
       },
       {
         name: "scoringPage",
-        path: "/scoringPage",
-        component: () => import("pages/ScoringPage.vue"),
+        path: "/labananScoringPage",
+        component: () => import("pages/LabananScoringPage.vue"),
       },
     ],
   },
