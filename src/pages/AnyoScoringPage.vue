@@ -31,25 +31,40 @@
         </q-card-section>
       </q-card>
     </div>
-    <div class="text-center q-mt-md">
-      <q-btn @click="calculateAverageScore" label="total score" color="red-8" />
+    <div class="text-center q-mt-md ">
+      <q-btn v-if="matchOnGoing" :disable="!allJudgesScored" @click="calculateAverageScore" label="total score"
+        color="red-8" />
+      <q-btn v-if="matchDone" label="continue" color="blue-8" />
+      <q-btn class="q-ml-sm" @click="back" v-if="matchDone" label="back" color="green-8" />
+
     </div>
   </q-page>
 </template>
 
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 
-
+const matchDone = ref(false)
+const matchOnGoing = ref(true)
 const playerScore = ref(0)
 const judgeScores = reactive(Array(5).fill(null))
+const allJudgesScored = computed(() => {
+  return judgeScores.every(score => score !== null && score !== '' && !isNaN(score));
+});
 
 const calculateAverageScore = () => {
+  matchDone.value = true
+  matchOnGoing.value = false
   const validScores = judgeScores.filter(score => score !== null && score >= 1 && score <= 10);
   const sum = validScores.reduce((acc, score) => acc + parseFloat(score), 0);
   const average = validScores.length > 0 ? (sum / validScores.length).toFixed(1) : 0;
   playerScore.value = average;
+}
+
+const back = () => {
+  matchDone.value = false
+  matchOnGoing.value = true
 }
 
 
