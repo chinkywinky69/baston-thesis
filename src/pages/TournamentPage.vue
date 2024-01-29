@@ -50,7 +50,9 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router';
+import { useTournamentStore } from 'src/stores/tournaments';
 
+const tournaStore = useTournamentStore()
 const router = useRouter()
 
 const submitTournamentName = ref(true)
@@ -62,8 +64,11 @@ const tournamentForm = reactive({
   date: ''
 })
 
-const handleSubmitTournamentName = () => {
+const handleSubmitTournamentName = async () => {
   submitTournamentName.value = false
+
+  await tournaStore.create(tournamentForm)
+
   pickTournamentType.value = true
 }
 
