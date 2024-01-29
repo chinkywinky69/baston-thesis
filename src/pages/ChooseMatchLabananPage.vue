@@ -174,7 +174,7 @@ const proceedMatch = () => {
 }
 
 const selectedGender = ref('Boys')
-const selectedCategory = ref('Kids')
+const selectedCategory = ref('Junior')
 
 const pickPlayers = ref(false)
 const pickWeight = ref(true)
