@@ -110,8 +110,8 @@
               </q-card-section>
               <q-separator />
               <q-card-actions>
-                <q-btn label="View" @click="handleViewTeam(item.id)" class="rb-1" dense style="width: 75px;"
-                  color="blue-8" />
+                <q-btn label="View" @click="handleViewTeam(item.id)" class="rb-1 text-bold" dense style="width: 75px;"
+                  color="blue-8" size="12px" outline />
                 <q-space />
                 <q-btn @click="deleteTeam(item)" size="sm" round icon="delete" outline color="red-8" />
               </q-card-actions>
