@@ -20,6 +20,7 @@ import {
 import { defineStore } from "pinia";
 import { Dialog, Loading, Notify } from "quasar";
 import { db, storage } from "src/boot/firebase";
+import { useTeamStore } from "./teams";
 
 export const useMemberStore = defineStore("members", {
   state: () => ({
@@ -55,6 +56,13 @@ export const useMemberStore = defineStore("members", {
           }
         }
 
+        if (data?.teamId) {
+          const teamData = useTeamStore()?.teams.find(
+            (item) => item.id == data.teamId
+          );
+          data.team = teamData;
+        }
+
         this.members.unshift({
           ...data,
           createdAt: Timestamp.now(),
@@ -80,6 +88,7 @@ export const useMemberStore = defineStore("members", {
         return { success: false };
       }
     },
+
     async update(id, data, file) {
       const dataRef = doc(db, "members", id);
       await updateDoc(dataRef, {
@@ -89,6 +98,13 @@ export const useMemberStore = defineStore("members", {
 
       if (file) {
         await this.uploadMedcert(id, file);
+      }
+
+      if (data?.teamId) {
+        const teamData = useTeamStore()?.teams.find(
+          (item) => item.id == data.teamId
+        );
+        data.team = teamData;
       }
 
       const i = this.members.findIndex((item) => item.id === id);
@@ -141,10 +157,16 @@ export const useMemberStore = defineStore("members", {
       const q = query(dataRef, orderBy("createdAt", "desc"));
       const snapshot = await getDocs(q);
 
-      this.members = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
+      this.members = snapshot.docs.map((doc) => {
+        const memberData = { ...doc.data(), id: doc.id };
+        if (memberData?.teamId) {
+          const teamData = useTeamStore()?.teams.find(
+            (item) => item.id == memberData.teamId
+          );
+          memberData.team = teamData;
+        }
+        return memberData;
+      });
     },
 
     async fetchOne(id) {

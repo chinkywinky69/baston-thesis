@@ -6,7 +6,8 @@
     </div>
 
     <div class="q-mb-md">
-      <q-table :loading="isLoadingMembersTable" :rows="approvedMembers" :columns="columns" row-key="name">
+      <q-table class="my-sticky-header-column-table" :loading="isLoadingMembersTable" :rows="approvedMembers"
+        :columns="columns" row-key="name">
         <template v-slot:top>
           <div class="text-h6 q-mr-md">Verified Members</div>
           <q-input placeholder="search" outlined dense>
@@ -15,17 +16,25 @@
             </template>
           </q-input>
         </template>
+        <template v-slot:body-cell-address="props">
+          <q-td :props="props">
+            <div style="max-width: 300px;" class="ellipsis">
+              {{ getAddress(props.row) }}
+            </div>
+          </q-td>
+        </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
-            <q-btn class="text-bold" flat label="View Details" color="red-8" @click="viewDetails(props.row, false)" />
+            <q-btn class="text-bold" flat label="View Details" size="10px" color="red-8"
+              @click="viewDetails(props.row, false)" />
           </q-td>
         </template>
       </q-table>
     </div>
 
     <div>
-      <q-table :loading="isLoadingMembersTable" title="Pending Users" :rows="pendingMembers" :columns="columns"
-        row-key="name">
+      <q-table class="my-sticky-header-column-table" :loading="isLoadingMembersTable" title="Pending Users"
+        :rows="pendingMembers" :columns="columns" row-key="name">
         <template v-slot:top>
           <div class="text-h6 q-mr-md">Pending Members</div>
           <q-input placeholder="search" outlined dense>
@@ -33,6 +42,13 @@
               <q-icon name="search" />
             </template>
           </q-input>
+        </template>
+        <template v-slot:body-cell-address="props">
+          <q-td :props="props">
+            <div style="max-width: 300px;" class="ellipsis">
+              {{ getAddress(props.row) }}
+            </div>
+          </q-td>
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
@@ -57,8 +73,8 @@
               :rules="[(val) => !!val]" />
             <q-input v-model="form.school" class="q-mb-sm" label="School" outlined dense type="text"
               :rules="[(val) => !!val]" />
-            <q-input v-model="form.team" class="q-mb-sm" label="Team" outlined dense type="text"
-              :rules="[(val) => !!val]" />
+            <q-select v-model="form.teamId" option-label="name" :options="teams" option-value="id" emit-value map-options
+              class="q-mb-sm" label="Team" outlined dense type="text" :rules="[(val) => !!val]" />
             <div class="row">
               <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
                 @change="calculateAge" :rules="[(val) => !!val]" />
@@ -165,15 +181,63 @@
         </q-card>
       </q-dialog>
     </q-dialog>
-    <q-linear-progress :value="uploadProgress" />
   </q-page>
 </template>
 
+<style lang="sass">
+.my-sticky-header-column-table
+  /* height or max-height is important */
+  height: auto
+
+  /* specifying max-width so the example can
+    highlight the sticky column on any browser window */
+  max-width: auto
+
+  // td:first-child
+    /* bg color is important for td; just specify one */
+    // background-color: #7D0A0A
+    // color: white
+
+  tr th
+    position: sticky
+    /* higher than z-index for td below */
+    z-index: 2
+    /* bg color is important; just specify one */
+    background: #c3312d
+    color: white
+
+  /* this will be the loading indicator */
+  thead tr:last-child th
+    /* height of all previous header rows */
+    top: 48px
+    /* highest z-index */
+    z-index: 3
+  thead tr:first-child th
+    top: 0
+    z-index: 1
+  tr:first-child th:first-child
+    /* highest z-index */
+    z-index: 3
+
+  td:first-child
+    z-index: 1
+
+  td:first-child, th:first-child
+    position: sticky
+    left: 0
+
+  /* prevent scrolling behind sticky top row on focus */
+  tbody
+    /* height of all previous header rows */
+    scroll-margin-top: 48px
+</style>
+
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onBeforeMount, onMounted } from 'vue'
 import { useMemberStore } from 'src/stores/members';
 import { useQuasar } from 'quasar';
 import { getFullname, getAddress } from 'src/composables/filters'
+import { useTeamStore } from 'src/stores/teams';
 
 const addUserDialog = ref(false)
 const viewDetailsDialog = ref(false)
@@ -183,7 +247,14 @@ const medCertDialog = ref(false)
 const $q = useQuasar()
 const maximizedToggle = ref(true)
 const memberStore = useMemberStore()
+const teams = computed(() => useTeamStore().teams)
 
+const onRejected = (rejectedEntries) => {
+  $q.dialog({
+    title: 'Opps',
+    message: `File did not pass validation constraints. File is invalid.`
+  })
+}
 
 const form = reactive({
   lastName: "",
@@ -191,7 +262,7 @@ const form = reactive({
   middleName: "",
   email: "",
   school: "",
-  team: "",
+  teamId: "",
   birthday: "",
   age: "",
   gender: "",
@@ -365,7 +436,8 @@ const columns = [
   { name: 'name', required: true, label: 'Name', format: (val, row) => getFullname(row), align: 'left', field: 'name', sortable: true },
   { name: 'gender', align: 'center', label: 'Gender', field: 'gender', sortable: true },
   { name: 'age', label: 'Age', field: 'age', sortable: true },
-  { name: 'address', label: 'Address', format: (val, row) => getAddress(row), field: 'address' },
+  { name: 'address', label: 'Address', format: (val, row) => getAddress(row), align: "left", field: 'address' },
+  { name: 'team', label: 'Team', field: 'team', format: (val) => val?.name, align: "left", sortable: true },
   { name: 'action', label: 'Actions', align: 'center', sortable: false }
 ]
 
@@ -419,4 +491,10 @@ onMounted(async () => {
   Object.assign(form, dummy)
   await fetchMembers()
 })
+
+const fetchTeams = async () => {
+  await useTeamStore().fetchAll()
+}
+
+onBeforeMount(() => fetchTeams())
 </script>
