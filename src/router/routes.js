@@ -61,6 +61,10 @@ const routes = [
         component: () => import("pages/ChooseTournamentTypePage.vue"),
       },
       {
+        path: "/existingTournaments",
+        component: () => import("pages/ExistingTournamentsPage.vue"),
+      },
+      {
         path: "/selectPlayers",
         component: () => import("pages/SelectPlayersPage.vue"),
       },
