@@ -55,14 +55,17 @@ const routes = [
     path: "/tournament",
     component: () => import("layouts/MainLayout.vue"),
     children: [
-      { path: "", component: () => import("pages/TournamentPage.vue") },
+      {
+        path: "",
+        component: () => import("pages/ExistingTournamentsPage.vue"),
+      },
+      {
+        path: "/createTournament",
+        component: () => import("pages/TournamentPage.vue"),
+      },
       {
         path: "/chooseTournamentType/:id",
         component: () => import("pages/ChooseTournamentTypePage.vue"),
-      },
-      {
-        path: "/existingTournaments",
-        component: () => import("pages/ExistingTournamentsPage.vue"),
       },
       {
         path: "/selectPlayers",

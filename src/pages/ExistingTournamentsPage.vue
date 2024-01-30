@@ -1,6 +1,9 @@
 <template>
   <q-page padding>
     <div class="text-center text-bold text-h6 q-mb-md">Existing tournament page</div>
+    <div class="row justify-start q-mb-lg">
+      <q-btn @click="handleViewExistingTournaments" label="Create Tournament" to="/createTournament" color="blue-8" />
+    </div>
     <div class="row justify-center q-gutter-sm">
       <div v-for="i in 5" :key="i">
         <q-card class="q-mb-sm col col-md-4" style="width: 350px">
