@@ -8,7 +8,18 @@
       <div v-for="i in tournaments" :key="i.id" class="col-12 col-md-4 q-pa-xs">
         <q-card class="rb-1">
           <q-card-section>
-            {{ i.name }}
+            <q-item class="q-px-none">
+              <q-item-section avatar>
+                <q-avatar size="50px">
+                  <q-icon name="fas fa-trophy" size="45" color="amber-10" />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-subtitle2"> {{ i.name }}</q-item-label>
+                <q-item-label class="text-caption"> {{ i.date }}</q-item-label>
+                <q-item-label caption class="q-pt-sm">Published: {{ timestamp(i.createdAt.toDate()) }}</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-card-section>
           <q-separator />
           <q-card-actions>
@@ -26,6 +37,7 @@
 <script setup>
 import { useTournamentStore } from 'src/stores/tournaments';
 import { computed, onBeforeMount } from 'vue';
+import { timestamp } from 'src/composables/filters'
 
 const tournaments = computed(() => useTournamentStore().tournaments)
 

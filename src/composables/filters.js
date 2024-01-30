@@ -1,3 +1,5 @@
+import { date } from "quasar";
+
 export function getFullname(data) {
   if (data && data.lastName && data.firstName) {
     const middleInitial =
@@ -68,4 +70,8 @@ export function getAge(birthday) {
   }
 
   return age;
+}
+
+export function timestamp(val) {
+  return date.formatDate(val, "MMM D, YYYY | h:mm A");
 }
