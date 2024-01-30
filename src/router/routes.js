@@ -43,6 +43,11 @@ const routes = [
         path: "view/:id",
         component: () => import("pages/viewTeamPage.vue"),
       },
+      {
+        name: "EditTeam",
+        path: "/editTeam/:id",
+        component: () => import("pages/EditTeamPage.vue"),
+      },
     ],
   },
 

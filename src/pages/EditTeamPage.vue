@@ -1,68 +1,82 @@
 <template>
   <q-page padding>
-    <div class="text-center q-mb-md text-h6 text-bold">Teams Page</div>
-    <!-- EXISTING TEAMS -->
-    <div class="text-subtitle1 text-bold">
-      Existing Teams
-    </div>
-    <div class="row justify-center q-gutter-sm">
-      <!-- <q-select class="col q-mb-sm" dense :options="weightDivision" outlined bg-color="white"
-            label="Weight Division" />
-          <q-select class="col q-mb-sm" dense :options="categories" outlined bg-color="white" label="Category" /> -->
-    </div>
-    <div class="row justify-start ">
-      <div v-for="(item, i) in teams" :key="i" class="col-6 col-md-3 q-mt-md q-pa-xs">
-        <q-card class="rb-1">
-          <q-card-section>
-            <div class="text-subtitle1 text-red-7 text-bold">
-              {{ item.name }}
-            </div>
+    <div class="text-h6 text-bold text-center q-mb-md">Edit Team</div>
+    <div class="row justify-center">
+      <!-- SELECT PLAYERS TABLE -->
+      <div class="col-12 col-md-6 q-pa-xs">
+        <q-table @row-click="(evt, row, index) => handleSelect(row)" :loading="isLoadingMembersTable" flat bordered
+          :filter="filter" :rows="approvedMembers" :columns="columnsSelectPlayer" row-key="name" class="rb-1">
+          <template v-slot:top>
             <div>
-              <img width="100px" src="../img/arnispic1.png" />
+              <div class="text-subtitle1 text-bold">Players</div>
+              <div class="full-width">
+                <q-input placeholder="Search" outlined dense>
+                  <template v-slot:prepend>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </div>
             </div>
-          </q-card-section>
-          <q-separator />
-          <q-card-actions>
-            <q-btn label="Draft" @click="handleViewTeam(item.id)" class="rb-1 text-bold" dense style="width: 75px;"
-              color="blue-8" size="12px" outline />
-            <q-btn label="edit" @click="handleEditTeam(item.id)" class="rb-1 text-bold" dense style="width: 75px;"
-              color="green-8" size="12px" outline />
-            <q-space />
-            <q-btn @click="deleteTeam(item)" size="sm" round icon="delete" outline color="red-8" />
-          </q-card-actions>
-        </q-card>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props" @click="handleSelect(props.row)"
+              :class="{ 'bg-red text-bold text-white': rowsTeam.includes(props.row) }">
+              <q-td>
+                {{ getFullname(props.row) }}
+              </q-td>
+              <q-td class="text-center">
+                {{ props.row.gender }}
+              </q-td>
+              <q-td class="text-center">
+                {{ getWeightClass(props.row.weight, props.row.gender) }}
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
       </div>
-    </div>
-    <q-dialog v-model="viewTeam">
-      <q-card style="width: 500px;">
-        <q-card-section>
-          <div class="text-center text-h6 text-bold">
-            Team Pura
+      <!-- TEAM VIEW TABLE -->
+      <div class="col-12 col-md-6 q-pa-xs">
+        <div class="row full-width justify-center q-gutter-sm q-mb-md">
+          <div>
+            <q-input v-model="teamName" placeholder="Team Name" dense style="width: 280px;" />
           </div>
-          <q-separator />
-          <div class="row justify-between q-mt-sm">
-            <div class="text-bold">
-              Bantamweight
-            </div>
-            <div class="text-bold">
-              Boys Senior
-            </div>
+          <div>
+            <q-select v-model="selectedCategory" style="width: 150px;" :options="categories" outlined bg-color="white"
+              dense />
           </div>
-          <q-separator />
-        </q-card-section>
+        </div>
         <q-list>
-          <q-item clickable v-ripple>
-            <q-item-section>Justin Villacampa</q-item-section>
+          <q-item v-for="(item, i) in rowsTeam" :key="i">
             <q-item-section avatar>
-              <q-btn color="red" icon="delete" dense />
+              <q-avatar size="50px" color="grey-4">
+                <q-icon name="person" color="indigo" />
+              </q-avatar>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ getFullname(item) }}</q-item-label>
+              <q-item-label caption>{{ getWeightClass(item.weight, item.gender) }} ({{ item.gender }})</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
-        <q-card-actions>
-          <q-btn label="Add Member" dense />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+        <!-- <q-table flat :rows="rowsTeam" :columns="columnsTeam" row-key="name" hide-pagination>
+              <template v-slot:top>
+                <div class="row full-width justify-center">
+                  <q-input v-model="teamName" placeholder="Team Name" dense />
+                </div>
+              </template>
+              <template v-slot:body-cell-action="props">
+                <q-td :props="props">
+                  <q-btn @click="removePlayerFromTeam(props.row)" icon="close" dense color="red-8" round size="sm"
+                    outline />
+                </q-td>
+              </template>
+            </q-table> -->
+        <div v-if="rowsTeam.length > 0" class="row justify-center q-mt-md q-gutter-sm">
+          <q-btn @click="handleCreateTeam" :disable="!teamName" label="create" color="red-8" />
+          <q-btn @click="clearTable" label="clear" color="blue-8" />
+        </div>
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -132,25 +146,6 @@ const clearTable = () => {
   selectedPlayers.value = [];
 };
 
-
-
-const removePlayerFromTeam = (player) => {
-  // Remove the player from rowsTeam
-  const index = rowsTeam.value.findIndex((teamPlayer) => teamPlayer.name === player.name);
-  if (index !== -1) {
-    rowsTeam.value.splice(index, 1);
-
-    // Deselect the player
-    const playerIndex = selectedPlayers.value.findIndex((selectedPlayer) => selectedPlayer.name === player.name);
-    if (playerIndex !== -1) {
-      selectedPlayers.value.splice(playerIndex, 1);
-    }
-    // Add the player back to selectPlayersTable
-    approvedMembers.value.unshift(player);
-  }
-};
-
-
 /*
 Backend Codes
 */
@@ -205,3 +200,4 @@ const deleteTeam = (team) => {
   useTeamStore().delete(team.id)
 }
 </script>
+

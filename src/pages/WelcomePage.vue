@@ -58,7 +58,6 @@
                 :rules="[(val) => !!val]" />
               <q-input v-model="form.weight" class="col q-mb-sm" label="Weight (kg)" outlined dense type="number"
                 :rules="[(val) => !!val]" />
-
             </div>
             <q-input :label="`${calculateWeightClass(form.weight, form.gender)}`" outlined dense readonly />
             <q-input class="col q-mb-sm" label="City: San Carlos City" outlined dense type="number" readonly />
