@@ -1,6 +1,7 @@
 import {
   Timestamp,
   addDoc,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
@@ -56,18 +57,26 @@ export const useMemberStore = defineStore("members", {
           }
         }
 
+        const playerData = {
+          ...data,
+          createdAt: Timestamp.now(),
+          id: docRef.id,
+        };
+
         if (data?.teamId) {
           const teamData = useTeamStore()?.teams.find(
             (item) => item.id == data.teamId
           );
           data.team = teamData;
+
+          // add the player to team in database
+          const teamRef = doc(db, "teams", data.teamId);
+          await updateDoc(teamRef, {
+            players: arrayUnion(playerData),
+          });
         }
 
-        this.members.unshift({
-          ...data,
-          createdAt: Timestamp.now(),
-          id: docRef.id,
-        });
+        this.members.unshift(playerData);
 
         Notify.create({
           type: "positive",
@@ -100,19 +109,26 @@ export const useMemberStore = defineStore("members", {
         await this.uploadMedcert(id, file);
       }
 
+      const playerData = {
+        ...data,
+        updatedAt: Timestamp.now(),
+      };
       if (data?.teamId) {
         const teamData = useTeamStore()?.teams.find(
           (item) => item.id == data.teamId
         );
         data.team = teamData;
+
+        // add the player to team in database
+        const teamRef = doc(db, "teams", data.teamId);
+        await updateDoc(teamRef, {
+          players: arrayUnion(playerData),
+        });
       }
 
       const i = this.members.findIndex((item) => item.id === id);
       if (i > -1) {
-        Object.assign(this.members[i], {
-          ...data,
-          updatedAt: Timestamp.now(),
-        });
+        Object.assign(this.members[i], playerData);
       }
 
       Notify.create({

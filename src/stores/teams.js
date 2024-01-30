@@ -1,6 +1,7 @@
 import {
   Timestamp,
   addDoc,
+  arrayRemove,
   collection,
   deleteDoc,
   doc,
@@ -55,6 +56,7 @@ export const useTeamStore = defineStore("teams", {
     },
 
     async update(id, data) {
+      Loading.show();
       const dataRef = doc(db, "teams", id);
       await updateDoc(dataRef, {
         ...data,
@@ -68,7 +70,7 @@ export const useTeamStore = defineStore("teams", {
           updatedAt: Timestamp.now(),
         });
       }
-
+      Loading.hide();
       Notify.create({
         type: "positive",
         icon: "thumb_up",
@@ -211,6 +213,33 @@ export const useTeamStore = defineStore("teams", {
         const fileRef = storageRef(storage, url);
         await deleteObject(fileRef);
       }
+    },
+
+    async removePlayer(id, player) {
+      Dialog.create({
+        title: "Confirm",
+        message: "Are you sure you want to remove the player to this team?",
+        cancel: true,
+      }).onOk(async () => {
+        Loading.show();
+        const dataRef = doc(db, "teams", id);
+        await updateDoc(dataRef, {
+          players: arrayRemove(player),
+        });
+        Loading.hide();
+
+        const i = this.team.players.findIndex((item) => item.id === player.id);
+        if (i > -1) {
+          this.team.players.splice(i, 1);
+        }
+
+        Notify.create({
+          type: "positive",
+          icon: "thumb_up",
+          position: "bottom-right",
+          message: "Player successfully removed!",
+        });
+      });
     },
   },
 });
