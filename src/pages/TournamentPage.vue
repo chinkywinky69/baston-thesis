@@ -1,9 +1,6 @@
 <template>
   <q-page padding>
     <div class="text-center q-mb-md text-h6 text-bold">Create a Tournament</div>
-    <div class="row justify-start q-mb-lg">
-      <q-btn @click="handleViewExistingTournaments" label="Existing Tournaments" color="blue-8" />
-    </div>
     <div class="flex flex-center">
       <q-card style="width: 500px;">
         <q-card-section class="column q-gutter-sm">
@@ -48,9 +45,6 @@ const handleSubmitTournamentName = async () => {
   if (res.success) router.push(`/chooseTournamentType/${res.id}`)
 }
 
-const handleViewExistingTournaments = async () => {
-  router.push('/existingTournaments')
-}
 
 </script>
 
