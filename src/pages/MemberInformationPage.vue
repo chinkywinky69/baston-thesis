@@ -52,7 +52,8 @@
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
-            <q-btn class="text-bold" flat label="View Details" color="blue-8" @click="viewDetails(props.row, true)" />
+            <q-btn rounded class="text-bold" label="Verify" color="blue-8" dense size="12px" style="width: 75px"
+              @click="viewDetails(props.row, true)" />
           </q-td>
         </template>
       </q-table>
@@ -129,28 +130,62 @@
           </div>
           <q-separator class="q-my-md" />
           <div class="q-gutter-xs">
-            <div><strong>Last Name:</strong> {{ previewMember.lastName }}</div>
-            <div><strong>First Name:</strong> {{ previewMember.firstName }}</div>
-            <div><strong>Middle Name:</strong> {{ previewMember.middleName }}</div>
-            <div><strong>Email:</strong> {{ previewMember.email }}</div>
-            <div><strong>School:</strong> {{ previewMember.school }}</div>
-            <div><strong>Team:</strong> {{ previewMember.team }}</div>
-            <div><strong>Birthday:</strong> {{ previewMember.birthday }}</div>
-            <div><strong>Age:</strong> {{ previewMember.birthday }}</div>
-            <div><strong>Gender:</strong> {{ previewMember.gender }}</div>
-            <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
-            <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
-            <div><strong>Weight:</strong> {{ previewMember.weight }} kg</div>
-            <div><strong>Weight Class:</strong> {{ previewMember.weightClass }}</div>
-            <div><strong>City:</strong> {{ previewMember.city }}</div>
-            <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
-            <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.street }}</div>
-            <div><strong>Father's Name:</strong> {{ previewMember.fathersName }}</div>
-            <div><strong>Mother's Name:</strong> {{ previewMember.mothersName }}</div>
-            <div><strong>Legal Guardian:</strong> {{ previewMember.legalGuardian }}</div>
-            <div><strong>Contact # of Legal Guardian:</strong> {{ previewMember.legalGuardianContact }}</div>
-            <div><strong>Med Cert:</strong> <q-btn @click="viewMedCert" flat size="12px"
-                class="text-indigo text-bold q-ml-sm" label="View Details" dense />
+            <q-item dense class="q-px-none">
+              <q-item-section avatar>
+                <q-avatar size="60px" color="red-1">
+                  <q-icon size="50px" color="grey-5" name="person" />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-subtitle2">{{ getFullname(previewMember) }}</q-item-label>
+                <q-item-label class="text-grey" style="font-size: 10px;">Last/First/Middle Name</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <div>
+              <q-field borderless rounded dense label="Email" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-primary" tabindex="0">{{
+                    previewMember.email
+                  }}</div>
+                </template>
+              </q-field>
+
+              <q-field borderless dense label="School" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline" tabindex="0">{{
+                    previewMember.school
+                  }}</div>
+                </template>
+              </q-field>
+
+              <q-field borderless dense label="Team" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-bold" tabindex="0">{{
+                    previewMember?.team?.name ?? 'Not available'
+                  }}</div>
+                </template>
+              </q-field>
+            </div>
+
+            <div class="q-pa-sm rb-1 q-gutter-xs" style="border: 1px solid grey;">
+              <div><strong>Birthday:</strong> {{ previewMember.birthday }}</div>
+              <div><strong>Age:</strong> {{ previewMember.birthday }}</div>
+              <div><strong>Gender:</strong> {{ previewMember.gender }}</div>
+              <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
+              <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
+              <div><strong>Weight:</strong> {{ previewMember.weight }} kg</div>
+              <div><strong>Weight Class:</strong> {{ previewMember.weightClass }}</div>
+              <div><strong>City:</strong> {{ previewMember.city }}</div>
+              <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
+              <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.street }}</div>
+              <div><strong>Father's Name:</strong> {{ previewMember.fathersName }}</div>
+              <div><strong>Mother's Name:</strong> {{ previewMember.mothersName }}</div>
+              <div><strong>Legal Guardian:</strong> {{ previewMember.legalGuardian }}</div>
+              <div><strong>Contact # of Legal Guardian:</strong> {{ previewMember.legalGuardianContact }}</div>
+              <div><strong>Med Cert:</strong> <q-btn @click="viewMedCert" flat size="12px"
+                  class="text-indigo text-bold q-ml-sm" label="View Details" dense />
+              </div>
             </div>
           </div>
           <q-card-actions v-if="pendingMode" align="right">
