@@ -10,13 +10,16 @@
           <q-card-section>
             <q-item class="q-px-none">
               <q-item-section avatar>
-                <q-avatar size="50px">
+                <q-avatar size="60px">
                   <q-icon name="fas fa-trophy" size="45" color="amber-10" />
                 </q-avatar>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-subtitle2"> {{ i.name }}</q-item-label>
-                <q-item-label class="text-caption"> {{ i.date }}</q-item-label>
+                <q-item-label class="text-h6 fw-600"> {{ i.name }}</q-item-label>
+                <q-item-label class="text-caption">Venue: <span class="fw-600">{{ i?.venue ?? 'Not set'
+                }}</span></q-item-label>
+                <q-item-label class="text-caption">Schedule: <span class="fw-600">{{ toDate(i.date) ?? 'Not set'
+                }}</span></q-item-label>
                 <q-item-label caption class="q-pt-sm">Published: {{ timestamp(i.createdAt.toDate()) }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -24,7 +27,7 @@
           <q-separator />
           <q-card-actions>
             <q-btn label="Matches" color="red-8" size="12px" class="rb-1" />
-            <q-btn label="Edit" color="red-8" size="12px" outline class="rb-1" />
+            <q-btn @click="handleEdit(i)" label="Edit" color="red-8" size="12px" outline class="rb-1" />
             <q-space />
             <q-btn @click="handleDeleteTourna(i)" round dense size="sm" icon="delete" color="negative" outline />
           </q-card-actions>
@@ -37,9 +40,13 @@
 <script setup>
 import { useTournamentStore } from 'src/stores/tournaments';
 import { computed, onBeforeMount } from 'vue';
-import { timestamp } from 'src/composables/filters'
+import { timestamp, toDate } from 'src/composables/filters'
+import { useQuasar } from 'quasar';
+
+import TournamentDialog from 'components/dialog/TournamentDialog.vue'
 
 const tournaments = computed(() => useTournamentStore().tournaments)
+const $q = useQuasar()
 
 const fetchTournaments = async () => {
   await useTournamentStore().fetchAll()
@@ -47,6 +54,15 @@ const fetchTournaments = async () => {
 
 const handleDeleteTourna = async (tourna) => {
   await useTournamentStore().delete(tourna.id)
+}
+
+const handleEdit = (tourna) => {
+  $q.dialog({
+    component: TournamentDialog,
+    componentProps: {
+      tourna: tourna
+    }
+  })
 }
 
 onBeforeMount(() => fetchTournaments())

@@ -54,6 +54,7 @@ export const useTournamentStore = defineStore("tournaments", {
     },
 
     async update(id, data) {
+      Loading.show();
       const dataRef = doc(db, "tournaments", id);
       await updateDoc(dataRef, {
         ...data,
@@ -67,7 +68,7 @@ export const useTournamentStore = defineStore("tournaments", {
           updatedAt: Timestamp.now(),
         });
       }
-
+      Loading.hide();
       Notify.create({
         type: "positive",
         icon: "thumb_up",
