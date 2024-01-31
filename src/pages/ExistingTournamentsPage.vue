@@ -26,7 +26,7 @@
           </q-card-section>
           <q-separator />
           <q-card-actions>
-            <q-btn label="Matches" color="red-8" size="12px" class="rb-1" />
+            <q-btn label="Matches" color="red-8" :to="`/chooseTournamentType/${i.id}`" size="12px" class="rb-1" />
             <q-btn @click="handleEdit(i)" label="Edit" color="red-8" size="12px" outline class="rb-1" />
             <q-space />
             <q-btn @click="handleDeleteTourna(i)" round dense size="sm" icon="delete" color="negative" outline />
