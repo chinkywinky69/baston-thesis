@@ -64,8 +64,8 @@ const routes = [
         component: () => import("pages/TournamentPage.vue"),
       },
       {
-        path: "/createMatch/:id",
-        component: () => import("pages/CreateMatch.vue"),
+        path: "/matches/:id",
+        component: () => import("pages/MatchesPage.vue"),
       },
       {
         path: "/chooseTournamentType/:id",
