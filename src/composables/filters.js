@@ -75,3 +75,7 @@ export function getAge(birthday) {
 export function timestamp(val) {
   return date.formatDate(val, "MMM D, YYYY | h:mm A");
 }
+
+export function toDate(val) {
+  return date.formatDate(new Date(val), "MMMM D, YYYY");
+}
