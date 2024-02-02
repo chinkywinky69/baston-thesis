@@ -120,7 +120,7 @@ export const useTournamentStore = defineStore("tournaments", {
     async fetchOne(id) {
       const dataRef = doc(db, "tournaments", id);
       const docSnap = await getDoc(dataRef);
-      this.tournament = docSnap.data();
+      this.tournament = { ...docSnap.data(), id: id };
       return true;
     },
 

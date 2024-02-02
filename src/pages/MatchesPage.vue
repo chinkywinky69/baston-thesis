@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
-    <div class="text-h6 fw-600">
-      <q-item dense v-if="tourna" class="q-px-none">
+    <q-card flat class="text-h6 q-mb-sm q-py-sm rb-1 fw-600">
+      <q-item v-if="tourna" class="q-px-none">
         <q-item-section avatar>
           <q-avatar size="60px">
             <q-icon name="fas fa-trophy" size="45" color="amber-10" />
@@ -16,19 +16,19 @@
           <q-item-label caption class="q-pt-sm">Published: {{ timestamp(tourna.createdAt.toDate()) }}</q-item-label>
         </q-item-section>
       </q-item>
-    </div>
+      <q-tabs v-model="tab" dense>
+        <q-tab label="Labanan" name="Labanan" />
+        <q-tab label="Anyo" name="Anyo" />
+      </q-tabs>
+    </q-card>
 
-    <q-tabs v-model="tab" dense class="q-mb-sm">
-      <q-tab label="Labanan" name="Labanan" />
-      <q-tab label="Anyo" name="Anyo" />
-    </q-tabs>
 
     <q-tab-panels v-model="tab" animated class="rb-1" style="min-height: 65vh;">
       <q-tab-panel name="Labanan">
-        <LabananTabPanel :tourna="tourna" />
+        <LabananTabPanel :tourna="tourna" :matches="labananMatches" />
       </q-tab-panel>
       <q-tab-panel name="Anyo">
-        sdas
+        <AnyoTabPanel :tourna="tourna" :matches="anyoMatches" />
       </q-tab-panel>
     </q-tab-panels>
   </q-page>
@@ -42,14 +42,25 @@ import { timestamp, toDate } from 'src/composables/filters'
 
 // COmponents
 import LabananTabPanel from 'components/tourna/LabananTabPanel.vue'
+import AnyoTabPanel from 'components/tourna/AnyoTabPanel.vue'
+import { useMatchStore } from 'src/stores/matches';
 
 const tab = ref('Labanan')
 const tournaStore = useTournamentStore()
+const matchStore = useMatchStore()
 const route = useRoute()
 const tourna = computed(() => tournaStore.tournament)
+const labananMatches = computed(() => matchStore.getLabananMatches)
+const anyoMatches = computed(() => matchStore.getAnyoMatches)
 
 const fetchTourna = async () => {
   await tournaStore.fetchOne(route.params.id)
 }
 onBeforeMount(() => fetchTourna())
+
+
+const fetchMatches = async () => {
+  await matchStore.fetchAllViaTournaId(route.params.id)
+}
+onBeforeMount(() => fetchMatches())
 </script>
