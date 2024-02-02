@@ -62,7 +62,7 @@ const handleMatch = (matchData) => {
       data: {
         tournaId: props.tourna.id,
         match: matchData,
-        matchType: 'Labanan',
+        matchType: 'Anyo',
         division: selectedDivision.value,
         gender: selectedGender.value
       }

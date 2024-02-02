@@ -42,7 +42,7 @@ const tournamentForm = reactive({
 
 const handleSubmitTournamentName = async () => {
   const res = await tournaStore.create(tournamentForm)
-  if (res.success) router.push(`/chooseTournamentType/${res.id}`)
+  if (res.success) router.push(`/matches/${res.id}`)
 }
 
 

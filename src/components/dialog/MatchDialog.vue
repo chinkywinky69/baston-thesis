@@ -1,13 +1,16 @@
 <template>
   <q-dialog ref='dialogRef'>
     <q-card style="width: 500px; border-radius: 10px">
-      <q-card-section class="text-h6 fw-600 q-pb-none">{{ match ? 'Update' : 'Create' }} Match</q-card-section>
-      <q-form @submit="updateTourna">
+      <q-card-section class="text-h6 fw-600 q-pb-none">{{ data.match ? 'Update' : 'Create' }} Match</q-card-section>
+      <q-form @submit="data.match ? update() : create()">
         <q-card-section class="column">
-          <div class="text-center">
+          <div class="q-mb-sm">
+            <div>Weight Division: <span class="fw-600">{{ data.division }}</span></div>
+            <div>Category: <span class="fw-600">{{ data.gender }}</span></div>
+          </div>
+          <div>
             <div class="">Match No.</div>
-            <q-input class="q-mx-auto" mask="##" v-model="form.no" outlined dense :rules="[(val) => !!val]"
-              style="width: 100px;" />
+            <q-input mask="##" v-model="form.no" outlined dense :rules="[(val) => !!val]" style="width: 100px;" />
           </div>
           <div class="row justify-center">
             <div class="col-12 col-md-6 q-pa-xs">
@@ -78,37 +81,37 @@
 import { useDialogPluginComponent } from 'quasar'
 import { reactive, ref, onMounted, computed } from 'vue';
 import { useTeamStore } from 'stores/teams'
-import { useTournamentStore } from 'stores/tournaments'
+import { useMatchStore } from 'stores/matches'
 import { getFullname } from 'src/composables/filters';
 
 defineEmits([...useDialogPluginComponent.emits])
 const { dialogRef, onDialogOK } = useDialogPluginComponent();
 
-const props = defineProps({ tourna: Object, match: Object, division: String, gender: String })
+const props = defineProps({ data: Object })
 const teams = computed(() => useTeamStore().teams)
 const team1 = ref(null)
 const team2 = ref(null)
 
 const form = reactive({
   no: '',
-  division: props?.division ?? '',
+  tournaId: '',
+  division: '',
+  matchType: '',
+  category: '',
   player1: '',
   player2: '',
 })
 
 onMounted(() => {
-  if (props.tourna) {
-    const data = props.tourna
-    form.name = data.name
-    form.venue = data.venue
-    form.date = data.date
+  if (props.data) {
+    const data = props.data
+    form.tournaId = data.tournaId
+    form.division = data.division
+    form.matchType = data.matchType
+    form.category = data.gender
   }
 })
 
-const updateTourna = async () => {
-  const res = await useTournamentStore().update(props.tourna.id, form)
-  if (res) onDialogOK()
-}
 
 const fetchTeams = async () => {
   await useTeamStore().fetchAll()
@@ -118,12 +121,24 @@ onMounted(async () => {
 })
 
 const checkRep = (teamData, playerModel) => {
-  if (teamData && teamData[props.division]) {
-    const value = teamData[props.division][props.gender];
+  if (teamData && teamData[props.data.division]) {
+    const value = teamData[props.data.division][props.data.gender];
     const result = value !== undefined ? value : '';
     form[playerModel] = result
   } else {
     form[playerModel] = 'none'
   }
+}
+
+const create = async () => {
+  form.no = parseInt(form.no)
+  const res = await useMatchStore().create(form)
+  if (res.success) onDialogOK()
+}
+
+const update = async () => {
+  form.no = parseInt(form.no)
+  const res = await useMatchStore().update(props.data.matchData?.id, form)
+  if (res) onDialogOK()
 }
 </script>
