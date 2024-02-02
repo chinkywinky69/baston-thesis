@@ -1,12 +1,15 @@
 <template>
   <q-page padding>
     <div class="text-center q-mb-md text-h6 text-bold">Teams Page</div>
+    <!--  -->
     <!-- EXISTING TEAMS -->
     <div class="text-subtitle1 text-bold">
       Existing Teams
     </div>
-    <div class="text-right">
-      <q-btn @click="handleCreateTeam" label="Create Team" color="primary" />
+    <div class="row justify-center q-gutter-sm">
+      <!-- <q-select class="col q-mb-sm" dense :options="weightDivision" outlined bg-color="white"
+            label="Weight Division" />
+          <q-select class="col q-mb-sm" dense :options="categories" outlined bg-color="white" label="Category" /> -->
     </div>
     <div class="row justify-start ">
       <div v-for="(item, i) in teams" :key="i" class="col-6 col-md-3 q-mt-md q-pa-xs">
@@ -67,14 +70,13 @@
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
-import { useQuasar } from 'quasar';
+import { Dialog } from 'quasar';
 import { getFullname, getWeightClass } from 'src/composables/filters'
 
 import { useMemberStore } from 'src/stores/members';
 import { useTeamStore } from 'src/stores/teams';
-import TeamDialog from 'src/components/dialog/TeamDialog.vue';
 
-const $q = useQuasar()
+
 const router = useRouter();
 const handleViewTeam = (teamId) => {
   router.push({ path: '/team/view/' + teamId });
@@ -184,13 +186,23 @@ const handleSelect = (row) => {
   }
 }
 
-const deleteTeam = (team) => {
-  useTeamStore().delete(team.id)
+const handleCreateTeam = () => {
+  Dialog.create({
+    title: 'Create Team?',
+    message: 'Are you sure you want to create this team?',
+    cancel: true,
+    persistent: true
+  })
+    .onOk(async () => {
+      const res = await useTeamStore().create({
+        name: teamName.value,
+        players: rowsTeam.value
+      })
+      if (res) tab.value = 'existing'
+    })
 }
 
-const handleCreateTeam = async () => {
-  $q.dialog({
-    component: TeamDialog
-  })
+const deleteTeam = (team) => {
+  useTeamStore().delete(team.id)
 }
 </script>
