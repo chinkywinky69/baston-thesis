@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <div class="text-center text-bold text-h6 q-mb-md">History page</div>
-    <div class="row">
+    <div class="row justify-center">
       <q-card class="col-md-3 col-xs-12 q-ma-xs" v-for="i in 5" :key="i">
         <q-card-section class="row justify-between">
           <div class="text-bold text-body1">Tournament Name</div>

@@ -11,9 +11,9 @@
           <div class="text-white text-body1 text-bold text-center">Individual Likha Single Weapon
           </div>
         </q-card-section>
-        <q-chip :label="`Violations: ${violations}`" dense />
-        <span><q-btn @click="undoViolation" :disable="violations <= 0" icon="fa-solid fa-rotate-left" dense color="blue-8"
-            outline size="sm" /></span>
+        <q-chip v-if="matchDone" :label="`Violations: ${violations}`" dense />
+        <span v-if="matchDone"><q-btn @click="undoViolation" :disable="violations <= 0" icon="fa-solid fa-rotate-left"
+            dense color="blue-8" outline size="sm" /></span>
         <q-card-section>
           <div class="row justify-center">
             <div class="text-h1 q-pa-md">{{ playerScore }}</div>
@@ -43,7 +43,7 @@
         color="red-8" />
       <q-btn v-if="matchDone" label="continue" color="blue-8" />
       <q-btn @click="back" v-if="matchDone" label="back" color="red-8" />
-      <q-btn v-if="matchDone" @click="noteDialog = true" label="Add Note" color="green-8" />
+      <q-btn @click="noteDialog = true" label="Add Note" color="green-8" />
 
     </div>
     <!-- ADD NOTE DIALOG -->
@@ -54,6 +54,10 @@
         </q-card-section>
         <q-separator />
         <q-card-section>
+          <div>
+            <q-select v-model="selectedViolations" label="Add Violation" :options="violationChoices" outlined dense
+              multiple use-chips />
+          </div>
           <q-input v-model="note" type="textarea" outlined />
         </q-card-section>
         <q-card-actions align="center">
@@ -74,6 +78,7 @@ const violations = ref(0)
 const playerScore = ref(0)
 const noteDialog = ref(false)
 const note = ref('')
+const selectedViolations = ref([])
 const judgeScores = reactive(Array(5).fill(null))
 const allJudgesScored = computed(() => {
   return judgeScores.every(score => score !== null && score !== '' && !isNaN(score));
@@ -118,6 +123,15 @@ const back = () => {
   matchDone.value = false
   matchOnGoing.value = true
 }
+
+const violationChoices = [
+  "Unintentionally dropping a weapon",
+  "Time limit violation",
+  "Line violation",
+  "Starting over",
+  "Failure to execute the Pugay",
+  "Finishing in place different from where the form started"
+]
 
 
 </script>

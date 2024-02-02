@@ -183,7 +183,7 @@ const gender = [
 // ]
 
 const weightDivision = [
-  'Pinweight', 'Bantanweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
+  'Pinweight', 'Bantamweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
 ]
 
 const individualAnyo = [
