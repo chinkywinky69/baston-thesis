@@ -11,11 +11,18 @@
           <div class="text-white text-body1 text-bold text-center">Individual Likha Single Weapon
           </div>
         </q-card-section>
+        <q-chip :label="`Violations: ${violations}`" dense />
+        <span><q-btn @click="undoViolation" :disable="violations <= 0" icon="fa-solid fa-rotate-left" dense color="blue-8"
+            outline size="sm" /></span>
         <q-card-section>
           <div class="row justify-center">
             <div class="text-h1 q-pa-md">{{ playerScore }}</div>
           </div>
         </q-card-section>
+        <q-separator v-if="matchDone" />
+        <q-card-actions align="center">
+          <q-btn v-if="matchDone" @click="subtractHalfPoint" label="add violation" color="red-8" />
+        </q-card-actions>
       </q-card>
     </div>
     <div class="q-mt-md row justify-center q-gutter-sm">
@@ -31,13 +38,29 @@
         </q-card-section>
       </q-card>
     </div>
-    <div class="text-center q-mt-md ">
+    <div class="row justify-center q-gutter-sm q-mt-md ">
       <q-btn v-if="matchOnGoing" :disable="!allJudgesScored" @click="calculateAverageScore" label="total score"
         color="red-8" />
       <q-btn v-if="matchDone" label="continue" color="blue-8" />
-      <q-btn class="q-ml-sm" @click="back" v-if="matchDone" label="back" color="green-8" />
+      <q-btn @click="back" v-if="matchDone" label="back" color="red-8" />
+      <q-btn v-if="matchDone" @click="noteDialog = true" label="Add Note" color="green-8" />
 
     </div>
+    <!-- ADD NOTE DIALOG -->
+    <q-dialog v-model="noteDialog">
+      <q-card style="width: 500px" bordered>
+        <q-card-section class="text-center text-bold text-h6">
+          Add a Note
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <q-input v-model="note" type="textarea" outlined />
+        </q-card-section>
+        <q-card-actions align="center">
+          <q-btn @click="noteDialog = false" color="green-8" label="submit" dense />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -47,20 +70,49 @@ import { ref, reactive, computed } from 'vue'
 
 const matchDone = ref(false)
 const matchOnGoing = ref(true)
+const violations = ref(0)
 const playerScore = ref(0)
+const noteDialog = ref(false)
+const note = ref('')
 const judgeScores = reactive(Array(5).fill(null))
 const allJudgesScored = computed(() => {
   return judgeScores.every(score => score !== null && score !== '' && !isNaN(score));
 });
 
 const calculateAverageScore = () => {
-  matchDone.value = true
-  matchOnGoing.value = false
-  const validScores = judgeScores.filter(score => score !== null && score >= 1 && score <= 10);
-  const sum = validScores.reduce((acc, score) => acc + parseFloat(score), 0);
+  matchDone.value = true;
+  matchOnGoing.value = false;
+  // Filter out null or invalid scores first
+  const validScores = judgeScores.filter(score => score !== null && score >= 1 && score <= 10 && !isNaN(score))
+    .map(score => parseFloat(score));
+  // Sort scores to easily find and remove the highest and lowest
+  validScores.sort((a, b) => a - b);
+
+  // Remove the highest and lowest scores
+  if (validScores.length > 2) {
+    validScores.pop(); // Remove the highest score
+    validScores.shift(); // Remove the lowest score
+  }
+
+  // Calculate the average of the remaining scores
+  const sum = validScores.reduce((acc, score) => acc + score, 0);
   const average = validScores.length > 0 ? (sum / validScores.length).toFixed(1) : 0;
   playerScore.value = average;
 }
+
+const subtractHalfPoint = () => {
+  if (playerScore.value > 0) {
+    playerScore.value = Math.max(0, (playerScore.value - 0.5).toFixed(1));
+  }
+  violations.value++
+};
+
+const undoViolation = () => {
+  if (violations.value > 0) {
+    violations.value -= 1; // Decrease violations by 1
+    playerScore.value = (parseFloat(playerScore.value) + 0.5).toFixed(1); // Add 0.5 to the playerScore
+  }
+};
 
 const back = () => {
   matchDone.value = false
