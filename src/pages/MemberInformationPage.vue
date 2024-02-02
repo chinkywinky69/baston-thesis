@@ -528,6 +528,7 @@ onMounted(async () => {
 })
 
 const fetchTeams = async () => {
+  console.log('hey');
   await useTeamStore().fetchAll()
 }
 
