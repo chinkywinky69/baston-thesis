@@ -1,8 +1,15 @@
 <template>
   <div>
-    <div>
-      <div class="text-caption">Select Weight Division</div>
-      <q-select v-model="selectedDivision" :options="weightDivision" outlined dense style="max-width: 200px" />
+    <div class="flex q-gutter-x-sm">
+      <div>
+        <div class="text-caption">Weight Division</div>
+        <q-select v-model="selectedDivision" :options="weightDivision" outlined dense style="max-width: 200px" />
+      </div>
+      <div>
+        <div class="text-caption">Category</div>
+        <q-select v-model="selectedGender" :options="gender" option-label="label" option-value="value" emit-value
+          map-options outlined dense style="max-width: 200px" />
+      </div>
     </div>
 
     <div v-if="selectedDivision">
@@ -33,7 +40,13 @@ const weightDivision = [
   'Pinweight', 'Bantamweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
 ]
 
-const selectedDivision = ref('')
+const gender = [
+  { label: 'Boys', value: 'Male' },
+  { label: 'Girls', value: 'Female' },
+]
+
+const selectedGender = ref('Male')
+const selectedDivision = ref('Pinweight')
 const matchesData = ref(null)
 
 watch(selectedDivision, (newVal) => {
@@ -44,7 +57,9 @@ const handleMatch = (data) => {
   $q.dialog({
     component: MatchDialog,
     componentProps: {
-      match: data
+      match: data,
+      division: selectedDivision.value,
+      gender: selectedGender.value
     }
   })
 }
