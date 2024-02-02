@@ -2,3 +2,105 @@
 * {
   font-family: "Poppins", sans-serif;
 }
+
+@media (max-width: 1024px) {
+  .for-desktop {
+    display: none;
+  }
+}
+
+@media (min-width: 1023px) {
+  .for-mobile {
+    display: none;
+  }
+}
+
+.rb-1 {
+  border-radius: 8px;
+}
+
+.rb-2 {
+  border-radius: 12px;
+}
+
+.lt {
+  text-decoration: line-through;
+}
+
+//scoring page css
+.score {
+  background: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  width: 100px;
+  border-color: transparent transparent;
+  text-align: center;
+  font-size: 100px;
+}
+
+.comic-button {
+  display: inline-block;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background-color: #ff5252;
+  border: 2px solid #000;
+  border-radius: 10px;
+  box-shadow: 5px 5px 0px #000;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.comic-button:hover {
+  background-color: #fff;
+  color: #ff5252;
+  border: 2px solid #ff5252;
+  box-shadow: 5px 5px 0px #ff5252;
+}
+
+.comic-button:active {
+  background-color: #fcf414;
+  box-shadow: none;
+  transform: translateY(4px);
+}
+
+.comic-button2 {
+  display: inline-block;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background-color: #127eb4;
+  border: 2px solid #000;
+  border-radius: 10px;
+  box-shadow: 5px 5px 0px #000;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.comic-button2:hover {
+  background-color: #fff;
+  color: #127eb4;
+  border: 2px solid #127eb4;
+  box-shadow: 5px 5px 0px #127eb4;
+}
+
+.comic-button2:active {
+  background-color: #fcf414;
+  box-shadow: none;
+  transform: translateY(4px);
+}
+
+.text-subtitle2 {
+  font-size: 14px;
+  font-weight: 600;
+}
+.fw-600 {
+  font-weight: 600;
+}
+
+.bordered {
+  border: 1px solid #c0c0c0;
+}

@@ -10,6 +10,9 @@
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
+    "deploy:storage": "firebase deploy --only storage",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:db": "firebase deploy --only firestore:rules",
     "build": "quasar build"
   },
   "dependencies": {
@@ -18,7 +21,10 @@
     "pinia": "^2.0.11",
     "quasar": "^2.6.0",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.0.0",
+    "vue-tournament": "^1.1.1",
+    "vue-tournament-bracket": "^2.1.4",
+    "vuefire": "^3.1.22"
   },
   "devDependencies": {
     "@quasar/app-vite": "^1.0.0",
