@@ -8,39 +8,30 @@ import {
   getDocs,
   orderBy,
   query,
-  where,
   serverTimestamp,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { Dialog, Loading, Notify } from "quasar";
 import { db } from "src/boot/firebase";
 
-export const useMatchStore = defineStore("matches", {
+export const useCompetitionStore = defineStore("competitions", {
   state: () => ({
-    matches: [],
-    match: null,
+    competitions: [],
+    competition: null,
   }),
-
-  getters: {
-    getLabananMatches: (state) => {
-      return state.matches.filter((item) => item.matchType == "Labanan");
-    },
-    getAnyoMatches: (state) => {
-      return state.matches.filter((item) => item.matchType == "Anyo");
-    },
-  },
 
   actions: {
     async create(data) {
       Loading.show();
-      const dataRef = collection(db, "matches");
+      const dataRef = collection(db, "competitions");
       const doc = await addDoc(dataRef, {
         ...data,
         createdAt: serverTimestamp(),
       });
 
-      this.matches.unshift({
+      this.competitions.unshift({
         ...data,
         createdAt: Timestamp.now(),
         id: doc.id,
@@ -59,19 +50,20 @@ export const useMatchStore = defineStore("matches", {
 
     async update(id, data) {
       Loading.show();
-      const dataRef = doc(db, "matches", id);
+      const dataRef = doc(db, "competitions", id);
       await updateDoc(dataRef, {
         ...data,
         updatedAt: serverTimestamp(),
       });
 
-      const i = this.matches.findIndex((item) => item.id === id);
+      const i = this.competitions.findIndex((item) => item.id === id);
       if (i > -1) {
-        Object.assign(this.matches[i], {
+        Object.assign(this.competitions[i], {
           ...data,
           updatedAt: Timestamp.now(),
         });
       }
+
       Loading.hide();
       Notify.create({
         type: "positive",
@@ -90,13 +82,13 @@ export const useMatchStore = defineStore("matches", {
         cancel: true,
       }).onOk(async () => {
         Loading.show();
-        const dataRef = doc(db, "matches", id);
+        const dataRef = doc(db, "competitions", id);
         await deleteDoc(dataRef);
         Loading.hide();
 
-        const i = this.matches.findIndex((item) => item.id === id);
+        const i = this.competitions.findIndex((item) => item.id === id);
         if (i > -1) {
-          this.matches.splice(i, 1);
+          this.competitions.splice(i, 1);
         }
 
         Notify.create({
@@ -110,36 +102,36 @@ export const useMatchStore = defineStore("matches", {
 
     async fetchAll() {
       Loading.show();
-      const dataRef = collection(db, "matches");
+      const dataRef = collection(db, "competitions");
       const q = query(dataRef, orderBy("createdAt", "desc"));
       const snapshot = await getDocs(q);
       Loading.hide();
 
-      this.matches = snapshot.docs.map((doc) => ({
+      this.competitions = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
     },
 
     async fetchAllViaTournaId(tournaId) {
-      const dataRef = collection(db, "matches");
+      const dataRef = collection(db, "competitions");
       const q = query(
         dataRef,
-        where("tournaId", "==", tournaId),
-        orderBy("no", "asc")
+        where("tournamentId", "==", tournaId),
+        orderBy("createdAt", "asc")
       );
       const snapshot = await getDocs(q);
 
-      this.matches = snapshot.docs.map((doc) => ({
+      this.competitions = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
     },
 
     async fetchOne(id) {
-      const dataRef = doc(db, "matches", id);
+      const dataRef = doc(db, "competitions", id);
       const docSnap = await getDoc(dataRef);
-      this.match = docSnap.data();
+      this.competition = docSnap.data();
       return true;
     },
   },

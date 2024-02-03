@@ -112,14 +112,6 @@ onMounted(() => {
   }
 })
 
-
-const fetchTeams = async () => {
-  await useTeamStore().fetchAll()
-}
-onMounted(async () => {
-  await fetchTeams()
-})
-
 const checkRep = (teamData, playerModel) => {
   if (teamData && teamData[props.data.division]) {
     const value = teamData[props.data.division][props.data.gender];

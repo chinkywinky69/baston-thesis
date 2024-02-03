@@ -1,72 +1,75 @@
 <template>
   <div>
-    <div class="flex q-gutter-x-sm">
-      <div>
-        <div class="text-caption">Weight Division</div>
-        <q-select v-model="selectedDivision" :options="weightDivision" outlined dense style="max-width: 200px" />
-      </div>
-      <div>
-        <div class="text-caption">Category</div>
-        <q-select v-model="selectedGender" :options="gender" option-label="label" option-value="value" emit-value
-          map-options outlined dense style="max-width: 200px" />
-      </div>
+    <div class="q-mb-sm">
+      <div class="text-subtitle2">Add Competition</div>
+      <q-select @update:model-value="create" v-model="selectedCom" :options="anyoTypes" outlined dense
+        style="max-width: 100vw; width: 300px" />
     </div>
 
-    <div v-if="selectedDivision">
-      <div class="text-right">
-        <q-btn @click="handleMatch(null)" label="Create Match" color="primary" />
-      </div>
-
-      <!-- List of Matches -->
-      <MatchList v-if="matches" :matches="filteredMatchesByGender()" />
-
-      <div v-else class="flex flex-center q-mt-lg">
-        <div class="text-subtitle1 text-grey-8"><q-icon class="q-mr-sm" name="far fa-face-laugh-beam" size="md" />No
-          matches available.
-        </div>
+    <!-- List of Competitions -->
+    <div class="row">
+      <div v-for="(com, i) in competitions" :key="i" class="col-12 col-md-4 q-pa-xs">
+        <q-card style="min-height: 250px;">
+          <q-card-section class="text-subtitle2 text-indigo-9 q-pb-none flex">
+            <div>{{ com.name }} </div>
+            <q-space />
+            <q-btn @click="deleteCom(com)" round dense icon="delete" color="red" size="sm" />
+          </q-card-section>
+          <q-card-section>
+            <q-list dense class="q-gutter-sm q-pa-sm">
+              <q-item v-for="team in com?.teams" :key="team.id" class="bg-grey-2 rb-1">
+                <q-item-section avatar>
+                  <q-avatar icon="fas fa-people-group"></q-avatar>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="fw-600">{{ team.name }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <div>
+                <q-btn @click="handleTeam(com)" size="12px" label="Add Teams" color="primary" class="full-width" />
+              </div>
+            </q-list>
+          </q-card-section>
+        </q-card>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import { useQuasar } from 'quasar';
+import { ref } from 'vue'
 
 // Components
-import MatchList from 'components/matches/MatchList.vue'
-import MatchDialog from '../dialog/MatchDialog.vue';
+import AnyoTeamDialog from '../dialog/AnyoTeamDialog.vue';
+import { useCompetitionStore } from 'src/stores/competitions';
 
-const $q = useQuasar();
-const props = defineProps({ tourna: Object, matches: Array })
-const weightDivision = [
-  'Pinweight', 'Bantamweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
+const anyoTypes = [
+  "Individual Likha Single Weapon", "Individual Likha Double Weapon", "Individual Likha Espada Y Daga Weapon", "Team Likha Single Weapon", "Team Likha Double Weapon", "Team Likha Espada Y Daga Weapon"
 ]
 
-const gender = [
-  { label: 'Boys', value: 'Male' },
-  { label: 'Girls', value: 'Female' },
-]
+const props = defineProps({ tourna: Object, competitions: Array })
+const selectedCom = ref('')
+const $q = useQuasar()
 
-const selectedGender = ref('Male')
-const selectedDivision = ref('Pinweight')
-
-const filteredMatchesByGender = () => {
-  return props.matches.filter(item => item.category == selectedGender.value && item.division == selectedDivision.value)
-}
-
-const handleMatch = (matchData) => {
+const handleTeam = (com) => {
   $q.dialog({
-    component: MatchDialog,
+    component: AnyoTeamDialog,
     componentProps: {
-      data: {
-        tournaId: props.tourna.id,
-        match: matchData,
-        matchType: 'Anyo',
-        division: selectedDivision.value,
-        gender: selectedGender.value
-      }
+      competition: com
     }
   })
+}
+
+const create = async (val) => {
+  const res = await useCompetitionStore().create({
+    name: val,
+    tournamentId: props.tourna.id
+  })
+  if (res.success) selectedCom.value = ''
+}
+
+const deleteCom = (com) => {
+  useCompetitionStore().delete(com.id)
 }
 </script>
