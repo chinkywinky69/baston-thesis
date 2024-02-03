@@ -28,7 +28,7 @@
         <LabananTabPanel :tourna="tourna" :matches="labananMatches" />
       </q-tab-panel>
       <q-tab-panel name="Anyo">
-        <AnyoTabPanel :tourna="tourna" :matches="anyoMatches" />
+        <AnyoTabPanel :tourna="tourna" :competitions="competitions" />
       </q-tab-panel>
     </q-tab-panels>
   </q-page>
@@ -36,7 +36,8 @@
 
 <script setup>
 import { useTournamentStore } from 'src/stores/tournaments';
-import { onBeforeMount, computed, ref } from 'vue';
+import { useTeamStore } from 'src/stores/teams';
+import { onBeforeMount, onMounted, computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { timestamp, toDate } from 'src/composables/filters'
 
@@ -44,14 +45,16 @@ import { timestamp, toDate } from 'src/composables/filters'
 import LabananTabPanel from 'components/tourna/LabananTabPanel.vue'
 import AnyoTabPanel from 'components/tourna/AnyoTabPanel.vue'
 import { useMatchStore } from 'src/stores/matches';
+import { useCompetitionStore } from 'src/stores/competitions';
 
 const tab = ref('Labanan')
 const tournaStore = useTournamentStore()
 const matchStore = useMatchStore()
+const comStore = useCompetitionStore()
 const route = useRoute()
 const tourna = computed(() => tournaStore.tournament)
 const labananMatches = computed(() => matchStore.getLabananMatches)
-const anyoMatches = computed(() => matchStore.getAnyoMatches)
+const competitions = computed(() => comStore.competitions)
 
 const fetchTourna = async () => {
   await tournaStore.fetchOne(route.params.id)
@@ -62,5 +65,18 @@ onBeforeMount(() => fetchTourna())
 const fetchMatches = async () => {
   await matchStore.fetchAllViaTournaId(route.params.id)
 }
-onBeforeMount(() => fetchMatches())
+
+const fetchCompetitions = async () => {
+  await comStore.fetchAllViaTournaId(route.params.id)
+}
+
+const fetchTeams = async () => {
+  await useTeamStore().fetchAll()
+}
+
+onMounted(async () => {
+  await fetchMatches()
+  await fetchCompetitions()
+  await fetchTeams()
+})
 </script>
