@@ -1,5 +1,5 @@
 <template>
-  <q-list>
+  <q-list class="q-gutter-sm">
     <q-item v-for="item in matches" :key="item.id" class="shadow-2 rb-1" style="max-width: 100vw; width: 280px;">
       <q-item-section avatar>
         <q-avatar icon="fas fa-medal" color="amber"></q-avatar>
