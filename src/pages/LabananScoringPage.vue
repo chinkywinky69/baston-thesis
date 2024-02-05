@@ -4,17 +4,17 @@
       <q-card class="" style="width: 350px;">
         <q-card-section class="text-center q-pa-">
           <div class="text-h6 text-bold">DIVISION</div>
-          <div class="text-body1">Girls</div>
+          <div class="text-body1">{{ matchData?.category == 'Male' ? 'Boys' : 'Girls' }}</div>
         </q-card-section>
         <q-card-section class="q-my-sm bg-blue-8 q-pa-md">
-          <div class="text-white text-body1 text-bold">Bout Number #: 420</div>
+          <div class="text-white text-body1 text-bold">Match #: {{ matchData?.no }}</div>
         </q-card-section>
         <q-card-section class="row justify-center q-pa-none q-mt-md">
           <q-btn square class="q-px-xl text-body1 " color="blue-8" label="Player 1" />
         </q-card-section>
         <q-card-section>
           <div class="row justify-center">
-            <div class="text-h1 q-pa-md">{{ player1Score }}</div>
+            <div class="text-h1 q-pa-md">{{ matchData?.player1?.score ?? 0 }}</div>
           </div>
           <q-separator class="q-mb-md" />
           <div class="text-body1 row justify-between">
@@ -39,9 +39,10 @@
             </div>
           </div>
           <div class="q-mt-sm row justify-center q-gutter-sm">
-            <q-btn @click="plus1(1)" class="q-pa-sm" icon="fa-solid fa-plus" color="blue-8" dense outline />
-            <q-btn @click="minus1(1)" :disable="player1Score <= 0" class="q-pa-sm" icon="fa-solid fa-minus" color="blue-8"
-              dense outline />
+            <q-btn @click="updateScore('player1', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="blue-8" dense
+              outline />
+            <q-btn @click="updateScore('player1', -1)" :disable="player1Score <= 0" class="q-pa-sm"
+              icon="fa-solid fa-minus" color="blue-8" dense outline />
           </div>
         </q-card-section>
       </q-card>
@@ -58,7 +59,7 @@
         </q-card-section>
         <q-card-section>
           <div class="row justify-center">
-            <div class="text-h1 q-pa-md">{{ player2Score }}</div>
+            <div class="text-h1 q-pa-md">{{ matchData?.player2?.score ?? 0 }}</div>
           </div>
           <q-separator class="q-mb-md" />
           <div class="text-body1 row justify-between">
@@ -81,9 +82,10 @@
 
           </div>
           <div class="q-mt-sm row justify-center q-gutter-sm">
-            <q-btn @click="plus1(2)" class="q-pa-sm" icon="fa-solid fa-plus" color="red-8" dense outline />
-            <q-btn @click="minus1(2)" :disable="player2Score <= 0" class="q-pa-sm" icon="fa-solid fa-minus" color="red-8"
-              dense outline />
+            <q-btn @click="updateScore('player2', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="red-8" dense
+              outline />
+            <q-btn @click="updateScore('player2', -1)" :disable="player2Score <= 0" class="q-pa-sm"
+              icon="fa-solid fa-minus" color="red-8" dense outline />
           </div>
         </q-card-section>
       </q-card>
@@ -145,14 +147,50 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed, watch, onBeforeMount, onMounted } from 'vue'
 import { Dialog } from 'quasar';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useScoringStore } from 'src/stores/scoring';
+import { useMatchStore } from 'src/stores/matches';
+import { increment } from 'firebase/firestore';
 
-
+const matchStore = useMatchStore()
 const router = useRouter()
 const scoringStore = useScoringStore()
+const matchData = computed(() => matchStore.match)
+const route = useRoute()
+
+const fetchMatch = async () => {
+  await matchStore.fetchOne(route.params.matchId)
+}
+
+const updateScore = async (currentRound, playerNo, val) => {
+  const fieldKey = `round${currentRound}.${playerNo}.score`
+  await matchStore.updateScoring(route.params.matchId, {
+    [fieldKey]: increment(val)
+  })
+}
+
+onBeforeMount(() => fetchMatch())
+onMounted(async () => {
+  if (!matchData.value?.hasOwnProperty('round1')) {
+    await matchStore.update(route.params.matchId, {
+      currentRound: 1,
+      round1: {
+        player1: {
+          score: 0,
+          fouls: 0,
+          disarm: 0
+        },
+        player2: {
+          score: 0,
+          fouls: 0,
+          disarm: 0
+        },
+      }
+    })
+  }
+})
 
 const matchDone = () => {
   router.push({ path: '/bracketPage' })

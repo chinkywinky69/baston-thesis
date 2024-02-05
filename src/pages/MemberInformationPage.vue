@@ -78,7 +78,7 @@
               class="q-mb-sm" label="Team" outlined dense type="text" :rules="[(val) => !!val]" />
             <div class="row">
               <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
-                @change="calculateAge" :rules="[(val) => !!val]" />
+                @update:model-value="calculateAge" :rules="[(val) => !!val]" />
               <q-input v-model="form.age" class="col q-mb-sm" label="Age" outlined dense type="number" readonly />
             </div>
             <q-select v-model="form.gender" class="q-mb-sm" :options="genders" outlined dense label="Gender"
@@ -170,7 +170,7 @@
 
             <div class="q-pa-sm rb-1 q-gutter-xs" style="border: 1px solid grey;">
               <div><strong>Birthday:</strong> {{ previewMember.birthday }}</div>
-              <div><strong>Age:</strong> {{ previewMember.birthday }}</div>
+              <div><strong>Age:</strong> {{ previewMember.age }}</div>
               <div><strong>Gender:</strong> {{ previewMember.gender }}</div>
               <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
               <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
@@ -216,6 +216,7 @@
         </q-card>
       </q-dialog>
     </q-dialog>
+
   </q-page>
 </template>
 
@@ -422,7 +423,7 @@ const calculateAge = () => {
     if (m < 0 || (m === 0 && today.getDate() < birthdayDate.getDate())) {
       ageCalc--;
     }
-    form.age = ageCalc;
+    form.age = parseInt(ageCalc);
   } else {
     form.age = '';
   }

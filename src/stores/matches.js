@@ -15,6 +15,7 @@ import {
 import { defineStore } from "pinia";
 import { Dialog, Loading, Notify } from "quasar";
 import { db } from "src/boot/firebase";
+import { useTeamStore } from "./teams";
 
 export const useMatchStore = defineStore("matches", {
   state: () => ({
@@ -83,6 +84,24 @@ export const useMatchStore = defineStore("matches", {
       return true;
     },
 
+    async updateScoring(id, data) {
+      const dataRef = doc(db, "matches", id);
+      await updateDoc(dataRef, {
+        ...data,
+        updatedAt: serverTimestamp(),
+      });
+
+      const i = this.matches.findIndex((item) => item.id === id);
+      if (i > -1) {
+        Object.assign(this.matches[i], {
+          ...data,
+          updatedAt: Timestamp.now(),
+        });
+      }
+
+      return true;
+    },
+
     async delete(id) {
       Dialog.create({
         title: "Confirm",
@@ -130,10 +149,20 @@ export const useMatchStore = defineStore("matches", {
       );
       const snapshot = await getDocs(q);
 
-      this.matches = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
+      this.matches = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+          const match = { ...doc.data(), id: doc.id };
+          const teamId1 = match.player1.teamId;
+          const teamData1 = await useTeamStore().fetchOne(teamId1);
+          match.player1.team = teamData1;
+
+          const teamId2 = match.player2.teamId;
+          const teamData2 = await useTeamStore().fetchOne(teamId2);
+          match.player2.team = teamData2;
+
+          return match;
+        })
+      );
     },
 
     async fetchOne(id) {

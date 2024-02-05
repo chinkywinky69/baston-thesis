@@ -102,7 +102,7 @@ const routes = [
       },
       {
         name: "scoringPage",
-        path: "/labananScoringPage",
+        path: "/labanan-scoring/:matchId",
         component: () => import("pages/LabananScoringPage.vue"),
       },
     ],

@@ -109,6 +109,7 @@ onMounted(() => {
     form.division = data.division
     form.matchType = data.matchType
     form.category = data.gender
+
   }
 })
 
