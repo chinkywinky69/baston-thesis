@@ -1,13 +1,13 @@
 <template>
   <q-page padding>
-    <div class="row justify-center q-gutter-md">
+    <div v-if="matchData" class="row justify-center q-gutter-md">
       <q-card class="" style="width: 350px;">
         <q-card-section class="text-center q-pa-">
           <div class="text-h6 text-bold">DIVISION</div>
           <div class="text-body1">{{ matchData?.category == 'Male' ? 'Boys' : 'Girls' }}</div>
         </q-card-section>
-        <q-card-section class="q-my-sm bg-blue-8 q-pa-md">
-          <div class="text-white text-body1 text-bold">Match #: {{ matchData?.no }}</div>
+        <q-card-section class="q-my-sm bg-blue-8 q-pa-sm">
+          <div class="text-white text-h5 fw-900">Match #: {{ matchData?.no }}</div>
         </q-card-section>
         <q-card-section class="row justify-center q-pa-none q-mt-md">
           <q-btn square class="q-px-xl text-body1 " color="blue-8" label="Player 1" />
@@ -18,41 +18,43 @@
           </div>
           <q-separator class="q-mb-md" />
           <div class="text-body1 row justify-between">
-            <q-chip :label="`Fouls: ${player1FoulScore}`" />
-            <q-chip :label="`Disarm: ${player1DisarmScore}`" />
+            <q-chip :label="`Fouls: ${matchData.player1?.foul ?? 0}`" />
+            <q-chip :label="`Disarm: ${matchData.player1?.disarm ?? 0}`" />
           </div>
           <div class="row justify-around">
-            <q-btn @click="minus1('foul1')" :disable="player1FoulScore <= 0" icon="fa-solid fa-rotate-left" dense
-              color="blue-8" outline size="sm" />
-            <q-btn @click="minus1('disarm1')" :disable="player1DisarmScore <= 0" icon="fa-solid fa-rotate-left" dense
-              color="blue-8" outline size="sm" />
+            <q-btn @click="updateStat('foul', 'player1', -1)" :disable="isDisabled('foul', 'player1')"
+              icon="fa-solid fa-rotate-left" dense color="blue-8" outline size="sm" />
+            <q-btn @click="updateStat('disarm', 'player1', -1)" :disable="isDisabled('disarm', 'player1')"
+              icon="fa-solid fa-rotate-left" dense color="blue-8" outline size="sm" />
           </div>
           <q-separator class="q-mt-md" />
         </q-card-section>
         <q-card-section class="q-pt-none">
           <div class="row justify-center q-gutter-sm">
             <div class="row justify-center q-gutter-sm">
-              <button @click="plus1('foul1')" class="comic-button2"><q-img width="60px" src="../img/foul.png" /></button>
-              <button @click="plus1('disarm1')" class="comic-button2"><q-img width="60px"
+              <button @click="updateStat('foul', 'player1', 1)" class="comic-button2"><q-img width="60px"
+                  src="../img/foul.png" /></button>
+              <button @click="updateStat('disarm', 'player1', 1)" class="comic-button2"><q-img width="60px"
                   src="../img/disarm.png" /></button>
-              <button @click="declareWinner('1')" style="font-size: 10px;" class="comic-button2">Declare Winner</button>
+              <button @click="declareWinner('player1', '1')" style="font-size: 10px;" class="comic-button2">Declare
+                Winner</button>
             </div>
           </div>
           <div class="q-mt-sm row justify-center q-gutter-sm">
-            <q-btn @click="updateScore('player1', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="blue-8" dense
+            <q-btn @click="updateStat('score', 'player1', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="blue-8" dense
               outline />
-            <q-btn @click="updateScore('player1', -1)" :disable="player1Score <= 0" class="q-pa-sm"
+            <q-btn @click="updateStat('score', 'player1', -1)" :disable="isDisabled('score', 'player1')" class="q-pa-sm"
               icon="fa-solid fa-minus" color="blue-8" dense outline />
           </div>
         </q-card-section>
       </q-card>
       <q-card class="" style="width: 350px;">
-        <q-card-section class="text-center q-pa-">
+        <q-card-section class="text-center q-pa-md">
           <div class="text-h6 text-bold">CATEGORY</div>
           <div class="text-body1">Openweight</div>
         </q-card-section>
-        <q-card-section class="q-my-sm bg-red-8 q-pa-md">
-          <div class="text-white text-body1 text-bold text-end">Round: {{ round }}</div>
+        <q-card-section class="q-my-sm bg-red-8 q-pa-sm">
+          <div class="text-white text-h5 fw-900 text-end">Round: {{ matchData.currentRound }}</div>
         </q-card-section>
         <q-card-section class="row justify-center q-pa-none q-mt-md">
           <q-btn square class="q-px-xl text-body1 " color="red-8" label="Player 2" />
@@ -63,28 +65,31 @@
           </div>
           <q-separator class="q-mb-md" />
           <div class="text-body1 row justify-between">
-            <q-chip :label="`Fouls: ${player2FoulScore}`" />
-            <q-chip :label="`Disarm: ${player2DisarmScore}`" />
+            <q-chip :label="`Fouls: ${matchData?.player2?.foul ?? 0}`" />
+            <q-chip :label="`Disarm: ${matchData?.player2?.disarm ?? 0}`" />
           </div>
           <div class="row justify-around">
-            <q-btn @click="minus1('foul2')" :disable="player2FoulScore <= 0" icon="fa-solid fa-rotate-left" dense
-              color="red-8" outline size="sm" />
-            <q-btn @click="minus1('disarm2')" :disable="player2DisarmScore <= 0" icon="fa-solid fa-rotate-left" dense
-              color="red-8" outline size="sm" />
+            <q-btn @click="updateStat('foul', 'player2', -1)" :disable="isDisabled('foul', 'player2')"
+              icon="fa-solid fa-rotate-left" dense color="red-8" outline size="sm" />
+            <q-btn @click="updateStat('disarm', 'player2', -1)" :disable="isDisabled('disarm', 'player2')"
+              icon="fa-solid fa-rotate-left" dense color="red-8" outline size="sm" />
           </div>
           <q-separator class="q-mt-md" />
         </q-card-section>
         <q-card-section class="q-pt-none">
           <div class="row justify-center q-gutter-sm">
-            <button @click="plus1('foul2')" class="comic-button"><q-img width="60px" src="../img/foul.png" /></button>
-            <button @click="plus1('disarm2')" class="comic-button"><q-img width="60px" src="../img/disarm.png" /></button>
-            <button @click="declareWinner('2')" style="font-size: 10px;" class="comic-button">Declare Winner</button>
+            <button @click="updateStat('foul', 'player2', 1)" class="comic-button"><q-img width="60px"
+                src="../img/foul.png" /></button>
+            <button @click="updateStat('disarm', 'player2', 1)" class="comic-button"><q-img width="60px"
+                src="../img/disarm.png" /></button>
+            <button @click="declareWinner('player2', '2')" style="font-size: 10px;" class="comic-button">Declare
+              Winner</button>
 
           </div>
           <div class="q-mt-sm row justify-center q-gutter-sm">
-            <q-btn @click="updateScore('player2', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="red-8" dense
+            <q-btn @click="updateStat('score', 'player2', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="red-8" dense
               outline />
-            <q-btn @click="updateScore('player2', -1)" :disable="player2Score <= 0" class="q-pa-sm"
+            <q-btn @click="updateStat('score', 'player2', -1)" :disable="isDisabled('score', 'player2')" class="q-pa-sm"
               icon="fa-solid fa-minus" color="red-8" dense outline />
           </div>
         </q-card-section>
@@ -147,7 +152,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onBeforeMount, onMounted } from 'vue'
+import { ref, computed, watch, onBeforeMount, watchEffect } from 'vue'
 import { Dialog } from 'quasar';
 import { useRouter, useRoute } from 'vue-router';
 import { useScoringStore } from 'src/stores/scoring';
@@ -160,37 +165,43 @@ const scoringStore = useScoringStore()
 const matchData = computed(() => matchStore.match)
 const route = useRoute()
 
+const isDisabled = (stat, playerno) => {
+  if (!matchData.value[playerno].hasOwnProperty(stat) || !matchData.value[playerno][stat]) return true
+  else return false
+}
+
 const fetchMatch = async () => {
   await matchStore.fetchOne(route.params.matchId)
 }
 
-const updateScore = async (currentRound, playerNo, val) => {
-  const fieldKey = `round${currentRound}.${playerNo}.score`
-  await matchStore.updateScoring(route.params.matchId, {
-    [fieldKey]: increment(val)
-  })
+const updateStat = async (stat, playerNo, val) => {
+  console.log(stat);
+  if (stat == 'disarm') {
+    let playerToScore = 'player1'
+    if (playerNo == 'player1') playerToScore = 'player2'
+    await matchStore.updateStat(route.params.matchId, 'score', playerToScore, val)
+  }
+  await matchStore.updateStat(route.params.matchId, stat, playerNo, val)
 }
 
 onBeforeMount(() => fetchMatch())
-onMounted(async () => {
-  if (!matchData.value?.hasOwnProperty('round1')) {
+watchEffect(async () => {
+  if (matchData.value && !matchData.value.hasOwnProperty('currentRound')) {
     await matchStore.update(route.params.matchId, {
       currentRound: 1,
-      round1: {
-        player1: {
-          score: 0,
-          fouls: 0,
-          disarm: 0
-        },
-        player2: {
-          score: 0,
-          fouls: 0,
-          disarm: 0
-        },
-      }
-    })
+    });
   }
-})
+});
+
+watchEffect(async () => {
+  if (!matchData.value) return;
+  if (matchData.value.player1?.wins === 2) {
+    displayMatchResult(1)
+  } else if (matchData.value.player2?.wins === 2) {
+    displayMatchResult(2)
+  }
+});
+
 
 const matchDone = () => {
   router.push({ path: '/bracketPage' })
@@ -230,56 +241,6 @@ const addRoundData = () => {
   });
 };
 
-const plus1 = (playerScore) => {
-  if (playerScore === 1 && player1Score.value < 5) {
-    player1Score.value += 1;
-  } else if (playerScore === 2 && player2Score.value < 5) {
-    player2Score.value += 1;
-  } else if (playerScore === 'foul1' && player1FoulScore.value < 5) {
-    player1FoulScore.value += 1;
-  } else if (playerScore === 'foul2' && player2FoulScore.value < 5) {
-    player2FoulScore.value += 1;
-  } else if (playerScore === 'disarm1' && player1DisarmScore.value < 5) {
-    player1DisarmScore.value += 1;
-    // Check if player2Score needs to be limited to 5 as well
-    if (player2Score.value < 5) {
-      player2Score.value += 1;
-    }
-  } else if (playerScore === 'disarm2' && player2DisarmScore.value < 5) {
-    player2DisarmScore.value += 1;
-    // Check if player1Score needs to be limited to 5 as well
-    if (player1Score.value < 5) {
-      player1Score.value += 1;
-    }
-  }
-}
-
-
-const minus1 = (playerScore) => {
-  if (playerScore === 1) {
-    player1Score.value -= 1;
-  }
-  else if (playerScore === 2) {
-    player2Score.value -= 1;
-  }
-  else if (playerScore === 'foul1') {
-    player1FoulScore.value -= 1;
-  }
-  else if (playerScore === 'foul2') {
-    player2FoulScore.value -= 1;
-  }
-  else if (playerScore === 'disarm1') {
-    player1DisarmScore.value -= 1;
-    player2Score.value -= 1;
-
-  }
-  else if (playerScore === 'disarm2') {
-    player2DisarmScore.value -= 1;
-    player2Score.value += 1;
-
-  }
-}
-
 const resetScoresAndFouls = () => {
   player1Score.value = 0;
   player2Score.value = 0;
@@ -312,24 +273,24 @@ const displayMatchResult = (winnerPlayerNumber) => {
   });
 };
 
-const declareWinner = (playerNumber) => {
+const declareWinner = (fieldKey, no) => {
   Dialog.create({
-    title: `Player ${playerNumber} wins!`,
-    message: `Confirm declaring Player ${playerNumber} as the winner and proceed to the next round?`,
+    title: `Player ${no} wins!`,
+    message: `Confirm declaring Player ${no} as the winner and proceed to the next round?`,
     persistent: true,
     cancel: true
-  }).onOk(() => {
-    if (playerNumber === '1') {
-      player1RoundsWon.value += 1;
-    } else if (playerNumber === '2') {
-      player2RoundsWon.value += 1;
-    }
-    addRoundData();
-    checkMatchWinner();
-    resetScoresAndFouls();
-    if (player1RoundsWon.value < 2 && player2RoundsWon.value < 2) {
-      round.value++;
-    }
+  }).onOk(async () => {
+    const modifiedKey = `${fieldKey}.wins`
+    await matchStore.update(route.params.matchId, {
+      [modifiedKey]: increment(1),
+      currentRound: increment(1),
+      'player1.score': 0,
+      'player1.foul': 0,
+      'player1.disarm': 0,
+      'player2.score': 0,
+      'player2.foul': 0,
+      'player2.disarm': 0,
+    }, 'statReset')
   });
 };
 

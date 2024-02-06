@@ -11,6 +11,7 @@ import {
   where,
   serverTimestamp,
   updateDoc,
+  increment,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { Dialog, Loading, Notify } from "quasar";
@@ -58,7 +59,7 @@ export const useMatchStore = defineStore("matches", {
       return { success: true, id: doc.id };
     },
 
-    async update(id, data) {
+    async update(id, data, mode) {
       Loading.show();
       const dataRef = doc(db, "matches", id);
       await updateDoc(dataRef, {
@@ -73,6 +74,11 @@ export const useMatchStore = defineStore("matches", {
           updatedAt: Timestamp.now(),
         });
       }
+
+      if (mode == "statReset") {
+        this.fetchOne(id);
+      }
+
       Loading.hide();
       Notify.create({
         type: "positive",
@@ -84,10 +90,16 @@ export const useMatchStore = defineStore("matches", {
       return true;
     },
 
-    async updateScoring(id, data) {
+    async updateStat(id, stat, playerNo, val) {
+      if (!this.match[playerNo].hasOwnProperty(stat))
+        this.match[playerNo].score = 0;
+      else if (val == -1) this.match[playerNo][stat]--;
+      else if (val == 1) this.match[playerNo][stat]++;
+
       const dataRef = doc(db, "matches", id);
+      const fieldKey = `${playerNo}.${stat}`;
       await updateDoc(dataRef, {
-        ...data,
+        [fieldKey]: increment(val),
         updatedAt: serverTimestamp(),
       });
 
