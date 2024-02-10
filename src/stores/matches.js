@@ -75,7 +75,14 @@ export const useMatchStore = defineStore("matches", {
         });
       }
 
-      if (mode == "statReset") {
+      if (this.match && this.match.id == id) {
+        Object.assign(this.match, {
+          ...data,
+          updatedAt: Timestamp.now(),
+        });
+      }
+
+      if (mode && mode == "statReset") {
         this.fetchOne(id);
       }
 
@@ -102,15 +109,6 @@ export const useMatchStore = defineStore("matches", {
         [fieldKey]: increment(val),
         updatedAt: serverTimestamp(),
       });
-
-      const i = this.matches.findIndex((item) => item.id === id);
-      if (i > -1) {
-        Object.assign(this.matches[i], {
-          ...data,
-          updatedAt: Timestamp.now(),
-        });
-      }
-
       return true;
     },
 
@@ -180,7 +178,7 @@ export const useMatchStore = defineStore("matches", {
     async fetchOne(id) {
       const dataRef = doc(db, "matches", id);
       const docSnap = await getDoc(dataRef);
-      this.match = docSnap.data();
+      this.match = { ...docSnap.data(), id: id };
       return true;
     },
   },

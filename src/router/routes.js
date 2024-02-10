@@ -91,8 +91,7 @@ const routes = [
         component: () => import("pages/ChooseTeamAnyoPage.vue"),
       },
       {
-        name: "anyo-individual-scoring",
-        path: "/anyoScoringPage",
+        path: "/anyo-scoring/:id",
         component: () => import("pages/AnyoScoringPage.vue"),
       },
       {

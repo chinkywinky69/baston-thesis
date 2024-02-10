@@ -64,6 +64,48 @@ export const useCompetitionStore = defineStore("competitions", {
         });
       }
 
+      if (this.competition && this.competition.id == id) {
+        Object.assign(this.competition, {
+          ...data,
+          updatedAt: Timestamp.now(),
+        });
+      }
+
+      Loading.hide();
+      Notify.create({
+        type: "positive",
+        icon: "thumb_up",
+        position: "bottom-right",
+        message: "Updated successfully!",
+      });
+
+      return true;
+    },
+
+    async updateAnyoScore(id, aveKey, vioKey, data) {
+      Loading.show();
+      const dataRef = doc(db, "competitions", id);
+      await updateDoc(dataRef, {
+        [aveKey]: data.ave,
+        [vioKey]: data.vio,
+        updatedAt: serverTimestamp(),
+      });
+
+      const i = this.competitions.findIndex((item) => item.id === id);
+      if (i > -1) {
+        Object.assign(this.competitions[i], {
+          ...data,
+          updatedAt: Timestamp.now(),
+        });
+      }
+
+      if (this.competition && this.competition.id == id) {
+        Object.assign(this.competition, {
+          ...data,
+          updatedAt: Timestamp.now(),
+        });
+      }
+
       Loading.hide();
       Notify.create({
         type: "positive",
@@ -131,7 +173,7 @@ export const useCompetitionStore = defineStore("competitions", {
     async fetchOne(id) {
       const dataRef = doc(db, "competitions", id);
       const docSnap = await getDoc(dataRef);
-      this.competition = docSnap.data();
+      this.competition = { ...docSnap.data(), id: id };
       return true;
     },
   },

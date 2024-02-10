@@ -28,7 +28,7 @@
                   <q-item-label caption v-else>{{ getFullname(team[com.name][com.category]) }}</q-item-label>
                 </q-item-section>
                 <q-item-section side>
-                  <q-btn round flat icon="open_in_new" />
+                  <q-btn @click="routeTo(com, team)" round flat icon="open_in_new" />
                 </q-item-section>
               </q-item>
               <div>
@@ -49,6 +49,7 @@
 <script setup>
 import { useQuasar } from 'quasar';
 import { ref } from 'vue'
+import { useRouter } from 'vue-router';
 
 // Components
 import AnyoTeamDialog from '../dialog/AnyoTeamDialog.vue';
@@ -63,6 +64,18 @@ const anyoTypes = [
 const props = defineProps({ tourna: Object, competitions: Array })
 const selectedCom = ref('')
 const $q = useQuasar()
+const router = useRouter()
+
+const routeTo = (comp, team) => {
+  router.push({
+    path: `/anyo-scoring/${comp.id}`,
+    query: {
+      type: comp.type,
+      category: comp.category,
+      teamId: team.id
+    }
+  })
+}
 
 const handleTeam = (com) => {
   $q.dialog({
