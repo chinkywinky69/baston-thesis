@@ -21,7 +21,7 @@
           </div>
         </q-card-section>
         <div class="q-pt-none" align="center">
-          <q-chip :label="`Violations: ${violations}`" dense />
+          <q-chip :label="`Violations: ${compData[teamData.id]?.violations?.length ?? 0}`" dense />
         </div>
         <q-card-section>
           <div class="row justify-center">
@@ -61,10 +61,10 @@
         <q-separator />
         <q-card-section>
           <div class="q-mb-sm">
-            <q-select v-model="selectedViolations" :model-value="compData[$route.query.teamId].violations ?? []"
+            <q-select v-model="selectedViolations" :model-value="compData[$route.query.teamId]?.violations ?? []"
               label="Add Violations" :options="violationChoices" outlined multiple use-chips />
           </div>
-          <q-input v-model="compData[$route.query.teamId].notes" type="textarea" outlined />
+          <q-input v-model="teamNotes" type="textarea" outlined />
         </q-card-section>
         <q-card-actions align="center">
           <q-btn flat label="Close" v-close-popup />
@@ -95,6 +95,18 @@ const allJudgesScored = computed(() => {
   return judgeScores.every(score => score !== null && score !== '' && !isNaN(score));
 });
 
+const teamNotes = computed(
+  {
+    get() {
+      return compData.value[route.query.teamId]?.notes ?? '';
+    },
+    set(value) {
+      compData.value[route.query.teamId] = compData.value[route.query.teamId] ?? {};
+      compData.value[route.query.teamId].notes = value
+    }
+  }
+)
+
 // backend
 const route = useRoute()
 const compStore = useCompetitionStore()
@@ -112,7 +124,7 @@ watch(selectedViolations, async (newVal) => {
 const saveNotes = async () => {
   const fieldKey = `${route.query.teamId}.notes`
   await compStore.update(route.params.id, {
-    [fieldKey]: compData.value[route.query.teamId].notes
+    [fieldKey]: teamNotes.value
   })
 }
 
@@ -152,7 +164,8 @@ const calculateAverageScore = async () => {
   // Calculate the average of the remaining scores
   const sum = validScores.reduce((acc, score) => acc + score, 0);
   const average = validScores.length > 0 ? (sum / validScores.length).toFixed(1) : 0;
-  playerScore.value = parseFloat(average) - (compData.value[route.query.teamId]?.violations?.length * 0.5)
+  playerScore.value = parseFloat(average) - ((compData.value[route.query.teamId]?.violations?.length ?? 0) * 0.5);
+
 
   await compStore.updateScore(route.params.id, route.query.teamId, playerScore.value, judgeScores)
 }
