@@ -82,27 +82,46 @@ export const useCompetitionStore = defineStore("competitions", {
       return true;
     },
 
-    async updateAnyoScore(id, aveKey, vioKey, data) {
+    async updateScore(id, teamId, score, judgesScores) {
       Loading.show();
       const dataRef = doc(db, "competitions", id);
+      const averageKey = `${teamId}.averageScore`;
+      const judgesKey = `${teamId}.judgesScores`;
       await updateDoc(dataRef, {
-        [aveKey]: data.ave,
-        [vioKey]: data.vio,
+        [averageKey]: score,
+        [judgesKey]: judgesScores,
         updatedAt: serverTimestamp(),
       });
 
-      const i = this.competitions.findIndex((item) => item.id === id);
-      if (i > -1) {
-        Object.assign(this.competitions[i], {
-          ...data,
-          updatedAt: Timestamp.now(),
-        });
+      if (this.competition && this.competition.id == id) {
+        this.competition[teamId] = this.competition[teamId] ?? {};
+        this.competition[teamId].averageScore = score;
       }
 
+      Loading.hide();
+      Notify.create({
+        type: "positive",
+        icon: "thumb_up",
+        position: "bottom-right",
+        message: "Updated successfully!",
+      });
+
+      return true;
+    },
+
+    async updateViolations(id, teamId, violations) {
+      Loading.show();
+      const dataRef = doc(db, "competitions", id);
+      const fieldKey = `${teamId}.violations`;
+      await updateDoc(dataRef, {
+        [fieldKey]: violations,
+        updatedAt: serverTimestamp(),
+      });
+
       if (this.competition && this.competition.id == id) {
-        Object.assign(this.competition, {
-          ...data,
-          updatedAt: Timestamp.now(),
+        this.competition[teamId] = this.competition[teamId] ?? {};
+        Object.assign(this.competition[teamId], {
+          violations: violations,
         });
       }
 

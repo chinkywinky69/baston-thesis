@@ -6,7 +6,10 @@
           <div class="text-h6 text-bold">DIVISION</div>
           <div class="text-body1">{{ compData.category == 'Male' ? 'Boys' : 'Girls' }}</div>
           <div v-if="compData.type == 'Team'">
-
+            <div v-for="player in teamData[compData.name][compData.category]" :key="player.id">
+              <div class="text-subtitle2 ">{{ getFullname(player) }}</div>
+            </div>
+            <div class="text-caption">Team: {{ teamData.name }}</div>
           </div>
           <div v-else>
             <div class="text-subtitle2 q-mt-sm">{{ getFullname(teamData[compData.name][compData.category]) }}</div>
@@ -17,25 +20,22 @@
           <div class="text-white text-body1 text-bold text-center">{{ compData.name }}
           </div>
         </q-card-section>
-        <q-chip :label="`Violations: ${violations}`" dense />
-        <span v-if="matchDone"><q-btn @click="undoViolation" :disable="violations <= 0" icon="fa-solid fa-rotate-left"
-            dense color="blue-8" outline size="sm" /></span>
+        <div class="q-pt-none" align="center">
+          <q-chip :label="`Violations: ${violations}`" dense />
+        </div>
         <q-card-section>
           <div class="row justify-center">
             <div class="text-h1 q-pa-md">{{ compData[teamData.id]?.averageScore ?? 0 }}</div>
           </div>
         </q-card-section>
-        <q-separator v-if="matchDone" />
-        <q-card-actions align="center">
-          <q-btn v-if="matchDone" @click="subtractHalfPoint" label="add violation" color="red-8" />
-        </q-card-actions>
       </q-card>
     </div>
     <div class="q-mt-sm row justify-center q-gutter-x-xs">
       <q-card v-for="(i, index) in 5" :key="i" style="width:175px">
         <q-card-section>
           <div class="row justify-center">
-            <input class="text-h3 judge-input" type="number" v-model="judgeScores[index]" min="1" max="10" step="0.1" />
+            <input :readonly="matchDone" class="text-h3 judge-input" type="number" v-model="judgeScores[index]" min="1"
+              max="10" step="0.1" autofocus />
           </div>
         </q-card-section>
         <q-separator />
@@ -45,11 +45,11 @@
       </q-card>
     </div>
     <div class="row justify-center q-gutter-sm q-mt-md ">
-      <q-btn v-if="matchOnGoing" :disable="!allJudgesScored" @click="calculateAverageScore" label="total score"
+      <q-btn v-if="matchOnGoing" :disable="!allJudgesScored" @click="calculateAverageScore" label="Calculate score"
         color="red-8" />
-      <q-btn v-if="matchDone" label="continue" color="blue-8" />
-      <q-btn @click="back" v-if="matchDone" label="back" color="red-8" />
-      <q-btn @click="noteDialog = true" label="Add Note" color="green-8" />
+      <q-btn @click="$router.go(-1)" v-if="matchDone" label="End Scoring" color="black" />
+      <q-btn @click="back" v-if="matchDone" label="Edit" color="red-8" />
+      <q-btn v-if="!matchDone" @click="noteDialog = true" label="Add Note" color="green-8" />
 
     </div>
     <!-- ADD NOTE DIALOG -->
@@ -60,14 +60,15 @@
         </q-card-section>
         <q-separator />
         <q-card-section>
-          <div>
+          <div class="q-mb-sm">
             <q-select v-model="selectedViolations" :model-value="compData[$route.query.teamId].violations ?? []"
-              label="Add Violation" :options="violationChoices" outlined dense multiple use-chips />
+              label="Add Violations" :options="violationChoices" outlined multiple use-chips />
           </div>
-          <q-input v-model="note" type="textarea" outlined />
+          <q-input v-model="compData[$route.query.teamId].notes" type="textarea" outlined />
         </q-card-section>
         <q-card-actions align="center">
-          <q-btn @click="noteDialog = false" color="green-8" label="submit" dense />
+          <q-btn flat label="Close" v-close-popup />
+          <q-btn @click="saveNotes" color="primary" label="Save Notes" dense />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -86,10 +87,9 @@ import { getFullname } from 'src/composables/filters';
 const matchDone = ref(false)
 const matchOnGoing = ref(true)
 const violations = ref(0)
+const selectedViolations = ref([])
 const playerScore = ref(0)
 const noteDialog = ref(false)
-const note = ref('')
-const selectedViolations = ref([])
 const judgeScores = reactive(Array(5).fill(null))
 const allJudgesScored = computed(() => {
   return judgeScores.every(score => score !== null && score !== '' && !isNaN(score));
@@ -105,18 +105,16 @@ const teamData = computed(() => {
   })
 })
 
-watch(selectedViolations, async (newVal, oldVal) => {
-  const oldCount = oldVal?.length ?? 0
-  const newCount = newVal?.length ?? 0
-  const diff = oldCount - newCount
-
-  const aveKey = `${route.query.teamId}.averageScore`
-  const vioKey = `${route.query.teamId}.violations`
-  await compStore.updateAnyoScore(route.params.id, aveKey, vioKey, {
-    ave: parseFloat((compData.value[route.query.teamId.id]?.averageScore ?? 0) + (diff * (0.5))),
-    vio: newVal,
-  })
+watch(selectedViolations, async (newVal) => {
+  await compStore.updateViolations(route.params.id, route.query.teamId, newVal)
 })
+
+const saveNotes = async () => {
+  const fieldKey = `${route.query.teamId}.notes`
+  await compStore.update(route.params.id, {
+    [fieldKey]: compData.value[route.query.teamId].notes
+  })
+}
 
 const fetchComp = async () => {
   await compStore.fetchOne(route.params.id)
@@ -136,7 +134,7 @@ watchEffect(() => {
   }
 })
 
-const calculateAverageScore = () => {
+const calculateAverageScore = async () => {
   matchDone.value = true;
   matchOnGoing.value = false;
   // Filter out null or invalid scores first
@@ -154,13 +152,9 @@ const calculateAverageScore = () => {
   // Calculate the average of the remaining scores
   const sum = validScores.reduce((acc, score) => acc + score, 0);
   const average = validScores.length > 0 ? (sum / validScores.length).toFixed(1) : 0;
-  playerScore.value = average;
-  updateComp({
-    [route.query.teamId]: {
-      averageScore: parseFloat(average),
-      judgeScores: judgeScores
-    }
-  })
+  playerScore.value = parseFloat(average) - (compData.value[route.query.teamId]?.violations?.length * 0.5)
+
+  await compStore.updateScore(route.params.id, route.query.teamId, playerScore.value, judgeScores)
 }
 
 
