@@ -44,7 +44,7 @@
               <div class="rb-1 bordered q-pa-md">
                 <div class="text-center text-subtitle2">Team 2</div>
                 <q-select @update:model-value="(val) => checkRep(val, 'player2')" class="q-mb-sm" v-model="team2"
-                  :options="teams" option-label="name" dense />
+                  :options="filteredTeams" option-label="name" dense />
                 <q-item v-if="form.player2 && form.player2 !== 'none'">
                   <q-item-section avatar>
                     <q-avatar color="red-1">
