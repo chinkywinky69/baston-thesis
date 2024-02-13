@@ -1,150 +1,154 @@
 <template>
   <q-page padding>
-    <div v-if="matchData" class="row justify-center q-gutter-md">
-      <q-card class="" style="width: 350px;">
-        <q-card-section class="text-center q-pa-">
-          <div class="text-h6 text-bold">DIVISION</div>
-          <div class="text-body1">{{ matchData?.category == 'Male' ? 'Boys' : 'Girls' }}</div>
-        </q-card-section>
-        <q-card-section class="q-my-sm bg-blue-8 q-pa-sm">
-          <div class="text-white text-h5 fw-900">Match #: {{ matchData?.no }}</div>
-        </q-card-section>
-        <q-card-section class="row justify-center q-pa-none q-mt-md">
-          <q-btn square class="q-px-xl text-body1 " color="blue-8" label="Player 1" />
-        </q-card-section>
-        <q-card-section>
-          <div class="row justify-center">
-            <div class="text-h1 q-pa-md">{{ matchData?.player1?.score ?? 0 }}</div>
-          </div>
-          <q-separator class="q-mb-md" />
-          <div class="text-body1 row justify-between">
-            <q-chip :label="`Fouls: ${matchData.player1?.foul ?? 0}`" />
-            <q-chip :label="`Disarm: ${matchData.player1?.disarm ?? 0}`" />
-          </div>
-          <div class="row justify-around">
-            <q-btn @click="updateStat('foul', 'player1', -1)" :disable="isDisabled('foul', 'player1')"
-              icon="fa-solid fa-rotate-left" dense color="blue-8" outline size="sm" />
-            <q-btn @click="updateStat('disarm', 'player1', -1)" :disable="isDisabled('disarm', 'player1')"
-              icon="fa-solid fa-rotate-left" dense color="blue-8" outline size="sm" />
-          </div>
-          <q-separator class="q-mt-md" />
-        </q-card-section>
-        <q-card-section class="q-pt-none">
-          <div class="row justify-center q-gutter-sm">
-            <div class="row justify-center q-gutter-sm">
-              <button @click="updateStat('foul', 'player1', 1)" class="comic-button2"><q-img width="60px"
-                  src="../img/foul.png" /></button>
-              <button @click="updateStat('disarm', 'player1', 1)" class="comic-button2"><q-img width="60px"
-                  src="../img/disarm.png" /></button>
-              <button @click="declareWinner('player1', '1')" style="font-size: 10px;" class="comic-button2">Declare
-                Winner</button>
+    <div v-if="matchData">
+      <q-card class="text-center q-pa-md rb-1 q-mx-auto q-mb-sm" style="max-width: 100vw; width: 720px">
+        <div class="text-h4"><span class=" text-bold">{{ matchData.division }}</span> <span>({{
+          matchData?.category == 'Male' ? 'Boys' : 'Girls' }})</span></div>
+      </q-card>
+      <div class="row justify-center q-gutter-md">
+        <q-card class="" style="width: 350px;">
+          <q-card-section class="text-center q-pb-none">
+            <div class="text-subtitle1 fw-600">{{ getFullname(matchData.player1) }}</div>
+          </q-card-section>
+          <q-card-section class="q-my-sm bg-blue-8 q-pa-sm">
+            <div class="text-white text-h5 fw-900">Match #: {{ matchData?.no }}</div>
+          </q-card-section>
+          <q-card-section class="row justify-center q-pa-none q-mt-md">
+            <q-btn square class="q-px-xl text-body1 " color="blue-8" label="Player 1" />
+          </q-card-section>
+          <q-card-section>
+            <div class="row justify-center">
+              <div class="text-h1 q-pa-md">{{ matchData?.player1?.score ?? 0 }}</div>
             </div>
-          </div>
-          <div class="q-mt-sm row justify-center q-gutter-sm">
-            <q-btn @click="updateStat('score', 'player1', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="blue-8" dense
-              outline />
-            <q-btn @click="updateStat('score', 'player1', -1)" :disable="isDisabled('score', 'player1')" class="q-pa-sm"
-              icon="fa-solid fa-minus" color="blue-8" dense outline />
-          </div>
-        </q-card-section>
-      </q-card>
-      <q-card class="" style="width: 350px;">
-        <q-card-section class="text-center q-pa-md">
-          <div class="text-h6 text-bold">CATEGORY</div>
-          <div class="text-body1">Openweight</div>
-        </q-card-section>
-        <q-card-section class="q-my-sm bg-red-8 q-pa-sm">
-          <div class="text-white text-h5 fw-900 text-end">Round: {{ matchData.currentRound }}</div>
-        </q-card-section>
-        <q-card-section class="row justify-center q-pa-none q-mt-md">
-          <q-btn square class="q-px-xl text-body1 " color="red-8" label="Player 2" />
-        </q-card-section>
-        <q-card-section>
-          <div class="row justify-center">
-            <div class="text-h1 q-pa-md">{{ matchData?.player2?.score ?? 0 }}</div>
-          </div>
-          <q-separator class="q-mb-md" />
-          <div class="text-body1 row justify-between">
-            <q-chip :label="`Fouls: ${matchData?.player2?.foul ?? 0}`" />
-            <q-chip :label="`Disarm: ${matchData?.player2?.disarm ?? 0}`" />
-          </div>
-          <div class="row justify-around">
-            <q-btn @click="updateStat('foul', 'player2', -1)" :disable="isDisabled('foul', 'player2')"
-              icon="fa-solid fa-rotate-left" dense color="red-8" outline size="sm" />
-            <q-btn @click="updateStat('disarm', 'player2', -1)" :disable="isDisabled('disarm', 'player2')"
-              icon="fa-solid fa-rotate-left" dense color="red-8" outline size="sm" />
-          </div>
-          <q-separator class="q-mt-md" />
-        </q-card-section>
-        <q-card-section class="q-pt-none">
-          <div class="row justify-center q-gutter-sm">
-            <button @click="updateStat('foul', 'player2', 1)" class="comic-button"><q-img width="60px"
-                src="../img/foul.png" /></button>
-            <button @click="updateStat('disarm', 'player2', 1)" class="comic-button"><q-img width="60px"
-                src="../img/disarm.png" /></button>
-            <button @click="declareWinner('player2', '2')" style="font-size: 10px;" class="comic-button">Declare
-              Winner</button>
-
-          </div>
-          <div class="q-mt-sm row justify-center q-gutter-sm">
-            <q-btn @click="updateStat('score', 'player2', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="red-8" dense
-              outline />
-            <q-btn @click="updateStat('score', 'player2', -1)" :disable="isDisabled('score', 'player2')" class="q-pa-sm"
-              icon="fa-solid fa-minus" color="red-8" dense outline />
-          </div>
-        </q-card-section>
-      </q-card>
-      <!-- match details -->
-      <q-dialog persistent v-model="showMatchDetailsDialog">
-        <q-card style="width: 500px" bordered>
-          <q-card-section>
-            <div class="text-center text-h6 ">Match Details</div>
+            <q-separator class="q-mb-md" />
+            <div class="text-body1 row justify-between">
+              <q-chip :label="`Fouls: ${matchData.player1?.foul ?? 0}`" />
+              <q-chip :label="`Disarm: ${matchData.player1?.disarm ?? 0}`" />
+            </div>
+            <div class="row justify-around">
+              <q-btn @click="updateStat('foul', 'player1', -1)" :disable="isDisabled('foul', 'player1')"
+                icon="fa-solid fa-rotate-left" dense color="blue-8" outline size="sm" />
+              <q-btn @click="updateStat('disarm', 'player1', -1)" :disable="isDisabled('disarm', 'player1')"
+                icon="fa-solid fa-rotate-left" dense color="blue-8" outline size="sm" />
+            </div>
+            <q-separator class="q-mt-md" />
           </q-card-section>
-          <q-separator />
-          <q-card-section style="max-height: 60vh" class="scroll">
-            <q-list bordered separator>
-              <div class="text-center text-bold text-h6">Winner: Player {{ matchData?.winner.no }}</div>
-              <q-item class="flex column " v-for="(match, index) in matchData.matchResults" :key="index">
-                <q-item-section>
-                  <q-item-label header class="text-bold text-subtitle2 text-black">ROUND: {{ index + 1 }}</q-item-label>
-                </q-item-section>
-
-                <q-item-label class="text-body1 text-bold text-red-8">Player 1</q-item-label>
-                <q-item-label>Points: {{ match.player1.score }}</q-item-label>
-                <q-item-label>Fouls: {{ match.player1.foul }}</q-item-label>
-                <q-item-label>Disarm: {{ match.player1.disarm }}</q-item-label>
-
-                <q-separator spaced />
-
-                <q-item-label class="text-body1 text-bold text-blue-8">Player 2</q-item-label>
-                <q-item-label>Points: {{ match.player2.score }}</q-item-label>
-                <q-item-label>Fouls: {{ match.player2.foul }}</q-item-label>
-                <q-item-label>Disarm: {{ match.player2.disarm }}</q-item-label>
-              </q-item>
-            </q-list>
+          <q-card-section class="q-pt-none">
+            <div class="row justify-center q-gutter-sm">
+              <div class="row justify-center q-gutter-sm">
+                <button @click="updateStat('foul', 'player1', 1)" class="comic-button2"><q-img width="60px"
+                    src="../img/foul.png" /></button>
+                <button @click="updateStat('disarm', 'player1', 1)" class="comic-button2"><q-img width="60px"
+                    src="../img/disarm.png" /></button>
+                <button @click="declareWinner('player1', '1')" style="font-size: 10px;" class="comic-button2">Declare
+                  Winner</button>
+              </div>
+            </div>
+            <div class="q-mt-sm row justify-center q-gutter-sm">
+              <q-btn @click="updateStat('score', 'player1', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="blue-8"
+                dense outline />
+              <q-btn @click="updateStat('score', 'player1', -1)" :disable="isDisabled('score', 'player1')" class="q-pa-sm"
+                icon="fa-solid fa-minus" color="blue-8" dense outline />
+            </div>
           </q-card-section>
-          <q-separator />
-          <q-card-actions align="right">
-            <q-btn @click="noteDialog = true" label="add note" color="green-8" />
-            <q-btn @click="matchDone" label="continue" color="blue-8" />
-          </q-card-actions>
         </q-card>
-      </q-dialog>
-      <!-- ADD NOTE DIALOG -->
-      <q-dialog v-model="noteDialog">
-        <q-card style="width: 500px" bordered>
-          <q-card-section class="text-center text-bold text-h6">
-            Add a Note
+        <q-card class="" style="width: 350px;">
+          <q-card-section class="text-center q-pb-none">
+            <div class="text-subtitle1 fw-600">{{ getFullname(matchData.player2) }}</div>
           </q-card-section>
-          <q-separator />
+          <q-card-section class="q-my-sm bg-red-8 q-pa-sm">
+            <div class="text-white text-h5 fw-900 text-end">Round: {{ matchData.currentRound }}</div>
+          </q-card-section>
+          <q-card-section class="row justify-center q-pa-none q-mt-md">
+            <q-btn square class="q-px-xl text-body1 " color="red-8" label="Player 2" />
+          </q-card-section>
           <q-card-section>
-            <q-input v-model="note" type="textarea" outlined />
+            <div class="row justify-center">
+              <div class="text-h1 q-pa-md">{{ matchData?.player2?.score ?? 0 }}</div>
+            </div>
+            <q-separator class="q-mb-md" />
+            <div class="text-body1 row justify-between">
+              <q-chip :label="`Fouls: ${matchData?.player2?.foul ?? 0}`" />
+              <q-chip :label="`Disarm: ${matchData?.player2?.disarm ?? 0}`" />
+            </div>
+            <div class="row justify-around">
+              <q-btn @click="updateStat('foul', 'player2', -1)" :disable="isDisabled('foul', 'player2')"
+                icon="fa-solid fa-rotate-left" dense color="red-8" outline size="sm" />
+              <q-btn @click="updateStat('disarm', 'player2', -1)" :disable="isDisabled('disarm', 'player2')"
+                icon="fa-solid fa-rotate-left" dense color="red-8" outline size="sm" />
+            </div>
+            <q-separator class="q-mt-md" />
           </q-card-section>
-          <q-card-actions align="center">
-            <q-btn @click="saveNote" color="green-8" label="submit" dense />
-          </q-card-actions>
+          <q-card-section class="q-pt-none">
+            <div class="row justify-center q-gutter-sm">
+              <button @click="updateStat('foul', 'player2', 1)" class="comic-button"><q-img width="60px"
+                  src="../img/foul.png" /></button>
+              <button @click="updateStat('disarm', 'player2', 1)" class="comic-button"><q-img width="60px"
+                  src="../img/disarm.png" /></button>
+              <button @click="declareWinner('player2', '2')" style="font-size: 10px;" class="comic-button">Declare
+                Winner</button>
+
+            </div>
+            <div class="q-mt-sm row justify-center q-gutter-sm">
+              <q-btn @click="updateStat('score', 'player2', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="red-8"
+                dense outline />
+              <q-btn @click="updateStat('score', 'player2', -1)" :disable="isDisabled('score', 'player2')" class="q-pa-sm"
+                icon="fa-solid fa-minus" color="red-8" dense outline />
+            </div>
+          </q-card-section>
         </q-card>
-      </q-dialog>
+        <!-- match details -->
+        <q-dialog persistent v-model="showMatchDetailsDialog">
+          <q-card style="width: 500px" bordered>
+            <q-card-section>
+              <div class="text-center text-h6 ">Match Details</div>
+            </q-card-section>
+            <q-separator />
+            <q-card-section style="max-height: 60vh" class="scroll">
+              <q-list bordered separator>
+                <div class="text-center text-bold text-h6">Winner: Player {{ matchData?.winner.no }}</div>
+                <q-item class="flex column " v-for="(match, index) in matchData.matchResults" :key="index">
+                  <q-item-section>
+                    <q-item-label header class="text-bold text-subtitle2 text-black">ROUND: {{ index + 1 }}</q-item-label>
+                  </q-item-section>
+
+                  <q-item-label class="text-body1 text-bold text-red-8">Player 1</q-item-label>
+                  <q-item-label>Points: {{ match.player1.score }}</q-item-label>
+                  <q-item-label>Fouls: {{ match.player1.foul }}</q-item-label>
+                  <q-item-label>Disarm: {{ match.player1.disarm }}</q-item-label>
+
+                  <q-separator spaced />
+
+                  <q-item-label class="text-body1 text-bold text-blue-8">Player 2</q-item-label>
+                  <q-item-label>Points: {{ match.player2.score }}</q-item-label>
+                  <q-item-label>Fouls: {{ match.player2.foul }}</q-item-label>
+                  <q-item-label>Disarm: {{ match.player2.disarm }}</q-item-label>
+                </q-item>
+              </q-list>
+            </q-card-section>
+            <q-separator />
+            <q-card-actions align="right">
+              <q-btn @click="noteDialog = true" label="add note" color="green-8" />
+              <q-btn @click="matchDone" label="continue" color="blue-8" />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+        <!-- ADD NOTE DIALOG -->
+        <q-dialog v-model="noteDialog">
+          <q-card style="width: 500px" bordered>
+            <q-card-section class="text-center text-bold text-h6">
+              Add a Note
+            </q-card-section>
+            <q-separator />
+            <q-card-section>
+              <q-input v-model="note" type="textarea" outlined />
+            </q-card-section>
+            <q-card-actions align="center">
+              <q-btn @click="saveNote" color="green-8" label="submit" dense />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+      </div>
     </div>
   </q-page>
 </template>
@@ -155,6 +159,7 @@ import { Dialog } from 'quasar';
 import { useRouter, useRoute } from 'vue-router';
 import { useMatchStore } from 'src/stores/matches';
 import { increment, arrayUnion } from 'firebase/firestore';
+import { getFullname } from 'src/composables/filters';
 
 const matchStore = useMatchStore()
 const router = useRouter()
@@ -181,7 +186,12 @@ const updateStat = async (stat, playerNo, val) => {
   console.log(stat);
   if (stat == 'disarm') {
     let playerToScore = 'player1'
-    if (playerNo == 'player1') playerToScore = 'player2'
+    let playerToSDisarm = 'player2'
+    if (playerNo == 'player1') {
+      playerToScore = 'player2'
+      playerToSDisarm = 'player1'
+    }
+    await matchStore.updateStat(route.params.matchId, 'disarm', playerToSDisarm, val)
     await matchStore.updateStat(route.params.matchId, 'score', playerToScore, val)
   }
   await matchStore.updateStat(route.params.matchId, stat, playerNo, val)

@@ -99,7 +99,7 @@ export const useMatchStore = defineStore("matches", {
 
     async updateStat(id, stat, playerNo, val) {
       if (!this.match[playerNo].hasOwnProperty(stat))
-        this.match[playerNo].score = 0;
+        this.match[playerNo][stat] = 0;
       else if (val == -1) this.match[playerNo][stat]--;
       else if (val == 1) this.match[playerNo][stat]++;
 

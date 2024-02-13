@@ -99,7 +99,7 @@ const handleCreate = (val) => {
   $q.dialog({
     component: CreateCompetitionDialog,
     componentProps: {
-      tourna: tourna
+      tourna: tourna.value
     }
   })
 }
