@@ -96,7 +96,7 @@ const team2 = ref(null)
 const filteredTeams = computed(() => {
   if (teams.value?.length > 0) {
     return teams.value.map(team => {
-      let isDisabled = currentMatches.value.some(match => match.player1.teamId === team.id || match.player2.teamId === team.id);
+      let isDisabled = currentMatches.value.some(match => (match.player1.teamId === team.id && match.division === props.data.division && match.category === props.data.category) || (match.player2.teamId === team.id && match.division === props.data.division && match.category === props.data.category));
       return { ...team, disable: isDisabled };
     });
   }
