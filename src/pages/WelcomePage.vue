@@ -28,6 +28,7 @@
         </div>
       </q-img>
     </div>
+
     <q-dialog v-model="addUserDialog">
       <q-card style="width: 400px">
         <q-form @submit="previewMember ? updateMember() : createMember()">
@@ -42,8 +43,8 @@
               :rules="[(val) => !!val]" />
             <q-input v-model="form.school" class="q-mb-sm" label="School" outlined dense type="text"
               :rules="[(val) => !!val]" />
-            <q-input v-model="form.team" class="q-mb-sm" label="Team" outlined dense type="text"
-              :rules="[(val) => !!val]" />
+            <q-select v-model="form.teamId" option-label="name" :options="teams" option-value="id" emit-value map-options
+              class="q-mb-sm" label="Team" outlined dense type="text" :rules="[(val) => !!val]" />
             <div class="row">
               <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
                 @change="calculateAge" :rules="[(val) => !!val]" />
@@ -84,6 +85,7 @@
         </q-form>
       </q-card>
     </q-dialog>
+
     <div class="q-pa-xl">
       <div class="text-h3 text-black text-bold text-center q-mb-xl">ABOUT US</div>
       <div class="row justify-center q-mb-xl">
@@ -192,10 +194,10 @@
                 <q-btn icon="fa-solid fa-calendar" label="date" color="red" />
               </div>
               <div style="width: 150px;">
-                <q-select label="Division" :options="weightDivision" outlined dense />
+                <q-select v-model="selectedDivision" label="Division" :options="weightDivision" outlined dense />
               </div>
               <div style="width: 150px;">
-                <q-select label="Category" :options="categories" outlined dense />
+                <q-select v-model="selectedCategory" label="Category" :options="categories" outlined dense />
               </div>
             </div>
             <div class="q-mt-md">
@@ -230,15 +232,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeMount } from 'vue'
 import { useMemberStore } from 'src/stores/members';
 import { useQuasar } from 'quasar';
 import { getFullname, getAddress } from 'src/composables/filters'
+import { useTeamStore } from 'src/stores/teams';
 
 const addUserDialog = ref(false)
 const viewDetailsDialog = ref(false)
 const medCert = ref(null)
 const $q = useQuasar()
+const teams = computed(() => useTeamStore().teams)
 
 const form = reactive({
   lastName: "",
@@ -246,7 +250,7 @@ const form = reactive({
   middleName: "",
   email: "",
   school: "",
-  team: "",
+  teamId: "",
   birthday: "",
   age: "",
   gender: "",
@@ -363,6 +367,12 @@ const calculateWeightClass = (weight, gender) => {
   }
 };
 
+const fetchTeams = async () => {
+  await useTeamStore().fetchAll()
+}
+
+onBeforeMount(() => fetchTeams())
+
 
 const columns = [
   { name: 'name', required: true, label: 'Name', format: (val, row) => getFullname(row), align: 'left', field: 'name', sortable: true },
@@ -438,12 +448,14 @@ const rows = [
 
 ]
 
+const selectedDivision = ref("")
 const weightDivision = [
   'Pinweight', 'Bantanweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
 ]
 
+const selectedCategory = ref("")
 const categories = [
-  'Girls (Kids)', 'Boys (Kids)', 'Girls Secondary (Junior)', 'Boys Secondary (Junior)', 'Boys Senior', 'Girs Senior'
+  "Boys", "Girls"
 ]
 
 </script>
