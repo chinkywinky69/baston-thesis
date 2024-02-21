@@ -96,12 +96,15 @@ const team2 = ref(null)
 const filteredTeams = computed(() => {
   if (teams.value?.length > 0) {
     return teams.value.map(team => {
-      let isDisabled = currentMatches.value.some(match => (match.player1.teamId === team.id && match.division === props.data.division && match.category === props.data.category) || (match.player2.teamId === team.id && match.division === props.data.division && match.category === props.data.category));
-      return { ...team, disable: isDisabled };
+      let isSameDivision = currentMatches.value.some(match => match.division === props.data.division);
+      let isSameCategory = currentMatches.value.some(match => match.category === props.data.gender);
+      let isPlayersSet = currentMatches.value.some(match => match.player1.teamId === team.id || match.player2.teamId === team.id);
+      return { ...team, disable: isSameDivision && isSameCategory && isPlayersSet };
     });
   }
   return [];
 });
+
 
 const form = reactive({
   no: '',
