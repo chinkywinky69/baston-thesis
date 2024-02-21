@@ -15,7 +15,7 @@
                 </q-avatar>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-h6 fw-600"> {{ i.name }}</q-item-label>
+                <q-item-label :lines="2" class="text-h6 fw-600" style="min-height: 50px;"> {{ i.name }}</q-item-label>
                 <q-item-label class="text-caption">Venue: <span class="fw-600">{{ i?.venue ?? 'Not set'
                 }}</span></q-item-label>
                 <q-item-label class="text-caption">Schedule: <span class="fw-600">{{ toDate(i.date) ?? 'Not set'
