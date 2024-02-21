@@ -68,7 +68,7 @@ const routes = [
         component: () => import("pages/MatchesPage.vue"),
         children: [
           {
-            path: "labanan",
+            path: "",
             component: () => import("pages/matches/LabananPage.vue"),
           },
           {

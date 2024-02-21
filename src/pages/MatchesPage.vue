@@ -17,7 +17,7 @@
         </q-item-section>
       </q-item>
       <q-tabs dense>
-        <q-route-tab label="Labanan" :to="`/matches/${tourna.id}/labanan`" />
+        <q-route-tab label="Labanan" :to="`/matches/${tourna.id}`" />
         <q-route-tab label="Anyo" :to="`/matches/${tourna.id}/anyo`" />
       </q-tabs>
     </q-card>

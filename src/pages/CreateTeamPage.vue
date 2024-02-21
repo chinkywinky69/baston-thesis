@@ -10,16 +10,19 @@
     </div>
     <div class="row justify-start ">
       <div v-for="(item, i) in teams" :key="i" class="col-6 col-md-3 q-mt-md q-pa-xs">
-        <q-card class="rb-1">
+        <q-card class="rb-1 column justify-between" style="min-height: 240px;">
           <q-card-section>
-            <div class="text-subtitle1 text-red-7 text-bold">
-              {{ item.name }}
-            </div>
-            <div>
-              <img width="100px" src="../img/arnispic1.png" />
-            </div>
+            <q-item class="text-subtitle1 text-red-7 text-bold">
+              <q-item-section>
+                <q-item-label :lines="2">
+                  {{ item.name }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
           </q-card-section>
-          <q-separator />
+          <div>
+            <img width="100px" src="../img/arnispic1.png" />
+          </div>
           <q-card-actions>
             <q-btn label="Draft" @click="handleViewTeam(item.id)" class="rb-1 text-bold" dense style="width: 75px;"
               color="blue-8" size="12px" outline />
