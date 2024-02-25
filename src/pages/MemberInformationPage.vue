@@ -6,11 +6,11 @@
     </div>
 
     <div class="q-mb-md">
-      <q-table class="my-sticky-header-column-table" :loading="isLoadingMembersTable" :rows="approvedMembers"
-        :columns="columns" row-key="name">
+      <q-table :filter="searchMember" class="my-sticky-header-column-table" :loading="isLoadingMembersTable"
+        :rows="approvedMembers" :columns="columns" row-key="name">
         <template v-slot:top>
           <div class="text-h6 q-mr-md">Verified Members</div>
-          <q-input placeholder="search" outlined dense>
+          <q-input v-model="searchMember" placeholder="search" outlined dense>
             <template v-slot:prepend>
               <q-icon name="search" />
             </template>
@@ -33,11 +33,11 @@
     </div>
 
     <div>
-      <q-table class="my-sticky-header-column-table" :loading="isLoadingMembersTable" title="Pending Users"
-        :rows="pendingMembers" :columns="columns" row-key="name">
+      <q-table :filter="searchPending" class="my-sticky-header-column-table" :loading="isLoadingMembersTable"
+        title="Pending Users" :rows="pendingMembers" :columns="columns" row-key="name">
         <template v-slot:top>
           <div class="text-h6 q-mr-md">Pending Members</div>
-          <q-input placeholder="search" outlined dense>
+          <q-input v-model="searchPending" placeholder="search" outlined dense>
             <template v-slot:prepend>
               <q-icon name="search" />
             </template>
@@ -277,7 +277,8 @@ import { useTeamStore } from 'src/stores/teams';
 
 const addUserDialog = ref(false)
 const viewDetailsDialog = ref(false)
-const search = ref("")
+const searchMember = ref("")
+const searchPending = ref("")
 const medCert = ref(null)
 const medCertDialog = ref(false)
 const $q = useQuasar()
