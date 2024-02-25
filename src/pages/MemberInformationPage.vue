@@ -490,26 +490,6 @@ const viewDetails = (data, pending) => {
   previewMember.value = memberDataCopy;
 };
 
-const dummy = {
-  lastName: 'Doe',
-  firstName: 'John',
-  middleName: 'Etlog',
-  email: 'john.doe@example.com',
-  birthday: '1990-01-01', // format YYYY-MM-DD
-  age: 21,
-  gender: 'Male',
-  contactNo: '123456789',
-  height: 180, // in cm
-  weight: 70, // in kg
-  city: 'San Carlos City',
-  barangay: 'Nataban',
-  street: '123, Elm Street',
-  fathersName: 'Richard Doe',
-  mothersName: 'Jane Doe',
-  legalGuardian: 'N/A',
-  legalGuardianContact: '0987654321',
-};
-
 const previewMember = ref(null)
 
 const isLoadingMembersTable = ref(false)
@@ -525,7 +505,6 @@ const editMember = (data) => {
 }
 
 onMounted(async () => {
-  Object.assign(form, dummy)
   await fetchMembers()
 })
 

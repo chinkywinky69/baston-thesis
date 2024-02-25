@@ -67,7 +67,7 @@ export const useMemberStore = defineStore("members", {
           const teamData = useTeamStore()?.teams.find(
             (item) => item.id == data.teamId
           );
-          data.team = teamData;
+          playerData.team = teamData;
 
           // add the player to team in database
           const teamRef = doc(db, "teams", data.teamId);
