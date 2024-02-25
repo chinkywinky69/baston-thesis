@@ -234,11 +234,9 @@
 import { ref, reactive, computed, onMounted, onBeforeMount } from 'vue'
 import { useMemberStore } from 'src/stores/members';
 import { useQuasar } from 'quasar';
-import { getFullname, getAddress } from 'src/composables/filters'
 import { useTeamStore } from 'src/stores/teams';
 
 const addUserDialog = ref(false)
-const viewDetailsDialog = ref(false)
 const medCert = ref(null)
 const $q = useQuasar()
 const teams = computed(() => useTeamStore().teams)
@@ -374,22 +372,6 @@ const fetchTeams = async () => {
 onBeforeMount(() => fetchTeams())
 
 
-const columns = [
-  { name: 'name', required: true, label: 'Name', format: (val, row) => getFullname(row), align: 'left', field: 'name', sortable: true },
-  { name: 'gender', align: 'center', label: 'Gender', field: 'gender', sortable: true },
-  { name: 'age', label: 'Age', field: 'age', sortable: true },
-  { name: 'address', label: 'Address', format: (val, row) => getAddress(row), field: 'address' },
-  { name: 'action', label: 'Actions', align: 'center', sortable: false }
-]
-
-const membersData = computed(() => useMemberStore().members)
-
-const viewDetails = (data) => {
-  viewDetailsDialog.value = true;
-  //PUT IN A DIALOG ANG FULL DETAILS
-  previewMember.value = data
-}
-
 const dummy = {
   lastName: 'Doe',
   firstName: 'John',
@@ -410,24 +392,8 @@ const dummy = {
   legalGuardianContact: '0987654321',
 };
 
-const previewMember = ref(null)
-
-const isLoadingMembersTable = ref(false)
-const fetchMembers = async () => {
-  isLoadingMembersTable.value = true
-  await useMemberStore().fetchAll()
-  isLoadingMembersTable.value = false
-}
-
-const editMember = (data) => {
-  Object.assign(form, data)
-  addUserDialog.value = true
-}
-
-
 onMounted(async () => {
   Object.assign(form, dummy)
-  await fetchMembers()
 })
 
 const slide = ref('first')
