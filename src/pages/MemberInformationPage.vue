@@ -190,7 +190,7 @@
           </div>
           <q-card-actions v-if="pendingMode" align="right">
             <q-btn @click="acceptMember(previewMember.id)" label="Accept" color="primary" v-close-popup />
-            <q-btn @click="rejectMember(previewMember.id)" label="Reject" color="red-8" v-close-popup />
+            <q-btn @click="deleteMember(previewMember)" label="Reject" color="red-8" v-close-popup />
           </q-card-actions>
           <q-card-actions v-else align="right">
             <q-btn @click="editMember(previewMember)" label="Edit" color="primary" v-close-popup />
