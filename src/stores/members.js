@@ -99,7 +99,7 @@ export const useMemberStore = defineStore("members", {
       }
     },
 
-    async update(id, data, file) {
+    async update(id, data, file, mode) {
       const dataRef = doc(db, "members", id);
       await updateDoc(dataRef, {
         ...data,
@@ -108,6 +108,14 @@ export const useMemberStore = defineStore("members", {
 
       if (file) {
         await this.uploadMedcert(id, file);
+      }
+
+      if (mode.type == "accepted") {
+        // add the player to team in database
+        const teamRef = doc(db, "teams", mode.teamId);
+        await updateDoc(teamRef, {
+          players: arrayUnion(mode.data),
+        });
       }
 
       const playerData = {

@@ -189,7 +189,7 @@
             </div>
           </div>
           <q-card-actions v-if="pendingMode" align="right">
-            <q-btn @click="acceptMember(previewMember.id)" label="Accept" color="primary" v-close-popup />
+            <q-btn @click="acceptMember(previewMember)" label="Accept" color="primary" v-close-popup />
             <q-btn @click="deleteMember(previewMember)" label="Reject" color="red-8" v-close-popup />
           </q-card-actions>
           <q-card-actions v-else align="right">
@@ -329,7 +329,7 @@ const handleMemberDialog = () => {
 
 const deleteMember = (data) => {
   viewDetailsDialog.value = false
-  useMemberStore().delete(data.id, data.medCert ?? null)
+  useMemberStore().delete(data, data.medCert ?? null)
 }
 
 
@@ -374,9 +374,14 @@ const updateMember = async () => {
   }
 }
 
-const acceptMember = async (id) => {
+const acceptMember = async (memberData) => {
   $q.loading.show()
-  const res = await useMemberStore().update(id, { approved: true })
+  const res = await useMemberStore().update(memberData.id, { approved: true }, null, {
+    type: 'accepted',
+    teamId: memberData.teamId,
+    data: memberData
+  })
+
   $q.loading.hide()
 }
 
