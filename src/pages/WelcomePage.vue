@@ -265,7 +265,6 @@ const form = reactive({
 })
 
 const handleMemberDialog = () => {
-  previewMember.value = null
   addUserDialog.value = true
 }
 
