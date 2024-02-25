@@ -244,6 +244,7 @@ const $q = useQuasar()
 const teams = computed(() => useTeamStore().teams)
 
 const form = reactive({
+  approved: false,
   lastName: "",
   firstName: "",
   middleName: "",

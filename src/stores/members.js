@@ -63,7 +63,7 @@ export const useMemberStore = defineStore("members", {
           id: docRef.id,
         };
 
-        if (data?.teamId) {
+        if (data?.teamId && data.approved) {
           const teamData = useTeamStore()?.teams.find(
             (item) => item.id == data.teamId
           );
