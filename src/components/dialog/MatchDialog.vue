@@ -148,6 +148,7 @@ const checkRep = (teamData, playerModel) => {
 }
 
 const create = async () => {
+  form.round = parseInt(form.round)
   form.no = parseInt(form.no)
   const res = await useMatchStore().create(form)
   if (res.success) onDialogOK()
