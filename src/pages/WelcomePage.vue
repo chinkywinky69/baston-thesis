@@ -79,8 +79,7 @@
                 <q-icon name="attach_file" />
               </template>
             </q-file>
-            <q-btn :loading="isLoading" type="submit" :label="previewMember ? 'Update Data' : 'Add Member'"
-              color="red-8" />
+            <q-btn :loading="isLoading" type="submit" label="Submit" color="red-8" />
           </q-card-section>
         </q-form>
       </q-card>
