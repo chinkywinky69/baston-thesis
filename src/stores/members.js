@@ -1,6 +1,7 @@
 import {
   Timestamp,
   addDoc,
+  arrayRemove,
   arrayUnion,
   collection,
   deleteDoc,
@@ -141,20 +142,28 @@ export const useMemberStore = defineStore("members", {
       return true;
     },
 
-    async delete(id, medCertUrl) {
+    async delete(member, medCertUrl) {
       Dialog.create({
         title: "Confirm",
         message: "Are you sure you want to permanently delete this data?",
         cancel: true,
       }).onOk(async () => {
         Loading.show();
-        const dataRef = doc(db, "members", id);
+        const dataRef = doc(db, "members", member.id);
         await deleteDoc(dataRef);
 
         if (medCertUrl) await this.deleteMedcert(medCertUrl);
         Loading.hide();
 
-        const i = this.members.findIndex((item) => item.id === id);
+        if (member?.teamId) {
+          // remove the player to team in database
+          const teamRef = doc(db, "teams", member.teamId);
+          await updateDoc(teamRef, {
+            players: arrayRemove(member),
+          });
+        }
+
+        const i = this.members.findIndex((item) => item.id === member.id);
         if (i > -1) {
           this.members.splice(i, 1);
         }

@@ -8,9 +8,16 @@
             <div>Weight Division: <span class="fw-600">{{ data.division }}</span></div>
             <div>Category: <span class="fw-600">{{ data.gender }}</span></div>
           </div>
-          <div>
-            <div class="">Match No.</div>
-            <q-input mask="##" v-model="form.no" outlined dense :rules="[(val) => !!val]" style="width: 100px;" />
+          <div class="flex q-gutter-x-md">
+            <div>
+              <div class="">Round No.</div>
+              <q-select v-model="form.round" outlined dense :options="[1, 2, 3, 4, 5]" :rules="[(val) => !!val]"
+                style="width: 65px;" />
+            </div>
+            <div>
+              <div class="">Match No.</div>
+              <q-input mask="##" v-model="form.no" outlined dense :rules="[(val) => !!val]" style="width: 100px;" />
+            </div>
           </div>
           <div class="row justify-center">
             <div class="col-12 col-md-6 q-pa-xs">
@@ -109,6 +116,7 @@ const filteredTeams = computed(() => {
 
 
 const form = reactive({
+  round: null,
   no: '',
   tournaId: '',
   division: '',
