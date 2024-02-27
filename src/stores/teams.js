@@ -164,7 +164,7 @@ export const useTeamStore = defineStore("teams", {
       const docSnap = await getDoc(dataRef);
       this.team = docSnap.data();
       Loading.hide();
-      return true;
+      return docSnap.data();
     },
 
     async updateImages(id, files) {

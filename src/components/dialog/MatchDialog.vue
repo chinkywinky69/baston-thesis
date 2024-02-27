@@ -17,7 +17,7 @@
               <div class="rb-1 bordered q-pa-md">
                 <div class="text-subtitle2 text-center">Team 1</div>
                 <q-select @update:model-value="(val) => checkRep(val, 'player1')" class="q-mb-sm" v-model="team1"
-                  :options="teams" option-label="name" dense />
+                  :options="filteredTeams" option-label="name" dense />
                 <q-item v-if="form.player1 && form.player1 !== 'none'">
                   <q-item-section avatar>
                     <q-avatar color="red-1">
@@ -44,7 +44,7 @@
               <div class="rb-1 bordered q-pa-md">
                 <div class="text-center text-subtitle2">Team 2</div>
                 <q-select @update:model-value="(val) => checkRep(val, 'player2')" class="q-mb-sm" v-model="team2"
-                  :options="teams" option-label="name" dense />
+                  :options="filteredTeams" option-label="name" dense />
                 <q-item v-if="form.player2 && form.player2 !== 'none'">
                   <q-item-section avatar>
                     <q-avatar color="red-1">
@@ -89,8 +89,19 @@ const { dialogRef, onDialogOK } = useDialogPluginComponent();
 
 const props = defineProps({ data: Object })
 const teams = computed(() => useTeamStore().teams)
+const currentMatches = computed(() => useMatchStore().matches)
 const team1 = ref(null)
 const team2 = ref(null)
+
+const filteredTeams = computed(() => {
+  if (teams.value?.length > 0) {
+    return teams.value.map(team => {
+      let isDisabled = currentMatches.value.some(match => match.player1.teamId === team.id || match.player2.teamId === team.id);
+      return { ...team, disable: isDisabled };
+    });
+  }
+  return [];
+});
 
 const form = reactive({
   no: '',
@@ -109,22 +120,15 @@ onMounted(() => {
     form.division = data.division
     form.matchType = data.matchType
     form.category = data.gender
+
   }
-})
-
-
-const fetchTeams = async () => {
-  await useTeamStore().fetchAll()
-}
-onMounted(async () => {
-  await fetchTeams()
 })
 
 const checkRep = (teamData, playerModel) => {
   if (teamData && teamData[props.data.division]) {
     const value = teamData[props.data.division][props.data.gender];
     const result = value !== undefined ? value : '';
-    form[playerModel] = result
+    form[playerModel] = { ...result, team: { name: teamData.name } }
   } else {
     form[playerModel] = 'none'
   }

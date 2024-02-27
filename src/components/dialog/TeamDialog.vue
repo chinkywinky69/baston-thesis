@@ -6,7 +6,7 @@
         <q-input v-model="teamName" label="Team Name" />
         <q-card-actions align="right">
           <q-btn flat label="Cancel" v-close-popup />
-          <q-btn @click="createTeam" dense label="Submit" color="primary" />
+          <q-btn @click="createTeam" :disable="!teamName" dense label="Submit" color="primary" />
         </q-card-actions>
       </q-card-section>
     </q-card>

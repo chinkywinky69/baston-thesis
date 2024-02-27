@@ -26,6 +26,12 @@
                     </q-item-label>
                   </template>
                   <q-item-label caption v-else>{{ getFullname(team[com.name][com.category]) }}</q-item-label>
+                  <q-item-label class="row items-center  text-red  fw-600"
+                    v-if="com.hasOwnProperty(team.id) && com[team.id].averageScore">
+                    <div class="q-mr-sm">Score: </div>
+                    <div class="text-h6">{{ com[team.id].averageScore
+                    }}</div>
+                  </q-item-label>
                 </q-item-section>
                 <q-item-section side>
                   <q-btn @click="routeTo(com, team)" round flat icon="open_in_new" />
@@ -48,20 +54,23 @@
 
 <script setup>
 import { useQuasar } from 'quasar';
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router';
+import { getFullname } from 'src/composables/filters';
+
+import { useCompetitionStore } from 'src/stores/competitions';
+import { useTournamentStore } from 'src/stores/tournaments';
 
 // Components
-import AnyoTeamDialog from '../dialog/AnyoTeamDialog.vue';
-import { useCompetitionStore } from 'src/stores/competitions';
-import { getFullname } from 'src/composables/filters';
-import CreateCompetitionDialog from '../dialog/CreateCompetitionDialog.vue';
+import AnyoTeamDialog from 'components/dialog/AnyoTeamDialog.vue';
+import CreateCompetitionDialog from 'components/dialog/CreateCompetitionDialog.vue';
 
-const anyoTypes = [
-  "Individual Likha Single Weapon", "Individual Likha Double Weapon", "Individual Likha Espada Y Daga Weapon", "Team Likha Single Weapon", "Team Likha Double Weapon", "Team Likha Espada Y Daga Weapon"
-]
+const tournaStore = useTournamentStore()
+const comStore = useCompetitionStore()
 
-const props = defineProps({ tourna: Object, competitions: Array })
+const tourna = computed(() => tournaStore.tournament)
+const competitions = computed(() => comStore.competitions)
+
 const selectedCom = ref('')
 const $q = useQuasar()
 const router = useRouter()
@@ -90,7 +99,7 @@ const handleCreate = (val) => {
   $q.dialog({
     component: CreateCompetitionDialog,
     componentProps: {
-      tourna: props.tourna
+      tourna: tourna.value
     }
   })
 }

@@ -11,16 +11,12 @@ import {
   where,
   serverTimestamp,
   updateDoc,
+  increment,
 } from "firebase/firestore";
-import {
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-  ref as storageRef,
-} from "firebase/storage";
 import { defineStore } from "pinia";
 import { Dialog, Loading, Notify } from "quasar";
-import { db, auth, storage } from "src/boot/firebase";
+import { db } from "src/boot/firebase";
+import { useTeamStore } from "./teams";
 
 export const useMatchStore = defineStore("matches", {
   state: () => ({
@@ -63,7 +59,7 @@ export const useMatchStore = defineStore("matches", {
       return { success: true, id: doc.id };
     },
 
-    async update(id, data) {
+    async update(id, data, mode) {
       Loading.show();
       const dataRef = doc(db, "matches", id);
       await updateDoc(dataRef, {
@@ -78,6 +74,18 @@ export const useMatchStore = defineStore("matches", {
           updatedAt: Timestamp.now(),
         });
       }
+
+      if (this.match && this.match.id == id) {
+        Object.assign(this.match, {
+          ...data,
+          updatedAt: Timestamp.now(),
+        });
+      }
+
+      if (mode && mode == "statReset") {
+        this.fetchOne(id);
+      }
+
       Loading.hide();
       Notify.create({
         type: "positive",
@@ -86,6 +94,21 @@ export const useMatchStore = defineStore("matches", {
         message: "Updated successfully!",
       });
 
+      return true;
+    },
+
+    async updateStat(id, stat, playerNo, val) {
+      if (!this.match[playerNo].hasOwnProperty(stat))
+        this.match[playerNo][stat] = 0;
+      else if (val == -1) this.match[playerNo][stat]--;
+      else if (val == 1) this.match[playerNo][stat]++;
+
+      const dataRef = doc(db, "matches", id);
+      const fieldKey = `${playerNo}.${stat}`;
+      await updateDoc(dataRef, {
+        [fieldKey]: increment(val),
+        updatedAt: serverTimestamp(),
+      });
       return true;
     },
 
@@ -128,7 +151,6 @@ export const useMatchStore = defineStore("matches", {
     },
 
     async fetchAllViaTournaId(tournaId) {
-      Loading.show();
       const dataRef = collection(db, "matches");
       const q = query(
         dataRef,
@@ -136,18 +158,27 @@ export const useMatchStore = defineStore("matches", {
         orderBy("no", "asc")
       );
       const snapshot = await getDocs(q);
-      Loading.hide();
 
-      this.matches = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
+      this.matches = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+          const match = { ...doc.data(), id: doc.id };
+          const teamId1 = match.player1.teamId;
+          const teamData1 = await useTeamStore().fetchOne(teamId1);
+          match.player1.team = teamData1;
+
+          const teamId2 = match.player2.teamId;
+          const teamData2 = await useTeamStore().fetchOne(teamId2);
+          match.player2.team = teamData2;
+
+          return match;
+        })
+      );
     },
 
     async fetchOne(id) {
       const dataRef = doc(db, "matches", id);
       const docSnap = await getDoc(dataRef);
-      this.match = docSnap.data();
+      this.match = { ...docSnap.data(), id: id };
       return true;
     },
   },

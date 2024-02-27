@@ -78,7 +78,7 @@
               class="q-mb-sm" label="Team" outlined dense type="text" :rules="[(val) => !!val]" />
             <div class="row">
               <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
-                @change="calculateAge" :rules="[(val) => !!val]" />
+                @update:model-value="calculateAge" :rules="[(val) => !!val]" />
               <q-input v-model="form.age" class="col q-mb-sm" label="Age" outlined dense type="number" readonly />
             </div>
             <q-select v-model="form.gender" class="q-mb-sm" :options="genders" outlined dense label="Gender"
@@ -93,7 +93,7 @@
 
             </div>
             <q-input :label="`${calculateWeightClass(form.weight, form.gender)}`" outlined dense readonly />
-            <q-input class="col q-mb-sm" label="City: San Carlos City" outlined dense type="number" readonly />
+            <q-input v-model="form.city" class="col q-mb-sm" outlined dense readonly />
             <q-select v-model="form.barangay" class="q-mb-sm" :options="barangays" outlined dense label="Barangay"
               :rules="[(val) => !!val]" />
             <q-input v-model="form.street" class="q-mb-sm" label="Street Name, Building, House no." outlined dense />
@@ -170,13 +170,13 @@
 
             <div class="q-pa-sm rb-1 q-gutter-xs" style="border: 1px solid grey;">
               <div><strong>Birthday:</strong> {{ previewMember.birthday }}</div>
-              <div><strong>Age:</strong> {{ previewMember.birthday }}</div>
+              <div><strong>Age:</strong> {{ previewMember.age }}</div>
               <div><strong>Gender:</strong> {{ previewMember.gender }}</div>
-              <div><strong>Contact Number:</strong> {{ previewMember.contactNumber }}</div>
+              <div><strong>Contact Number:</strong> {{ previewMember.contactNo }}</div>
               <div><strong>Height:</strong> {{ previewMember.height }} cm</div>
               <div><strong>Weight:</strong> {{ previewMember.weight }} kg</div>
               <div><strong>Weight Class:</strong> {{ previewMember.weightClass }}</div>
-              <div><strong>City:</strong> {{ previewMember.city }}</div>
+              <div><strong>City:</strong> {{ previewMember.city == '' ? 'San Carlos City' : previewMember.city }}</div>
               <div><strong>Barangay:</strong> {{ previewMember.barangay }}</div>
               <div><strong>Street Name, Building, House No.:</strong> {{ previewMember.street }}</div>
               <div><strong>Father's Name:</strong> {{ previewMember.fathersName }}</div>
@@ -216,6 +216,7 @@
         </q-card>
       </q-dialog>
     </q-dialog>
+
   </q-page>
 </template>
 
@@ -306,6 +307,7 @@ const form = reactive({
   weight: "",
   weightClass: "",
   barangay: "",
+  city: "San Carlos City",
   street: "",
   fathersName: "",
   mothersName: "",
@@ -422,7 +424,7 @@ const calculateAge = () => {
     if (m < 0 || (m === 0 && today.getDate() < birthdayDate.getDate())) {
       ageCalc--;
     }
-    form.age = ageCalc;
+    form.age = parseInt(ageCalc);
   } else {
     form.age = '';
   }
@@ -518,7 +520,7 @@ const fetchMembers = async () => {
 }
 
 const editMember = (data) => {
-  Object.assign(form, data)
+  Object.assign(form, { ...data, city: 'San Carlos City' })
   addUserDialog.value = true
 }
 
@@ -528,7 +530,6 @@ onMounted(async () => {
 })
 
 const fetchTeams = async () => {
-  console.log('hey');
   await useTeamStore().fetchAll()
 }
 
