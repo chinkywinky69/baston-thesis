@@ -42,8 +42,8 @@
               :rules="[(val) => !!val]" />
             <q-input v-model="form.school" class="q-mb-sm" label="School" outlined dense type="text"
               :rules="[(val) => !!val]" />
-            <q-input v-model="form.team" class="q-mb-sm" label="Team" outlined dense type="text"
-              :rules="[(val) => !!val]" />
+            <q-select v-model="form.teamId" option-label="name" :options="teams" option-value="id" emit-value map-options
+              class="q-mb-sm" label="Team" outlined dense type="text" :rules="[(val) => !!val]" />
             <div class="row">
               <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
                 @change="calculateAge" :rules="[(val) => !!val]" />
@@ -229,10 +229,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeMount } from 'vue'
 import { useMemberStore } from 'src/stores/members';
 import { useQuasar } from 'quasar';
 import { getFullname, getAddress } from 'src/composables/filters'
+import { useTeamStore } from 'src/stores/teams';
+
 
 const addUserDialog = ref(false)
 const viewDetailsDialog = ref(false)
@@ -260,6 +262,13 @@ const form = reactive({
   legalGuardian: "",
   legalGuardianContact: ""
 })
+
+const teams = computed(() => useTeamStore().teams)
+const fetchTeams = async () => {
+  await useTeamStore().fetchAll()
+}
+onBeforeMount(() => fetchTeams())
+
 
 const handleMemberDialog = () => {
   previewMember.value = null
