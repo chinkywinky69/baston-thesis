@@ -24,7 +24,7 @@ const routes = [
 
   {
     path: "/welcomePage",
-    component: () => import("layouts/AuthLayout.vue"),
+    component: () => import("layouts/WelcomePageLayout.vue"),
     children: [
       {
         path: "",

@@ -130,7 +130,8 @@
             <q-separator />
             <q-card-actions class="row justify-center">
               <q-btn label="Read More" color="red-8"
-                href="https://www.martialartsplanet.com/threads/arnis-eskrima-kali.31257/" target="_blank" />
+                href="https://palarongpambansa.deped.gov.ph/wp-content/uploads/2023/07/Tech-Guide-Arnis.pdf#:~:text=%E2%9E%A4%20A%20match%20is%20won%20when%20one,shall%20be%20applied%20to%20break%20the%20tie."
+                target="_blank" />
             </q-card-actions>
           </q-card>
         </div>
