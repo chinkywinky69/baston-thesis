@@ -33,7 +33,7 @@
       <q-card style="width: 400px">
         <q-form @submit="previewMember ? updateMember() : createMember()">
           <q-card-section>
-            <div class="text-bold text-h6 q-mb-md">Add Member</div>
+            <div class="text-bold text-h6 q-mb-md">Be a Member</div>
             <q-input v-model="form.lastName" class="q-mb-sm" label="Last Name" outlined dense :rules="[(val) => !!val]" />
             <q-input v-model="form.firstName" class="q-mb-sm" label="First Name" outlined dense
               :rules="[(val) => !!val]" />
@@ -79,7 +79,7 @@
                 <q-icon name="attach_file" />
               </template>
             </q-file>
-            <q-btn :loading="isLoading" type="submit" label="Submit" color="red-8" />
+            <q-btn :loading="isLoading" type="submit" label="Register" color="red-8" />
           </q-card-section>
         </q-form>
       </q-card>
@@ -130,7 +130,8 @@
             <q-separator />
             <q-card-actions class="row justify-center">
               <q-btn label="Read More" color="red-8"
-                href="https://www.martialartsplanet.com/threads/arnis-eskrima-kali.31257/" target="_blank" />
+                href="https://palarongpambansa.deped.gov.ph/wp-content/uploads/2023/07/Tech-Guide-Arnis.pdf#:~:text=%E2%9E%A4%20A%20match%20is%20won%20when%20one,shall%20be%20applied%20to%20break%20the%20tie."
+                target="_blank" />
             </q-card-actions>
           </q-card>
         </div>
