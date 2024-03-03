@@ -10,9 +10,9 @@
           </div>
           <div class="flex q-gutter-x-md">
             <div>
-              <div class="">Round No.</div>
-              <q-select v-model="form.round" outlined dense :options="[1, 2, 3, 4, 5]" :rules="[(val) => !!val]"
-                style="width: 65px;" />
+              <div class="">Round</div>
+              <q-select v-model="form.round" outlined dense :options="roundsOpts" :rules="[(val) => !!val]"
+                style="width: 200px;" />
             </div>
             <div>
               <div class="">Match No.</div>
@@ -84,6 +84,7 @@
     </q-card>
   </q-dialog>
 </template>
+
 <script setup>
 import { useDialogPluginComponent } from 'quasar'
 import { reactive, ref, onMounted, computed } from 'vue';
@@ -104,7 +105,12 @@ const filteredTeams = computed(() => {
   if (teams.value?.length > 0) {
     return teams.value.map(team => {
       const isDisabled = currentMatches.value.some(match => {
-        return match.division === props.data.division && match.category === props.data.gender && (match.player1.teamId === team.id || match.player2.teamId === team.id);
+        return (
+          match.division === props.data.division &&
+          match.category === props.data.gender &&
+          (match.player1.teamId === team.id || match.player2.teamId === team.id) &&
+          form.round == match.round
+        );
       });
 
       return { ...team, disable: isDisabled };
@@ -114,6 +120,13 @@ const filteredTeams = computed(() => {
 });
 
 
+
+const roundsOpts = [
+  'Elimination',
+  'Quarter Finals',
+  'Semi-Finals',
+  'Finals'
+]
 
 const form = reactive({
   round: null,
@@ -148,7 +161,6 @@ const checkRep = (teamData, playerModel) => {
 }
 
 const create = async () => {
-  form.round = parseInt(form.round)
   form.no = parseInt(form.no)
   const res = await useMatchStore().create(form)
   if (res.success) onDialogOK()

@@ -18,7 +18,7 @@
       </div>
 
       <!-- List of Matches -->
-      <MatchList v-if="matches" :matches="filteredMatchesByGender()" />
+      <MatchList v-if="matches" :matches="filteredMatchesByGender()" class="q-mt-md" />
 
       <div v-else class="flex flex-center q-mt-lg">
         <div class="text-subtitle1 text-grey-8"><q-icon class="q-mr-sm" name="far fa-face-laugh-beam" size="md" />No
