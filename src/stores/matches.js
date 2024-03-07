@@ -14,7 +14,7 @@ import {
   increment,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
-import { Dialog, Loading, Notify } from "quasar";
+import { Dialog, Loading, Notify, date } from "quasar";
 import { db } from "src/boot/firebase";
 import { useTeamStore } from "./teams";
 
@@ -30,6 +30,34 @@ export const useMatchStore = defineStore("matches", {
     },
     getAnyoMatches: (state) => {
       return state.matches.filter((item) => item.matchType == "Anyo");
+    },
+
+    getMatchesToday: (state) => {
+      const today = date.formatDate(new Date(), "YYYY-MM-DD");
+      return state.matches.filter((match) => {
+        if (match.updatedAt) {
+          const matchDate = date.formatDate(
+            match.updatedAt.toDate(),
+            "YYYY-MM-DD"
+          );
+          return today === matchDate;
+        }
+        return false;
+      });
+    },
+
+    getMatchesAgo: (state) => {
+      const today = date.formatDate(new Date(), "YYYY-MM-DD");
+      return state.matches.filter((match) => {
+        if (match.updatedAt) {
+          const matchDate = date.formatDate(
+            match.updatedAt.toDate(),
+            "YYYY-MM-DD"
+          );
+          return today !== matchDate && match.winner;
+        }
+        return false;
+      });
     },
   },
 
