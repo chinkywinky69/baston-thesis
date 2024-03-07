@@ -42,14 +42,6 @@
             <q-item-section>Tournament</q-item-section>
           </q-item>
 
-
-          <q-item to="/matchList" clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon color="red-8" name="fa-solid fa-tv" />
-            </q-item-section>
-            <q-item-section>Match List</q-item-section>
-          </q-item>
-
           <q-item to="/matchHistory" clickable v-ripple>
             <q-item-section avatar>
               <q-icon color="red-8" name="fa-solid fa-clock-rotate-left" />
