@@ -64,6 +64,10 @@ const routes = [
         component: () => import("pages/TournamentPage.vue"),
       },
       {
+        path: "/tally",
+        component: () => import("pages/TallyPage.vue"),
+      },
+      {
         path: "/matches/:id",
         component: () => import("pages/MatchesPage.vue"),
         children: [
