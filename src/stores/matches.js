@@ -104,6 +104,7 @@ export const useMatchStore = defineStore("matches", {
       }
 
       if (this.match && this.match.id == id) {
+        if (typeof data.currentRound === "object") data.currentRound = "";
         Object.assign(this.match, {
           ...data,
           updatedAt: Timestamp.now(),
@@ -126,10 +127,16 @@ export const useMatchStore = defineStore("matches", {
     },
 
     async updateStat(id, stat, playerNo, val) {
+      console.log({
+        stat: stat,
+        playerNo: playerNo,
+        val: val,
+      });
+
       if (!this.match[playerNo].hasOwnProperty(stat))
         this.match[playerNo][stat] = 0;
       else if (val == -1) this.match[playerNo][stat]--;
-      else if (val == 1) this.match[playerNo][stat]++;
+      if (val == 1) this.match[playerNo][stat]++;
 
       const dataRef = doc(db, "matches", id);
       const fieldKey = `${playerNo}.${stat}`;

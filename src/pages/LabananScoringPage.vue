@@ -184,7 +184,6 @@ const fetchMatch = async () => {
 }
 
 const updateStat = async (stat, playerNo, val) => {
-  console.log(stat);
   if (stat == 'disarm') {
     let playerToScore = 'player1'
     let playerToSDisarm = 'player2'
@@ -194,27 +193,12 @@ const updateStat = async (stat, playerNo, val) => {
     }
     await matchStore.updateStat(route.params.matchId, 'disarm', playerToSDisarm, val)
     await matchStore.updateStat(route.params.matchId, 'score', playerToScore, val)
+    return
   }
   await matchStore.updateStat(route.params.matchId, stat, playerNo, val)
 }
 
 onBeforeMount(() => fetchMatch())
-watchEffect(async () => {
-  if (matchData.value && !matchData.value.hasOwnProperty('currentRound')) {
-    await matchStore.update(route.params.matchId, {
-      currentRound: 1,
-    });
-  }
-});
-
-watchEffect(async () => {
-  if (!matchData.value) return;
-  if (matchData.value?.player1?.wins === 2) {
-    displayMatchResult('player1', 1, matchData.value.player1.id)
-  } else if (matchData.value?.player2?.wins === 2) {
-    displayMatchResult('player2', 2, matchData.value.player2.id)
-  }
-});
 
 
 const matchDone = () => {
@@ -346,5 +330,20 @@ player2RoundsWon.value = 0;
 matchWinner.value = null;
 
 
+watchEffect(async () => {
+  if (matchData.value && !matchData.value.hasOwnProperty('currentRound')) {
+    await matchStore.update(route.params.matchId, {
+      currentRound: 1,
+    });
+  }
+});
 
+watchEffect(async () => {
+  if (!matchData.value) return;
+  if (matchData.value?.player1?.wins === 2) {
+    displayMatchResult('player1', 1, matchData.value.player1.id)
+  } else if (matchData.value?.player2?.wins === 2) {
+    displayMatchResult('player2', 2, matchData.value.player2.id)
+  }
+});
 </script>

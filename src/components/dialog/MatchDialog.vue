@@ -1,6 +1,6 @@
 <template>
   <q-dialog ref='dialogRef'>
-    <q-card style="width: 500px; border-radius: 10px">
+    <q-card style="max-width: 100vw; width: 720px; border-radius: 10px">
       <q-card-section class="text-h6 fw-600 q-pb-none">{{ data.match ? 'Update' : 'Create' }} Match</q-card-section>
       <q-form @submit="data.match ? update() : create()">
         <q-card-section class="column">
