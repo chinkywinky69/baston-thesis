@@ -28,6 +28,7 @@
           <q-card-actions>
             <q-btn label="Matches" color="red-8" :to="`/matches/${i.id}`" size="12px" class="rb-1" />
             <q-btn @click="handleEdit(i)" label="Edit" color="red-8" size="12px" outline class="rb-1" />
+            <q-btn to="/tally" label="Tally" color="blue-8" size="12px" outline class="rb-1" />
             <q-space />
             <q-btn @click="handleDeleteTourna(i)" round dense size="sm" icon="delete" color="negative" outline />
           </q-card-actions>
@@ -36,7 +37,6 @@
     </div>
   </q-page>
 </template>
-
 <script setup>
 import { useTournamentStore } from 'src/stores/tournaments';
 import { computed, onBeforeMount } from 'vue';
