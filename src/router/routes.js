@@ -64,7 +64,7 @@ const routes = [
         component: () => import("pages/TournamentPage.vue"),
       },
       {
-        path: "/tally",
+        path: "/tally/:id",
         component: () => import("pages/TallyPage.vue"),
       },
       {

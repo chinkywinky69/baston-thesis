@@ -6,7 +6,7 @@
       <!-- LABANAN -->
       <div class="col">
         <div class="text-center text-bold text-h5">LABANAN</div>
-        <div v-for="(w, index) in weightDivision" :key="index">
+        <div v-for="(w, index) in matches" :key="index">
           <div class="text-h6 ">{{ w }} Boys</div>
           <div v-for="(m, index ) in dummyMembers" :key="index">
             <q-item clickable>
@@ -44,7 +44,34 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onBeforeMount } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useMatchStore } from 'src/stores/matches';
+import { useTournamentStore } from 'src/stores/tournaments';
+import { useCompetitionStore } from 'src/stores/competitions';
+
+const route = useRouter()
+const matchStore = useMatchStore()
+const tournaStore = useTournamentStore()
+const comStore = useCompetitionStore()
+
+const tourna = computed(() => tournaStore.tournament)
+const coms = computed(() => comStore.competitions)
+const matches = computed(() => matchStore.matches)
+
+const fetchTourna = async () => {
+  await tournaStore.fetchOne(route.params.id)
+}
+const fetchMatches = async () => {
+  await matchStore.fetchAllViaTournaId(route.params.id)
+}
+const fetchComs = async () => {
+  await comStore.fetchAllViaTournaId(route.params.id)
+}
+
+onBeforeMount(async () => {
+  await fetchTourna()
+})
 
 const weightDivision = [
   'Pinweight', 'Bantamweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
