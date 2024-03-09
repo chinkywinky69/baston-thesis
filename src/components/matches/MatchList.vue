@@ -14,13 +14,13 @@
                 </div>
 
               </div>
-              <div class="text-caption text-blue">Team: {{ item.player1.team.name }}</div>
+              <div class="text-caption text-blue">Team: {{ item.player1.team?.name }}</div>
             </q-item-label>
             <q-item-label class="q-pa-xs" :class="{ 'bg-blue-1 rb-1': isWinner(item, item.player2) }">
               <div class="text-body2">{{ getFullname(item.player2) }}
                 <q-chip dark v-if="isWinner(item, item.player2)" color="positive" label="Winner" size="sm" />
               </div>
-              <div class="text-caption text-red">Team: {{ item.player2.team.name }}</div>
+              <div class="text-caption text-red">Team: {{ item.player2.team?.name }}</div>
             </q-item-label>
           </q-item-section>
           <q-item-section side top>

@@ -1,5 +1,5 @@
 <template>
-  <q-card class="q-gutter-y-md rb-1">
+  <q-card flat bordered class="rb-1">
     <q-list v-if="matches.length">
 
       <q-item v-for="item in matches" :key="item.id">
@@ -42,9 +42,6 @@ import { useMatchStore } from 'src/stores/matches';
 
 const props = defineProps({ matches: Array })
 
-const handleDelete = (matchId) => {
-  useMatchStore().delete(matchId)
-}
 
 const isWinner = (match, player) => {
   if (match.winner) {

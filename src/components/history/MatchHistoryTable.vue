@@ -3,7 +3,7 @@
     <q-table :filter="filter" flat bordered :rows="matches" :columns="columns" :pagination="{ rowsPerPage: 10 }"
       class="rb-1">
       <template v-slot:top>
-        <q-input v-model="filter" outlined dense placeholder="Search">
+        <q-input v-model="filter" outlined dense placeholder="Search" style="max-width: 100vw; width: 350px">
           <template v-slot:append>
             <q-icon name="search" />
           </template>

@@ -13,7 +13,7 @@ import {
   where,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
-import { Dialog, Loading, Notify } from "quasar";
+import { Dialog, Loading, Notify, date } from "quasar";
 import { db } from "src/boot/firebase";
 
 export const useCompetitionStore = defineStore("competitions", {
@@ -21,6 +21,36 @@ export const useCompetitionStore = defineStore("competitions", {
     competitions: [],
     competition: null,
   }),
+
+  getters: {
+    getCompetitionsToday: (state) => {
+      const today = date.formatDate(new Date(), "YYYY-MM-DD");
+      return state.competitions.filter((match) => {
+        if (match.updatedAt) {
+          const matchDate = date.formatDate(
+            match.updatedAt.toDate(),
+            "YYYY-MM-DD"
+          );
+          return today === matchDate;
+        }
+        return false;
+      });
+    },
+
+    getCompetitionsAgo: (state) => {
+      const today = date.formatDate(new Date(), "YYYY-MM-DD");
+      return state.competitions.filter((match) => {
+        if (match.updatedAt) {
+          const matchDate = date.formatDate(
+            match.updatedAt.toDate(),
+            "YYYY-MM-DD"
+          );
+          return today !== matchDate;
+        }
+        return false;
+      });
+    },
+  },
 
   actions: {
     async create(data) {
