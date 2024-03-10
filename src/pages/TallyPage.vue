@@ -76,7 +76,7 @@
                         <q-item-label class="row items-center  text-red  fw-600"
                           v-if="com.hasOwnProperty(team.id) && com[team.id].averageScore">
                           <div class="q-mr-sm">Score: </div>
-                          <div class="text-h6">{{ com[team.id].averageScore
+                          <div class="text-subtitle2">{{ com[team.id].averageScore
                             }}</div>
                         </q-item-label>
                       </q-item-section>
