@@ -36,12 +36,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { getFullname } from 'src/composables/filters';
-import { useMatchStore } from 'src/stores/matches';
 
 const props = defineProps({ matches: Array })
-
 
 const isWinner = (match, player) => {
   if (match.winner) {
@@ -52,14 +49,4 @@ const isWinner = (match, player) => {
   }
 }
 
-const groupedMatches = computed(() => {
-  const grouped = {};
-  props.matches.forEach(match => {
-    if (!grouped[match.round]) {
-      grouped[match.round] = [];
-    }
-    grouped[match.round].push(match);
-  });
-  return grouped;
-});
 </script>

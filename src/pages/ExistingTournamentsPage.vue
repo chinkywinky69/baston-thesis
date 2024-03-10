@@ -26,10 +26,11 @@
           </q-card-section>
           <q-separator />
           <q-card-actions>
-            <q-btn label="Matches" color="red-8" :to="`/matches/${i.id}`" size="12px" class="rb-1" />
-            <q-btn @click="handleEdit(i)" label="Edit" color="red-8" size="12px" outline class="rb-1" />
-            <q-btn :to="`/tally/${i.id}`" label="Tally" color="blue-8" size="12px" outline class="rb-1" />
+            <q-btn label="Matches" :to="`/matches/${i.id}`" size="12px" class="rb-1" />
+            <q-btn :to="`/tally/${i.id}`" label="Tally" size="12px" class="rb-1" />
             <q-space />
+
+            <q-btn @click="handleEdit(i)" icon="edit" color="info" outline round dense size="sm" />
             <q-btn @click="handleDeleteTourna(i)" round dense size="sm" icon="delete" color="negative" outline />
           </q-card-actions>
         </q-card>
