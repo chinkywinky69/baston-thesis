@@ -125,6 +125,7 @@ const roundsOpts = [
   'Elimination',
   'Quarter Finals',
   'Semi-Finals',
+  'Fight For 3rd',
   'Finals'
 ]
 
