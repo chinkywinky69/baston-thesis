@@ -175,7 +175,7 @@
         <q-card>
           <q-card-section>
             <div class="text-h3 text-bold text-center q-mb-md">
-              LIVE MATCHES
+              ON-GOING MATCHES
             </div>
             <div>
               <q-table title="Matches" flat bordered :rows="rows" row-key="name" color="amber" />
