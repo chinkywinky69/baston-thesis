@@ -7,40 +7,74 @@
         <!-- LABANAN -->
         <div class="col">
           <div class="text-center text-bold text-subtitle1">LABANAN</div>
-          <q-list v-if="matches.length">
-            <q-item v-for="item in matches" :key="item.id">
-              <q-item-section avatar>
-                <q-avatar color="grey-1">
-                  <q-icon color="amber" name="fas fa-trophy" />
-                </q-avatar>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-subtitle1 fw-600">
-                  <div class="flex">
-                    <span> {{ item.division }} </span>
-                    <span class="q-ml-xs">({{ item.category == 'Male' ? 'Boys' : 'Girls' }})</span>
-                    <q-badge v-if="!item.winner" align="middle" class="q-ml-xs">No Result</q-badge>
-                  </div>
-                </q-item-label>
-                <q-item-label class="q-pa-xs" :class="{ 'bg-blue-1 rb-1': isWinner(item, item.player1) }">
-                  <div class="fw-600 text-blue">Team: {{ item.player1.team.name }}</div>
-                  <div>
-                    <div class="text-caption">
-                      {{ getFullname(item.player1) }}
-                      <q-chip dark v-if="isWinner(item, item.player1)" color="positive" label="Winner" size="sm" />
-                    </div>
-                  </div>
+          <q-list v-if="matches.length" class="q-mt-sm q-mx-sm">
+            <div v-for="item in matches" :key="item.id" class="q-my-md">
+              <div>
+                <div class="flex text-subtitle1 fw-600">
+                  <span> {{ item.division }} </span>
+                  <span class="q-ml-xs">({{ item.category == 'Male' ? 'Boys' : 'Girls' }})</span>
+                </div>
+                <div class="text-caption">Finished: {{ date.formatDate(item.updatedAt.toDate(), 'MMM D, YYYY | h:mm a')
+                  }}</div>
+              </div>
+              <template v-if="item.round == 'Finals' && item.winner">
+                <q-item dense>
+                  <q-item-section avatar>
+                    <span class="text-bold text-h6">1st</span>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>
+                      <div class="fw-600 text-subtitle2 text-blue">Team: {{ item[`player${item.winner.no}`].team.name }}
+                      </div>
+                      <div>
+                        <div>
+                          {{ getFullname(item[`player${item.winner.no}`]) }}
+                        </div>
+                      </div>
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
 
-                </q-item-label>
-                <q-item-label class="q-pa-xs" :class="{ 'bg-blue-1 rb-1': isWinner(item, item.player2) }">
+                <q-item dense>
+                  <q-item-section avatar>
+                    <span class="text-bold text-h6">2nd</span>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>
+                      <div class="fw-600 text-subtitle2 text-blue">Team: {{ item[`player${item.winner.no == 1 ? 2 :
+      1}`].team.name }}
+                      </div>
+                      <div>
+                        <div>
+                          {{ getFullname(item[`player${item.winner.no == 1 ? 2 :
+      1}`]) }}
+                        </div>
+                      </div>
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+              <template v-if="item.round == 'Fight For 3rd' && item.winner">
 
-                  <div class="text-red fw-600">{{ item.player2.team.name }}</div>
-                  <div class="text-caption">{{ getFullname(item.player2) }}
-                    <q-chip dark v-if="isWinner(item, item.player2)" color="positive" label="Winner" size="sm" />
-                  </div>
-                </q-item-label>
-              </q-item-section>
-            </q-item>
+
+                <q-item dense>
+                  <q-item-section avatar>
+                    <span class="text-bold text-h6">3rd</span>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>
+                      <div class="fw-600 text-subtitle2 text-blue">Team: {{ item[`player${item.winner.no}`].team.name }}
+                      </div>
+                      <div>
+                        <div>
+                          {{ getFullname(item[`player${item.winner.no}`]) }}
+                        </div>
+                      </div>
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+            </div>
           </q-list>
         </div>
         <q-separator vertical class="q-ma-md" />
@@ -98,6 +132,7 @@
 
 <script setup>
 import { ref, computed, onBeforeMount } from 'vue';
+import { date } from 'quasar';
 import { useRoute } from 'vue-router';
 import { useMatchStore } from 'src/stores/matches';
 import { useTournamentStore } from 'src/stores/tournaments';
