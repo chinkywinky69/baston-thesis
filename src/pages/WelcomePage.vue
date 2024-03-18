@@ -34,7 +34,8 @@
         <q-form @submit="previewMember ? updateMember() : createMember()">
           <q-card-section>
             <div class="text-bold text-h6 q-mb-md">Be a Member</div>
-            <q-input v-model="form.lastName" class="q-mb-sm" label="Last Name" outlined dense :rules="[(val) => !!val]" />
+            <q-input v-model="form.lastName" class="q-mb-sm" label="Last Name" outlined dense
+              :rules="[(val) => !!val]" />
             <q-input v-model="form.firstName" class="q-mb-sm" label="First Name" outlined dense
               :rules="[(val) => !!val]" />
             <q-input v-model="form.middleName" class="q-mb-sm" label="Middle Name" outlined dense
@@ -43,8 +44,8 @@
               :rules="[(val) => !!val]" />
             <q-input v-model="form.school" class="q-mb-sm" label="School" outlined dense type="text"
               :rules="[(val) => !!val]" />
-            <q-select v-model="form.teamId" option-label="name" :options="teams" option-value="id" emit-value map-options
-              class="q-mb-sm" label="Team" outlined dense type="text" :rules="[(val) => !!val]" />
+            <q-select v-model="form.teamId" option-label="name" :options="teams" option-value="id" emit-value
+              map-options class="q-mb-sm" label="Team" outlined dense type="text" :rules="[(val) => !!val]" />
             <div class="row">
               <q-input v-model="form.birthday" class="col q-mb-sm" label="Birthday" outlined dense type="date"
                 @change="calculateAge" :rules="[(val) => !!val]" />
@@ -99,9 +100,11 @@
               </div>
               <div class="text-center">
                 Arnis, also known as Eskrima and Kali, is a traditional Filipino martial art that emphasizes the use of
-                weapons such as sticks, knives, and bladed weapons, as well as empty-hand techniques. It is considered to
+                weapons such as sticks, knives, and bladed weapons, as well as empty-hand techniques. It is considered
+                to
                 be
-                one of the oldest and most practical fighting systems in the world, and is known for its speed, power, and
+                one of the oldest and most practical fighting systems in the world, and is known for its speed, power,
+                and
                 effectiveness.
               </div>
             </q-card-section>
@@ -160,12 +163,16 @@
         <q-card>
           <q-card-section>
             <div class="text-body1 q-pa-lg">
-              San Carlos Jungle Fighters Martial Arts Club is a non-government organization that promotes martial sports.
-              It was founded by Diomedes N. Mamugay, a 3rd Dan Blackbelt, in San Carlos City, Negros Occidental. The club
+              San Carlos Jungle Fighters Martial Arts Club is a non-government organization that promotes martial
+              sports.
+              It was founded by Diomedes N. Mamugay, a 3rd Dan Blackbelt, in San Carlos City, Negros Occidental. The
+              club
               produces Arnis practitioners and coordinates with the City Sports Office to offer programs such as
-              Grassroots Training. However, managing Arnis tournaments with manual methods proved to be time-consuming. To
+              Grassroots Training. However, managing Arnis tournaments with manual methods proved to be time-consuming.
+              To
               simplify the process, the club plans to create a web-based app that records player information, records
-              scores, and bout-making. The app will be accessible from mobile or web and offer real-time updates on match
+              scores, and bout-making. The app will be accessible from mobile or web and offer real-time updates on
+              match
               results and standings for all stakeholders.
             </div>
           </q-card-section>
@@ -175,10 +182,12 @@
         <q-card>
           <q-card-section>
             <div class="text-h3 text-bold text-center q-mb-md">
-              ON-GOING MATCHES
+              Recent Matches
             </div>
             <div>
-              <q-table title="Matches" flat bordered :rows="rows" row-key="name" color="amber" />
+              <div>
+                <MatchHistoryList :matches="matchesToday" />
+              </div>
             </div>
           </q-card-section>
         </q-card>
@@ -189,7 +198,9 @@
             <div class="text-h3 text-bold text-center q-mb-md">
               MATCH HISTORY
             </div>
-            <div class="row justify-between">
+
+            <MatchHistoryTable :matches="matchesAgo" />
+            <!-- <div class="row justify-between">
               <div>
                 <q-btn icon="fa-solid fa-calendar" label="date" color="red" />
               </div>
@@ -223,7 +234,7 @@
                   </q-card>
                 </q-expansion-item>
               </q-list>
-            </div>
+            </div> -->
           </q-card-section>
         </q-card>
       </div>
@@ -234,14 +245,21 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onBeforeMount } from 'vue'
+import { useMatchStore } from 'stores/matches'
 import { useMemberStore } from 'src/stores/members';
 import { useQuasar } from 'quasar';
 import { useTeamStore } from 'src/stores/teams';
 
+import MatchHistoryList from 'components/history/MatchHistoryList.vue'
+import MatchHistoryTable from 'components/history/MatchHistoryTable.vue'
+
+const matchStore = useMatchStore()
 const addUserDialog = ref(false)
 const medCert = ref(null)
 const $q = useQuasar()
 const teams = computed(() => useTeamStore().teams)
+const matchesToday = computed(() => matchStore.getMatchesToday)
+const matchesAgo = computed(() => matchStore.getMatchesAgo)
 
 const form = reactive({
   approved: false,
@@ -286,6 +304,15 @@ const createMember = async () => {
   }
   isLoading.value = false
 }
+
+const fetchMatches = async () => {
+  await matchStore.fetchAll()
+}
+
+onBeforeMount(async () => {
+  await fetchMatches()
+})
+
 
 const genders = [
   "Male",
