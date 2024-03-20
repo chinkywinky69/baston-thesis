@@ -220,6 +220,7 @@ const player2DisarmScore = ref(0)
 const player1RoundsWon = ref(0);
 const player2RoundsWon = ref(0);
 const matchWinner = ref(null);
+const matchLoser = ref(null);
 const showMatchDetailsDialog = ref(false)
 
 const addRoundData = () => {
@@ -251,10 +252,12 @@ const resetScoresAndFouls = () => {
 const checkMatchWinner = () => {
   if (player1RoundsWon.value === 2) {
     matchWinner.value = 'Player 1';
+    matchLoser.value = 'Player 2';
     console.log('Match winner: Player 1');
     displayMatchResult(1);
   } else if (player2RoundsWon.value === 2) {
     matchWinner.value = 'Player 2';
+    matchLoser.value = 'Player 1';
     console.log('Match winner: Player 2');
     displayMatchResult(2);
   }
@@ -328,6 +331,7 @@ round.value = 1;
 player1RoundsWon.value = 0;
 player2RoundsWon.value = 0;
 matchWinner.value = null;
+matchLoser.value = null;
 
 
 watchEffect(async () => {

@@ -6,16 +6,19 @@
       <div class="q-mt-md row justify-center">
         <!-- LABANAN -->
         <div class="col">
-          <div class="text-center text-bold text-subtitle1">LABANAN</div>
+          <div class="row justify-between">
+            <div class="col text-center text-bold text-subtitle1">LABANAN</div>
+            <q-select v-model="seltectedCategory" class="col" :options="category" dense outlined label="Category" />
+          </div>
           <q-list v-if="matches.length" class="q-mt-sm q-mx-sm">
-            <div v-for="item in matches" :key="item.id" class="q-my-md">
+            <div v-for="item in filteredMatches" :key="item.id" class="q-my-md">
               <div>
                 <div class="flex text-subtitle1 fw-600">
                   <span> {{ item.division }} </span>
                   <span class="q-ml-xs">({{ item.category == 'Male' ? 'Boys' : 'Girls' }})</span>
                 </div>
                 <div class="text-caption">Finished: {{ date.formatDate(item.updatedAt.toDate(), 'MMM D, YYYY | h:mm a')
-                  }}</div>
+                }}</div>
               </div>
               <template v-if="item.round == 'Finals' && item.winner">
                 <q-item dense>
@@ -42,12 +45,12 @@
                   <q-item-section>
                     <q-item-label>
                       <div class="fw-600 text-subtitle2 text-blue">Team: {{ item[`player${item.winner.no == 1 ? 2 :
-      1}`].team.name }}
+                        1}`].team.name }}
                       </div>
                       <div>
                         <div>
                           {{ getFullname(item[`player${item.winner.no == 1 ? 2 :
-      1}`]) }}
+                            1}`]) }}
                         </div>
                       </div>
                     </q-item-label>
@@ -55,8 +58,6 @@
                 </q-item>
               </template>
               <template v-if="item.round == 'Fight For 3rd' && item.winner">
-
-
                 <q-item dense>
                   <q-item-section avatar>
                     <span class="text-bold text-h6">3rd</span>
@@ -87,7 +88,7 @@
                 <q-item>
                   <q-item-section>
                     <q-item-label class="text-subtitle2">{{ com.name }} <span>({{ com.category == 'Male' ? 'Boys' :
-      'Girls' }})</span></q-item-label>
+                      'Girls' }})</span></q-item-label>
                   </q-item-section>
                 </q-item>
 
@@ -103,7 +104,7 @@
                         <q-item-label class="fw-600">{{ team.name }}</q-item-label>
                         <template v-if="com.type == 'Team'">
                           <q-item-label caption v-for="player in team[com.name][com.category]" :key="player.id">{{
-      getFullname(player) }}
+                            getFullname(player) }}
                           </q-item-label>
                         </template>
                         <q-item-label caption v-else>{{ getFullname(team[com.name][com.category]) }}</q-item-label>
@@ -111,7 +112,7 @@
                           v-if="com.hasOwnProperty(team.id) && com[team.id].averageScore">
                           <div class="q-mr-sm">Score: </div>
                           <div class="text-subtitle2">{{ com[team.id].averageScore
-                            }}</div>
+                          }}</div>
                         </q-item-label>
                       </q-item-section>
                     </q-item>
@@ -148,6 +149,14 @@ const tourna = computed(() => tournaStore.tournament)
 const coms = computed(() => comStore.competitions)
 const matches = computed(() => matchStore.matches)
 
+const filteredMatches = computed(() => {
+  return matches.value.filter(item => {
+    return (item.round === 'Finals' || item.round === 'Fight For 3rd') && item.category === seltectedCategory.value;
+  }).sort((a, b) => {
+    return a.division.localeCompare(b.division);
+  });
+});
+
 const fetchTourna = async () => {
   await tournaStore.fetchOne(route.params.id)
 }
@@ -164,24 +173,8 @@ onBeforeMount(async () => {
   await fetchComs()
 })
 
-const isWinner = (match, player) => {
-  if (match.winner) {
-    if (match.winner.playerId == player.id) return true;
-    else return false
-  } else {
-    return false
-  }
-}
+const category = ['Male', 'Female'];
+const seltectedCategory = ref('Male')
 
-const weightDivision = [
-  'Pinweight', 'Bantamweight', 'Featherweight', 'Extra Lightweight', 'Half Lightweight', 'Open Weight'
-]
 
-const anyo = [
-  "Individual Likha Single Weapon", "Individual Likha Double Weapon", "Individual Likha Espada Y Daga Weapon", "Team Likha Single Weapon", "Team Likha Double Weapon", "Team Likha Espada Y Daga Weapon"
-]
-
-const dummyMembers = [
-  'John Vince Paderna', 'Justin Villacampa', 'Angel Bert Tausa'
-]
 </script>
