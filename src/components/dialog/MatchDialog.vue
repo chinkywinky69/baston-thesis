@@ -103,17 +103,17 @@ const team2 = ref(null)
 
 const filteredTeams = computed(() => {
   if (teams.value?.length > 0) {
-    return teams.value.map(team => {
+    return teams.value.map(teamData => {
       const isDisabled = currentMatches.value.some(match => {
         return (
           match.division === props.data.division &&
           match.category === props.data.gender &&
-          (match.player1.teamId === team.id || match.player2.teamId === team.id) &&
-          form.round == match.round
+          (match.player1.teamId === teamData.id || match.player2.teamId === teamData.id) &&
+          form.round == match.round || (team1.value?.id == teamData.id || team2.value?.id == teamData.id)
         );
       });
 
-      return { ...team, disable: isDisabled };
+      return { ...teamData, disable: isDisabled };
     });
   }
   return [];

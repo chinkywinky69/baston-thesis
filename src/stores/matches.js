@@ -62,6 +62,10 @@ export const useMatchStore = defineStore("matches", {
   },
 
   actions: {
+    async setMatchToNull() {
+      this.match = null;
+      return true;
+    },
     async create(data) {
       Loading.show();
       const dataRef = collection(db, "matches");

@@ -26,7 +26,7 @@
           <q-item-section side top>
             <q-btn @click="handleDelete(item.id)" round dense flat icon="delete" size="14px" class="fw-600"
               color="negative" />
-            <q-btn :to="`/labanan-scoring/${item.id}`" round dense flat icon="open_in_new" />
+            <q-btn @click="routeToScoringPage(item.id)" round dense flat icon="open_in_new" />
           </q-item-section>
         </q-item>
       </q-list>
@@ -38,11 +38,18 @@
 import { computed } from 'vue'
 import { getFullname } from 'src/composables/filters';
 import { useMatchStore } from 'src/stores/matches';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({ matches: Array })
+const router = useRouter()
 
 const handleDelete = (matchId) => {
   useMatchStore().delete(matchId)
+}
+
+const routeToScoringPage = async (matchId) => {
+  const isNull = await useMatchStore().setMatchToNull()
+  if (isNull) router.push(`/labanan-scoring/${matchId}`)
 }
 
 const isWinner = (match, player) => {

@@ -3,7 +3,7 @@
     <div v-if="matchData">
       <q-card class="text-center q-pa-md rb-1 q-mx-auto q-mb-sm" style="max-width: 100vw; width: 720px">
         <div class="text-h4"><span class=" text-bold">{{ matchData.division }}</span> <span>({{
-          matchData?.category == 'Male' ? 'Boys' : 'Girls' }})</span></div>
+      matchData?.category == 'Male' ? 'Boys' : 'Girls' }})</span></div>
       </q-card>
       <div class="row justify-center q-gutter-md">
         <q-card class="" style="width: 350px;">
@@ -47,8 +47,8 @@
             <div class="q-mt-sm row justify-center q-gutter-sm">
               <q-btn @click="updateStat('score', 'player1', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="blue-8"
                 dense outline />
-              <q-btn @click="updateStat('score', 'player1', -1)" :disable="isDisabled('score', 'player1')" class="q-pa-sm"
-                icon="fa-solid fa-minus" color="blue-8" dense outline />
+              <q-btn @click="updateStat('score', 'player1', -1)" :disable="isDisabled('score', 'player1')"
+                class="q-pa-sm" icon="fa-solid fa-minus" color="blue-8" dense outline />
             </div>
           </q-card-section>
         </q-card>
@@ -92,8 +92,8 @@
             <div class="q-mt-sm row justify-center q-gutter-sm">
               <q-btn @click="updateStat('score', 'player2', 1)" class="q-pa-sm" icon="fa-solid fa-plus" color="red-8"
                 dense outline />
-              <q-btn @click="updateStat('score', 'player2', -1)" :disable="isDisabled('score', 'player2')" class="q-pa-sm"
-                icon="fa-solid fa-minus" color="red-8" dense outline />
+              <q-btn @click="updateStat('score', 'player2', -1)" :disable="isDisabled('score', 'player2')"
+                class="q-pa-sm" icon="fa-solid fa-minus" color="red-8" dense outline />
             </div>
           </q-card-section>
         </q-card>
@@ -110,7 +110,7 @@
                 <q-item class="flex column " v-for="(match, index) in matchData.matchResults" :key="index">
                   <q-item-section>
                     <q-item-label header class="text-bold text-subtitle2 text-black">ROUND: {{ index + 1
-                    }}</q-item-label>
+                      }}</q-item-label>
                   </q-item-section>
 
                   <q-item-label class="text-body1 text-bold text-blue-8">Player 1</q-item-label>
@@ -155,7 +155,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onBeforeMount, watchEffect } from 'vue'
+import { ref, computed, onBeforeMount, watchEffect, watch } from 'vue'
 import { Dialog } from 'quasar';
 import { useRouter, useRoute } from 'vue-router';
 import { useMatchStore } from 'src/stores/matches';
@@ -342,8 +342,8 @@ watchEffect(async () => {
   }
 });
 
-watchEffect(async () => {
-  if (!matchData.value) return;
+watch(matchData, async (newVal) => {
+  if (!newVal) return;
   if (matchData.value?.player1?.wins === 2) {
     displayMatchResult('player1', 1, matchData.value.player1.id)
   } else if (matchData.value?.player2?.wins === 2) {
